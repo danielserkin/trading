@@ -1,0 +1,24 @@
+# Local secrets and sessions
+.env
+.env.*
+*.session
+*.session-journal
+telegram.session*
+mt5-credentials.*
+
+# Generated trading artifacts
+sessions/*/
+!sessions/.gitkeep
+inputs/*
+!inputs/.gitkeep
+
+# Python/cache
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+
+# OS/editor
+.DS_Store
+Thumbs.db

@@ -1,0 +1,36 @@
+# Copy to config/sources.yaml and tune only if you need different defaults.
+# This workflow uses public web data and does not require API keys.
+sources:
+  - id: "fbs-crypto-cfd"
+    type: "fbs_crypto_cfd"
+    enabled: true
+    asset_scope: ["crypto_cfd"]
+    broker: "fbs"
+    broker_symbols: ["BCHUSD", "BTCUSD", "ETHUSD", "LTCUSD", "XRPUSD", "TRXUSD", "DOGUSD", "SOLUSD", "XLMUSD", "BNBUSD", "ETCUSD", "ADAUSD", "DOTUSD"]
+    notes: "Only these FBS crypto CFD symbols may appear as trade candidates."
+
+  - id: "binance-crypto-proxy"
+    type: "binance_market"
+    enabled: true
+    asset_scope: ["crypto"]
+    symbols: ["BTCUSD", "ETHUSD", "SOLUSD"]
+    interval: "15m"
+    lookback: 96
+    min_quote_volume_usd: 10000000
+    max_spread_percent: 0.06
+    min_rr: 1.6
+    notes: "Public Binance market data is used only as a technical proxy for matching FBS crypto/USD CFDs."
+
+  - id: "coingecko-crypto-universe"
+    type: "coingecko_market"
+    enabled: true
+    asset_scope: ["crypto"]
+    top_assets: 80
+    notes: "Public web source for expanding the crypto universe and ranking liquidity/momentum. Does not generate trades directly."
+
+  - id: "alternative-me-fear-greed"
+    type: "crypto_regime"
+    enabled: true
+    asset_scope: ["crypto"]
+    provider: "alternative.me"
+    notes: "Public Fear & Greed regime context. Does not generate trades directly."

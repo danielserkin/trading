@@ -1,0 +1,4 @@
+interface:
+  display_name: "Trading Review"
+  short_description: "Evalua trades cerrados y mejora filtros"
+  default_prompt: "Use $trading-review to review a completed assisted trading session and suggest improvements."
