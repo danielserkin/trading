@@ -1,4 +1,3 @@
-# Copy to config/sources.yaml and tune only if you need different defaults.
 sources:
   - id: "telegram-expert-signals"
     type: "telegram_signals"
@@ -7,14 +6,72 @@ sources:
     max_age_hours: 24
     default_priority: 3
     channels:
-      # Replace with channels where your Telegram account has legitimate access.
-      # Lower priority is better: 1 = strongest trusted source, 5 = weak source.
-      - id: "example-crypto-forex-signals"
-        handle: "@example_channel"
-        enabled: false
+      - id: "canal_1"
+        handle: "@Cripto_Neney10"
+        enabled: true
+        priority: 2
+        max_age_hours: 24
+        markets: ["crypto_cfd", "forex", "metals", "indices", "energies"]
+      - id: "m15_signals_llc"
+        handle: "@M15_SIGNALS_LLC"
+        enabled: true
         priority: 3
         max_age_hours: 24
         markets: ["crypto_cfd", "forex", "metals", "indices", "energies"]
+      - id: "xauusdtrading0000"
+        handle: "@xauusdtrading0000"
+        enabled: true
+        priority: 2
+        max_age_hours: 24
+        markets: ["metals"]
+      - id: "viewxuk50"
+        handle: "@ViewXuk50"
+        enabled: true
+        priority: 3
+        max_age_hours: 24
+        markets: ["indices", "metals", "forex"]
+      - id: "goldvlp7"
+        handle: "@Goldvlp7"
+        enabled: true
+        priority: 2
+        max_age_hours: 24
+        markets: ["metals"]
+      - id: "tradewithuk500"
+        handle: "@TRADEWITHUK500"
+        enabled: true
+        priority: 3
+        max_age_hours: 24
+        markets: ["indices", "forex", "metals"]
+      - id: "tradewith_forexking786"
+        handle: "@Tradewith_Forexking786"
+        enabled: true
+        priority: 3
+        max_age_hours: 24
+        markets: ["forex", "metals", "indices"]
+      - id: "starxhuk_6273"
+        handle: "@StarXHuk_6273"
+        enabled: true
+        priority: 3
+        max_age_hours: 24
+        markets: ["forex", "metals", "indices", "energies"]
+      - id: "technicalpips6273"
+        handle: "@TechnicalPips6273"
+        enabled: true
+        priority: 3
+        max_age_hours: 24
+        markets: ["forex", "metals", "indices", "energies"]
+      - id: "goldinsighthub525"
+        handle: "@GoldInsighthub525"
+        enabled: true
+        priority: 3
+        max_age_hours: 24
+        markets: ["metals"]
+      - id: "nassniperhuk50"
+        handle: "@nassniperhuk50"
+        enabled: true
+        priority: 3
+        max_age_hours: 24
+        markets: ["indices", "metals", "forex"]
     symbol_aliases:
       GOLD: "XAUUSD"
       SILVER: "XAGUSD"
@@ -44,7 +101,6 @@ sources:
       AMAZON: "AMZN"
       NETFLIX: "NFLX"
       DOGEUSD: "DOGUSD"
-    notes: "Primary signal source for the Telegram/FBS workflow. Add/remove channels here."
 
   - id: "fbs-market-universe"
     type: "fbs_market_universe"
@@ -57,38 +113,9 @@ sources:
       energies: ["UKOIL", "USOIL", "XNGUSD"]
       indices: ["AUS200", "DE30", "ES35", "EU50", "FRA40", "HK50", "JP225", "UK100", "US30", "US100", "US500"]
       stocks: ["AAL", "AAPL", "ABNB", "AMD", "AMZN", "BA", "BABA", "BAC", "BIDU", "BP", "COIN", "COST", "CVX", "DAL", "DIS", "F", "GM", "GOOG", "GOOGL", "GS", "HD", "INTC", "JNJ", "JPM", "KO", "MA", "MCD", "META", "MRK", "MRNA", "MS", "MSFT", "NFLX", "NIO", "NKE", "NVDA", "PEP", "PFE", "PLTR", "PYPL", "SBUX", "TSLA", "UAL", "UBER", "ULVR", "V", "WMT", "XOM"]
-    notes: "Configurable FBS allowlist. Confirm current availability, trading hours, spreads, and contract specs in FBS before execution."
-
-  - id: "fbs-crypto-cfd"
-    type: "fbs_crypto_cfd"
-    enabled: true
-    asset_scope: ["crypto_cfd"]
-    broker: "fbs"
-    broker_symbols: ["BCHUSD", "BTCUSD", "ETHUSD", "LTCUSD", "XRPUSD", "TRXUSD", "DOGUSD", "SOLUSD", "XLMUSD", "BNBUSD", "ETCUSD", "ADAUSD", "DOTUSD"]
-    notes: "Only these FBS crypto CFD symbols may appear as trade candidates."
-
-  - id: "binance-crypto-proxy"
-    type: "binance_market"
-    enabled: true
-    asset_scope: ["crypto"]
-    symbols: ["BTCUSD", "ETHUSD", "SOLUSD"]
-    interval: "15m"
-    lookback: 96
-    min_quote_volume_usd: 10000000
-    max_spread_percent: 0.06
-    min_rr: 1.6
-    notes: "Public Binance market data is used only as a technical proxy for matching FBS crypto/USD CFDs."
-
-  - id: "coingecko-crypto-universe"
-    type: "coingecko_market"
-    enabled: true
-    asset_scope: ["crypto"]
-    top_assets: 80
-    notes: "Public web source for expanding the crypto universe and ranking liquidity/momentum. Does not generate trades directly."
 
   - id: "alternative-me-fear-greed"
     type: "crypto_regime"
     enabled: true
     asset_scope: ["crypto"]
     provider: "alternative.me"
-    notes: "Public Fear & Greed regime context. Does not generate trades directly."

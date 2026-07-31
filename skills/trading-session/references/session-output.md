@@ -18,16 +18,20 @@ Use this exact section order:
 
 Use the same columns for primary and backup tables:
 
-| Rank | Stars | Source | Provider | Asset | Direction | Entry | Current | SL | TP | R/R | Risk USD | Size | Valid Until | Evidence | Why |
+| Rank | Stars | Source | Provider | Asset | Direction | Entry | Current | SL | TP | R/R | Risk USD | Size | Volume Est. | Valid Until | Evidence | Why |
 
 Rules:
 
 - `Stars` must be one to five literal `*` characters.
-- `Source` must be `binance_market` for the active FBS crypto CFD workflow.
-- `Asset` must be an FBS crypto CFD symbol, such as `BTCUSD` or `SOLUSD`, not the Binance proxy symbol.
+- `Source` must be `telegram_signal` for the active Telegram/FBS workflow.
+- `Provider` should be the Telegram channel id.
+- `Asset` must be a configured FBS symbol, such as `BTCUSD`, `EURUSD`, or `XAUUSD`.
+- `Entry` must be the executable side of the quote: `Ask` for `BUY`, `Bid` for `SELL`.
+- `Current` should include `Bid / Ask` and spread when available, so the user can compare it with the trading platform before placing an order.
 - `Risk USD` and `Size` must be `TBD` until FBS contract value and lot sizing are confirmed in the trading platform.
-- `Evidence` must summarize the scanner condition, public proxy market data, FBS broker context, and any regime context used.
-- `Why` must be one concise reason, not a long paragraph.
+- `Volume Est.` may show estimated asset units from the public market proxy, but it is not the final FBS lot size.
+- `Evidence` must summarize the Telegram message and any public proxy market data used for validation.
+- `Why` must include vigencia/status and any `modification_note` when the expert entry is no longer directly actionable.
 
 ## Discarded Signals
 

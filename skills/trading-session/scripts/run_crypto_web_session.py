@@ -54,6 +54,14 @@ FBS_CRYPTO_SYMBOL_MAP = {
 }
 
 
+def asset_unit(asset: str) -> str:
+    upper = asset.upper()
+    for suffix in ("USDT", "USD"):
+        if upper.endswith(suffix):
+            return upper.removesuffix(suffix)
+    return upper
+
+
 def enrich_candidate(candidate: dict[str, Any], capital_usd: float, max_risk_usd: float, valid_hours: int) -> dict[str, Any]:
     entry = float(candidate["entry"])
     stop_loss = float(candidate["stop_loss"])
@@ -70,6 +78,13 @@ def enrich_candidate(candidate: dict[str, Any], capital_usd: float, max_risk_usd
 
     candidate["risk_usd"] = round(risk_usd, 4)
     candidate["size"] = round(size, 8)
+    candidate["volume_estimate"] = {
+        "units": round(size, 8),
+        "unit": asset_unit(str(candidate.get("asset", ""))),
+        "notional_usd": round(size * entry, 4),
+        "risk_usd": round(risk_usd, 4),
+        "basis": "proxy_units",
+    }
     candidate["valid_until"] = (datetime.now(timezone.utc) + timedelta(hours=valid_hours)).isoformat()
     return candidate
 
@@ -317,12 +332,13 @@ def run_session(
             candidate["source_context"]["broker"] = broker
             candidate["source_context"]["broker_symbol"] = context.get("broker_symbol", symbol)
             candidate["asset"] = context.get("broker_symbol", symbol)
-            candidate = enrich_candidate(candidate, capital_usd, max_risk_usd, valid_hours)
+            effective_valid_hours = min(valid_hours, 2) if interval == "15m" else valid_hours
+            candidate = enrich_candidate(candidate, capital_usd, max_risk_usd, effective_valid_hours)
             if broker == "fbs":
                 candidate["evidence"] = f"{candidate['evidence']}; broker=FBS; marketProxy={symbol}"
                 candidate["risk_usd"] = None
                 candidate["size"] = "TBD"
-                candidate["source_context"]["sizing_note"] = "Confirm lot size and CFD contract value in FBS before execution."
+                candidate["source_context"]["sizing_note"] = "Volume Est. is proxy asset units. Confirm final FBS lot size and CFD contract value in the trading platform before execution."
             candidates.append(candidate)
 
     metadata.update({

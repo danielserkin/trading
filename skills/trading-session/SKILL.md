@@ -1,21 +1,21 @@
 ---
 name: trading-session
-description: Assisted FBS crypto CFD trading-session workflow for finding, validating, scoring, and reporting candidate setups using public web market data. Use when the user asks to run a trading session, find FBS crypto CFD setups, shortlist crypto trades, validate setups with current market data, or generate the daily trading-session Markdown report.
+description: Assisted FBS trading-session workflow for reading expert Telegram signals, validating them against current market data, scoring them, and reporting candidate setups. Use when the user asks to run a trading session, review Telegram trading signals, find FBS setups across forex/crypto/metals/indices/energies/stocks, or generate the daily trading-session Markdown report.
 ---
 
 # Trading Session
 
 ## Workflow
 
-Use this skill to produce a standardized daily shortlist of FBS crypto CFD trade candidates. Do not execute orders. Treat the user as the only execution authority.
+Use this skill to produce a standardized daily shortlist of FBS trade candidates from expert Telegram channels. Do not execute orders. Treat the user as the only execution authority.
 
 1. Load config from `config/sources.yaml` and `config/session-params.yaml` when present; otherwise use the matching `.example.yaml` defaults.
-2. Run `scripts/run_crypto_web_session.py` for the session.
-3. Restrict candidates to FBS-offered crypto CFD symbols only: `BCHUSD`, `BTCUSD`, `ETHUSD`, `LTCUSD`, `XRPUSD`, `TRXUSD`, `DOGUSD`, `SOLUSD`, `XLMUSD`, `BNBUSD`, `ETCUSD`, `ADAUSD`, and `DOTUSD`.
-4. Use Binance public market data only as a technical proxy for matching crypto/USD symbols, CoinGecko only for universe/liquidity/momentum context, and Alternative.me only for broad crypto regime context.
-5. Keep only candidates with FBS asset symbol, direction, entry, stop loss, at least one take profit, current price proxy, and acceptable risk/reward.
-6. Validate each candidate against closed candles, multi-timeframe trend, liquidity, spread proxy, volume participation, recent range context, and R/R.
-7. Score candidates from 1 to 5 stars. Prefer fresh, clear, close-to-entry setups with acceptable R/R and strong technical quality.
+2. Run `scripts/run_telegram_fbs_session.py` for the session.
+3. Read only enabled Telegram channels from the configurable source list.
+4. Restrict candidates to configured FBS symbols across crypto CFDs, forex, metals, energies, indices, and stocks.
+5. Keep only expert signals with FBS asset symbol, direction, entry, stop loss, at least one take profit, timestamp, source channel, and acceptable risk/reward.
+6. Validate each candidate against current market data when a validator is configured. Crypto CFDs use Binance public data as a technical proxy; non-crypto signals without a configured validator must be shown as discarded until confirmed in FBS.
+7. Score candidates from 1 to 5 stars. Prefer fresh, clear, close-to-entry expert signals with acceptable R/R, trusted channel priority, and verifiable market context.
 8. Write `sessions/YYYY-MM-DD/session-report.md` with up to 5 candidates: 3 primary and 2 backup.
 
 ## FBS Crypto CFD Sessions
@@ -29,23 +29,43 @@ Use this skill to produce a standardized daily shortlist of FBS crypto CFD trade
 - Reject late entries in obviously overextended moves, especially when `1h` or `4h` RSI is extreme.
 - Require acceptable liquidity, quote volume, spread proxy, and volume confirmation before considering an asset tradable.
 - Use recent support/resistance or recent range context when placing SL and TP.
+- Use the executable quote side for entries: `Ask` for `BUY`, `Bid` for `SELL`. Recalculate R/R from that executable entry, not only from the closed-candle signal price.
 - Require a minimum acceptable R/R; prefer `1.6` or better.
 - Do not calculate or present final FBS lot size from Binance spot data. Show `Risk USD` and `Size` as `TBD` until FBS contract value and lot sizing are confirmed in the trading platform.
 - It is acceptable to return fewer than 5 candidates, or even zero, when the market does not offer clean setups.
+
+## Telegram FBS Sessions
+
+- Telegram is the primary source of trade ideas; market data is only a validation layer.
+- Channels are controlled in `config/sources.yaml` under `type: telegram_signals`; channels can be added, disabled, reprioritized, or scoped by market.
+- Required Telegram credentials are `TELEGRAM_API_ID`, `TELEGRAM_API_HASH`, and optionally `TELEGRAM_SESSION`; keep them in `.env`/`.env.telegram`, never in git.
+- Parse text signals first. Treat images/charts as evidence when attached, but do not invent missing entry, SL, or TP from an image unless a future OCR/chart parser is explicitly added and tested.
+- Mark signals as `vigente`, `llegada_tarde`, `vencida`, `duplicada`, `incompleta`, or `descartada`.
+- Treat Telegram signals as hypotheses, not instructions. A signal can be recommended only after independent validation of market viability and source reliability.
+- Validate trade structure before scoring: for `BUY`, require `SL < entry < TP`; for `SELL`, require `TP < entry < SL`.
+- Reject signals whose first TP or SL has already been reached by current validated market price. Do not move targets to rescue an old signal.
+- Prefer channels that repeatedly publish complete, timely, executable signals. Penalize or discard channels/messages that mostly publish marketing, hindsight wins, account-management ads, or partial screenshots without entry/SL/TP.
+- Ranking must combine expert signal quality with current market reality: freshness, channel priority, R/R, entry distance, current bid/ask/proxy price, spread/liquidity where available, and whether the setup is still actionable now.
+- If current price has moved too far from the expert entry, do not chase it. Keep the original signal and add `modification_note` explaining the wait-for-pullback condition.
+- Signals outside the configured FBS universe must be discarded as `outside_fbs_universe`.
+- The configured FBS universe is intentionally broad but not guaranteed exhaustive. FBS advertises 550+ CFD assets, including 470+ stock CFDs, so unknown but plausible stock/index symbols must be labeled `unknown_fbs_symbol` instead of assumed unavailable.
+- Accept common stock notation such as `#AAPL`, `AAPL`, `COIN`, or company-name aliases when configured. Require market-data validation before promoting any stock signal to Top Candidates.
+- Non-crypto FBS markets require a configured market-data validator before they can become top candidates. Otherwise include them in discarded signals with `market_data` missing and tell the user to confirm in FBS.
 
 ## Required Behavior
 
 - Use `capital_usd: 100` and `max_risk_usd: 2` unless config overrides them, but do not infer FBS lot sizing from those values.
 - Reject candidates without SL or TP.
-- Reject candidates outside the intraday window unless the user explicitly requests a wider session.
+- Reject candidates outside the configured signal window unless the user explicitly requests a wider session.
 - Never invent market prices. If public market data is missing, mark the candidate discarded or abort if the session cannot be validated.
-- Do not present Binance, CoinGecko, or Alternative.me data as third-party trader signals.
-- Do not include assets outside the FBS crypto CFD allowlist.
+- Do not present Binance, CoinGecko, Alternative.me, or any market-data proxy as third-party trader signals.
+- Do not include assets outside the configured FBS allowlist.
 - Keep the report format stable across sessions. Read `references/session-output.md` before writing the report.
 
 ## Scripts
 
-- `scripts/run_crypto_web_session.py`: run the credential-free FBS crypto CFD session using public web data and write `sessions/YYYY-MM-DD/session-report.md`.
+- `scripts/run_telegram_fbs_session.py`: run the Telegram-driven FBS session and write `sessions/YYYY-MM-DD/session-report.md`.
+- `scripts/run_crypto_web_session.py`: legacy credential-free FBS crypto CFD session using public web data.
 - `scripts/fetch_binance_market.py`: fetch Binance public market data and produce filtered setup candidates using closed candles, multi-timeframe trend, RSI, relative volume, spread proxy, liquidity, range context, and R/R checks.
 - `scripts/score_candidates.py`: score normalized candidates and render a Markdown report from JSON input.
 - `scripts/normalize_candidates.py`: normalize candidate JSON into the common report schema when needed.

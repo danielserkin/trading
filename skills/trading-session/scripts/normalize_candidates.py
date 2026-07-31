@@ -34,6 +34,18 @@ COMMON_KEYS = {
     "broker",
     "broker_symbol",
     "market_symbol",
+    "channel",
+    "message_id",
+    "message_url",
+    "raw_text",
+    "image_evidence",
+    "parsed_by",
+    "freshness_minutes",
+    "signal_status",
+    "expert_signal",
+    "modification_note",
+    "channel_priority",
+    "entry_distance_percent",
 }
 
 

@@ -7,11 +7,15 @@ primary_count: 3
 backup_count: 2
 mode: "recommend_only"
 broker: "fbs"
+primary_source: "telegram_signals"
 market_proxy: "binance"
+min_rr: 1.6
 market_data:
   max_spread_points: null
-  max_entry_distance_percent: null
+  max_entry_distance_percent: 1.2
 scoring_weights:
+  expert_signal: 1.2
+  channel_priority: 1.0
   source_quality: 1.2
   freshness: 1.0
   risk_reward: 1.2
@@ -20,6 +24,7 @@ scoring_weights:
   signal_clarity: 1.0
   broker_universe: 1.0
 source_trust:
+  telegram_signal: 4
   binance_market: 4
   coingecko_market: 3
   crypto_regime: 2

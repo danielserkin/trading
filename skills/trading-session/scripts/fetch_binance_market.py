@@ -17,6 +17,9 @@ BASE_URL = "https://api.binance.com"
 MIN_QUOTE_VOLUME_USD = 10_000_000
 MAX_SPREAD_PERCENT = 0.06
 MIN_RR = 1.6
+TREND_VOLUME_RATIO = 0.85
+PULLBACK_VOLUME_RATIO = 0.65
+BREAKOUT_VOLUME_RATIO = 1.10
 
 
 def fmean(values: list[float]) -> float:
@@ -63,6 +66,23 @@ def rr(entry: float, stop_loss: float, take_profit: float) -> float:
     if risk == 0:
         return 0.0
     return abs(take_profit - entry) / risk
+
+
+def executable_entry(direction: str, bid: float, ask: float) -> float:
+    if direction == "BUY":
+        return ask
+    if direction == "SELL":
+        return bid
+    raise ValueError(f"unsupported direction: {direction}")
+
+
+def adjusted_take_profit(direction: str, entry: float, stop_loss: float, take_profit: float, min_rr: float) -> float:
+    risk = abs(entry - stop_loss)
+    if direction == "BUY":
+        return max(take_profit, entry + (risk * min_rr))
+    if direction == "SELL":
+        return min(take_profit, entry - (risk * min_rr))
+    return take_profit
 
 
 def get_json(path: str, params: dict[str, Any] | None = None) -> Any:
@@ -152,9 +172,14 @@ def build_candidate(
         return None
 
     direction = setup["direction"]
+    regime = (context or {}).get("regime")
+    if _regime_blocks_setup(direction, setup["setup_type"], regime):
+        return None
+
     stop_loss = setup["stop_loss"]
-    take_profit = setup["take_profit"]
-    risk_reward = rr(current, stop_loss, take_profit)
+    entry = executable_entry(direction, bid, ask)
+    take_profit = adjusted_take_profit(direction, entry, stop_loss, setup["take_profit"], min_rr)
+    risk_reward = rr(entry, stop_loss, take_profit)
     if risk_reward < min_rr:
         return None
 
@@ -176,7 +201,7 @@ def build_candidate(
         "provider": "binance_public_api",
         "asset": symbol,
         "direction": direction,
-        "entry": round(current, 8),
+        "entry": round(entry, 8),
         "current_price": round(current, 8),
         "stop_loss": round(stop_loss, 8),
         "take_profits": [round(take_profit, 8)],
@@ -185,6 +210,7 @@ def build_candidate(
             f"{interval} closed-candle {setup['setup_type']}: {setup['condition']}; "
             f"RR={risk_reward:.2f}; RSI15={rsi_15m:.1f}; RSI1h={rsi_1h:.1f}; "
             f"RSI4h={rsi_4h:.1f}; vol_ratio={volume_ratio:.2f}; "
+            f"bid={bid:.8f}; ask={ask:.8f}; executableEntry={entry:.8f}; "
             f"spread={spread:.8f} ({spread_percent:.4f}%); quoteVol24h={quote_volume:.0f}"
             f"{context_evidence}"
         ),
@@ -198,6 +224,11 @@ def build_candidate(
         "liquidity_rank": (context or {}).get("liquidity_rank"),
         "analysis": {
             "closed_candle_time": datetime.fromtimestamp(int(closed[-1][6]) / 1000, tz=timezone.utc).isoformat(),
+            "signal_price": round(current, 8),
+            "bid": round(bid, 8),
+            "ask": round(ask, 8),
+            "executable_entry": round(entry, 8),
+            "spread": round(spread, 8),
             "rsi_15m": round(rsi_15m, 2),
             "rsi_1h": round(rsi_1h, 2),
             "rsi_4h": round(rsi_4h, 2),
@@ -230,24 +261,25 @@ def _select_setup(
 ) -> dict[str, Any] | None:
     uptrend = fast > slow * 1.001 and fast_1h > slow_1h and fast_4h >= slow_4h
     downtrend = fast < slow * 0.999 and fast_1h < slow_1h and fast_4h <= slow_4h
-    bullish_rsi = 45 <= rsi_15m <= 68 and rsi_1h < 78 and rsi_4h < 76
-    bearish_rsi = 32 <= rsi_15m <= 58 and rsi_1h > 25 and rsi_4h > 28
-    enough_volume = volume_ratio >= 0.45
-    strong_volume = volume_ratio >= 0.85
+    bullish_rsi = 45 <= rsi_15m <= 64 and rsi_1h < 72 and rsi_4h < 70
+    bearish_rsi = 36 <= rsi_15m <= 58 and rsi_1h > 28 and rsi_4h > 30
+    enough_pullback_volume = volume_ratio >= PULLBACK_VOLUME_RATIO
+    enough_trend_volume = volume_ratio >= TREND_VOLUME_RATIO
+    strong_volume = volume_ratio >= BREAKOUT_VOLUME_RATIO
 
-    if uptrend and bullish_rsi and enough_volume and range_position <= 0.85:
+    if uptrend and bullish_rsi and enough_trend_volume and 0.25 <= range_position <= 0.72:
         stop_loss = min(recent_low - (0.25 * volatility), current - (1.2 * volatility))
         return _setup("trend_continuation", "tomable ahora", "BUY", current, stop_loss, min_rr, "15m/1h/4h uptrend with controlled RSI and confirmed volume")
 
-    if downtrend and bearish_rsi and enough_volume and range_position >= 0.15:
+    if downtrend and bearish_rsi and enough_trend_volume and 0.28 <= range_position <= 0.75:
         stop_loss = max(recent_high + (0.25 * volatility), current + (1.2 * volatility))
         return _setup("trend_continuation", "tomable ahora", "SELL", current, stop_loss, min_rr, "15m/1h/4h downtrend with controlled RSI and confirmed volume")
 
-    if uptrend and 38 <= rsi_15m <= 55 and rsi_1h < 72 and 0.15 <= range_position <= 0.45 and enough_volume:
+    if uptrend and 38 <= rsi_15m <= 55 and rsi_1h < 70 and rsi_4h < 72 and 0.15 <= range_position <= 0.45 and enough_pullback_volume:
         stop_loss = min(recent_low - (0.2 * volatility), current - volatility)
         return _setup("pullback", "solo con pullback", "BUY", current, stop_loss, min_rr, "uptrend pullback near recent range support")
 
-    if downtrend and 45 <= rsi_15m <= 62 and rsi_1h > 30 and 0.55 <= range_position <= 0.9 and enough_volume:
+    if downtrend and 45 <= rsi_15m <= 62 and rsi_1h > 30 and rsi_4h > 28 and 0.55 <= range_position <= 0.9 and enough_pullback_volume:
         stop_loss = max(recent_high + (0.2 * volatility), current + volatility)
         return _setup("pullback", "solo con pullback", "SELL", current, stop_loss, min_rr, "downtrend pullback near recent range resistance")
 
@@ -268,6 +300,16 @@ def _select_setup(
         return _setup("controlled_reversal", "solo con ruptura", "SELL", current, stop_loss, min_rr, "controlled rejection from upper range with 4h pressure")
 
     return None
+
+
+def _regime_blocks_setup(direction: str, setup_type: str, regime: str | None) -> bool:
+    if setup_type != "trend_continuation":
+        return False
+    if direction == "BUY" and regime in {"risk_off", "extreme_fear"}:
+        return True
+    if direction == "SELL" and regime in {"risk_on", "extreme_greed"}:
+        return True
+    return False
 
 
 def _setup(setup_type: str, execution_bias: str, direction: str, current: float, stop_loss: float, min_rr: float, condition: str) -> dict[str, Any]:
