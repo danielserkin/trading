@@ -231,6 +231,11 @@ def _format_current(candidate: dict[str, Any]) -> str:
 
 
 def _format_volume_estimate(candidate: dict[str, Any]) -> str:
+    sizing = candidate.get("position_sizing")
+    if isinstance(sizing, dict) and sizing.get("lot_size") is not None:
+        profit = sizing.get("tp1_profit_usd")
+        profit_suffix = f", TP1 ~{float(profit):.2f} USD" if profit is not None else ""
+        return f"{float(sizing['lot_size']):.2f} lot{profit_suffix}"
     volume = candidate.get("volume_estimate")
     if isinstance(volume, dict):
         units = volume.get("units")
@@ -256,6 +261,8 @@ def _why(candidate: dict[str, Any], reasons: list[str]) -> str:
         parts.append(str(candidate["signal_status"]))
     if candidate.get("modification_note"):
         parts.append(str(candidate["modification_note"]))
+    if candidate.get("sizing_note"):
+        parts.append(str(candidate["sizing_note"]))
     parts.extend(reasons[:2])
     return ", ".join(parts)
 

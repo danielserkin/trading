@@ -13,7 +13,7 @@ import run_telegram_fbs_session as session
 
 class TelegramFbsParserTest(unittest.TestCase):
     def setUp(self) -> None:
-        self.allowed = {"AAPL", "BTCUSD", "EURUSD", "XAUUSD", "US100", "DOGUSD"}
+        self.allowed = {"AAPL", "BTCUSD", "EURUSD", "NZDCHF", "XAUUSD", "US100", "DOGUSD"}
         self.aliases = dict(session.SYMBOL_ALIASES)
 
     def parse(self, text: str) -> dict:
@@ -111,6 +111,19 @@ class TelegramFbsParserTest(unittest.TestCase):
         unique = session.dedupe([first, second])
         self.assertEqual(len(unique), 1)
         self.assertIn("duplicate", second["missing"])
+
+    def test_forex_lot_size_uses_quote_currency_conversion(self) -> None:
+        original_fetch = session.fetch_yahoo_current
+        session.fetch_yahoo_current = lambda asset: 1.0 if asset == "USDCHF" else None
+        try:
+            candidate = self.parse("BUY NZDCHF Entry 0.5000 SL 0.4998 TP 0.5004")
+            sizing = session.estimate_fbs_lot_size(candidate, 2.0)
+        finally:
+            session.fetch_yahoo_current = original_fetch
+        self.assertIsNotNone(sizing)
+        self.assertEqual(sizing["size"], "0.10 lot")
+        self.assertEqual(sizing["risk_usd"], 2.0)
+        self.assertEqual(sizing["tp1_profit_usd"], 4.0)
 
 
 if __name__ == "__main__":

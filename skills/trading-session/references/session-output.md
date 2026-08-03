@@ -28,8 +28,8 @@ Rules:
 - `Asset` must be a configured FBS symbol, such as `BTCUSD`, `EURUSD`, or `XAUUSD`.
 - `Entry` must be the executable side of the quote: `Ask` for `BUY`, `Bid` for `SELL`.
 - `Current` should include `Bid / Ask` and spread when available, so the user can compare it with the trading platform before placing an order.
-- `Risk USD` and `Size` must be `TBD` until FBS contract value and lot sizing are confirmed in the trading platform.
-- `Volume Est.` may show estimated asset units from the public market proxy, but it is not the final FBS lot size.
+- `Risk USD` and `Size` may show indicative FBS lot sizing for forex and metals when contract size and quote-currency conversion are available. Use `TBD` for markets whose FBS contract value is not modeled.
+- `Volume Est.` may show estimated lots and TP1 profit for forex/metals, or estimated asset units from a public market proxy. It is still an estimate that must be confirmed in FBS.
 - `Evidence` must summarize the Telegram message and any public proxy market data used for validation.
 - `Why` must include vigencia/status and any `modification_note` when the expert entry is no longer directly actionable.
 

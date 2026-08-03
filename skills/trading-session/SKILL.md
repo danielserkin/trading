@@ -10,13 +10,46 @@ description: Assisted FBS trading-session workflow for reading expert Telegram s
 Use this skill to produce a standardized daily shortlist of FBS trade candidates from expert Telegram channels. Do not execute orders. Treat the user as the only execution authority.
 
 1. Load config from `config/sources.yaml` and `config/session-params.yaml` when present; otherwise use the matching `.example.yaml` defaults.
-2. Run `scripts/run_telegram_fbs_session.py` for the session.
-3. Read only enabled Telegram channels from the configurable source list.
-4. Restrict candidates to configured FBS symbols across crypto CFDs, forex, metals, energies, indices, and stocks.
-5. Keep only expert signals with FBS asset symbol, direction, entry, stop loss, at least one take profit, timestamp, source channel, and acceptable risk/reward.
-6. Validate each candidate against current market data when a validator is configured. Crypto CFDs use Binance public data as a technical proxy; non-crypto signals without a configured validator must be shown as discarded until confirmed in FBS.
-7. Score candidates from 1 to 5 stars. Prefer fresh, clear, close-to-entry expert signals with acceptable R/R, trusted channel priority, and verifiable market context.
-8. Write `sessions/YYYY-MM-DD/session-report.md` with up to 5 candidates: 3 primary and 2 backup.
+2. Load Telegram credentials from `.env.telegram` before running the session when that file exists. The runner does not auto-load dotenv files.
+3. Run `scripts/run_telegram_fbs_session.py` for the session.
+4. Read only enabled Telegram channels from the configurable source list.
+5. Restrict candidates to configured FBS symbols across crypto CFDs, forex, metals, energies, indices, and stocks.
+6. Keep only expert signals with FBS asset symbol, direction, entry, stop loss, at least one take profit, timestamp, source channel, and acceptable risk/reward.
+7. Validate each candidate against current market data when a validator is configured. Crypto CFDs use Binance public data as a technical proxy; non-crypto signals without a configured validator must be shown as discarded until confirmed in FBS.
+8. Score candidates from 1 to 5 stars. Prefer fresh, clear, close-to-entry expert signals with acceptable R/R, trusted channel priority, and verifiable market context.
+9. Write `sessions/YYYY-MM-DD/session-report.md` with up to 5 candidates: 3 primary and 2 backup.
+
+## Operational Command
+
+For a normal new session, run from the repository root:
+
+```bash
+set -a; source .env.telegram; set +a; python3 skills/trading-session/scripts/run_telegram_fbs_session.py
+```
+
+If `.env.telegram` is missing, run the script anyway once and report the generated discard reason. If the report says `TELEGRAM_API_ID and TELEGRAM_API_HASH are required`, the session is blocked on credentials and no Telegram messages were reviewed.
+
+The script requires network access for Telegram plus public market/regime validators such as Binance, Yahoo Finance proxies, and Alternative.me. If the first run fails with DNS, host resolution, connection, or API/network errors, retry the same command with escalated network permission instead of falling back to stale data.
+
+After the command finishes, read `sessions/YYYY-MM-DD/session-report.md` and summarize:
+
+- `Telegram messages reviewed`
+- `Candidates reviewed`
+- `Valid candidates`
+- whether `Top Candidates` or `Backup Candidates` contain actionable setups
+- the main discard reasons
+
+## Analyst Overlay
+
+Do not present a candidate as actionable only because it passed parser and risk/reward checks. Before summarizing any Top or Backup candidate to the user, apply an analyst overlay:
+
+- Confirm the signal is still live relative to current price, original entry, SL, and first TP.
+- Check whether the direction agrees with current market context where data is available: recent momentum, higher-timeframe bias, nearby support/resistance, volatility, and obvious overextension.
+- Prefer clean continuation or pullback setups over late entries chasing a move into TP.
+- Downgrade or withhold candidates when the expected move is already mostly consumed, when price is sitting near a major opposing level, or when the signal depends on unvalidated assumptions.
+- Explain the final recommendation in plain language: why it is acceptable, why it is only a pullback/rupture setup, or why it should be skipped.
+
+The automated report is a shortlist generator, not the final trading decision. The assistant must add this market-expectation review before telling the user a setup is good.
 
 ## FBS Crypto CFD Sessions
 
@@ -31,7 +64,7 @@ Use this skill to produce a standardized daily shortlist of FBS trade candidates
 - Use recent support/resistance or recent range context when placing SL and TP.
 - Use the executable quote side for entries: `Ask` for `BUY`, `Bid` for `SELL`. Recalculate R/R from that executable entry, not only from the closed-candle signal price.
 - Require a minimum acceptable R/R; prefer `1.6` or better.
-- Do not calculate or present final FBS lot size from Binance spot data. Show `Risk USD` and `Size` as `TBD` until FBS contract value and lot sizing are confirmed in the trading platform.
+- Do not calculate or present final FBS lot size from Binance spot data. For forex and metals only, show an indicative lot size when contract size and quote-currency conversion are available; still tell the user to confirm the value of point, spread, and margin in FBS before execution. Show `TBD` for markets whose FBS contract value is not modeled.
 - It is acceptable to return fewer than 5 candidates, or even zero, when the market does not offer clean setups.
 
 ## Telegram FBS Sessions
@@ -54,7 +87,7 @@ Use this skill to produce a standardized daily shortlist of FBS trade candidates
 
 ## Required Behavior
 
-- Use `capital_usd: 100` and `max_risk_usd: 2` unless config overrides them, but do not infer FBS lot sizing from those values.
+- Use `capital_usd: 100` and `max_risk_usd: 2` unless config overrides them. For forex and metals, calculate indicative lot sizing from entry-to-SL distance and known contract sizes; for other FBS markets, do not infer lot sizing without confirmed contract specs.
 - Reject candidates without SL or TP.
 - Reject candidates outside the configured signal window unless the user explicitly requests a wider session.
 - Never invent market prices. If public market data is missing, mark the candidate discarded or abort if the session cannot be validated.

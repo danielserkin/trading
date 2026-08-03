@@ -26,6 +26,15 @@ from run_crypto_web_session import FBS_CRYPTO_SYMBOL_MAP, fetch_fear_greed, load
 from score_candidates import render_report, risk_reward
 
 
+FOREX_CURRENCIES = {"AUD", "CAD", "CHF", "CNH", "EUR", "GBP", "HKD", "JPY", "MXN", "NOK", "NZD", "SEK", "SGD", "TRY", "USD", "ZAR"}
+FOREX_CONTRACT_SIZE = 100000
+METAL_CONTRACT_SIZES = {
+    "XAUUSD": 100,
+    "XAGUSD": 5000,
+}
+MIN_LOT = 0.01
+LOT_STEP = 0.01
+
 DEFAULT_FBS_SYMBOLS = {
     "crypto_cfd": sorted(FBS_CRYPTO_SYMBOL_MAP),
     "forex": [
@@ -154,6 +163,23 @@ SYMBOL_ALIASES = {
     "NETFLIX": "NFLX",
     "DOGEUSD": "DOGUSD",
 }
+QUOTE_TO_USD_PROXY = {
+    "AUD": ("AUDUSD", False),
+    "CAD": ("USDCAD", True),
+    "CHF": ("USDCHF", True),
+    "CNH": ("USDCNH", True),
+    "EUR": ("EURUSD", False),
+    "GBP": ("GBPUSD", False),
+    "HKD": ("USDHKD", True),
+    "JPY": ("USDJPY", True),
+    "MXN": ("USDMXN", True),
+    "NOK": ("USDNOK", True),
+    "NZD": ("NZDUSD", False),
+    "SEK": ("USDSEK", True),
+    "SGD": ("USDSGD", True),
+    "TRY": ("USDTRY", True),
+    "ZAR": ("USDZAR", True),
+}
 YAHOO_PROXY_SYMBOLS = {
     "AUDUSD": "AUDUSD=X",
     "EURUSD": "EURUSD=X",
@@ -248,11 +274,14 @@ AMBIGUOUS_SHORT_STOCK_TOKENS = {
 }
 
 DIRECTION_RE = re.compile(r"\b(BUY|SELL|LONG|SHORT)\b", re.IGNORECASE)
-NUMBER_RE = re.compile(r"(?<![A-Z0-9])\d+(?:\.\d+)?(?![A-Z0-9])")
+PRICE_PATTERN = r"(?:\d{1,3}(?:,\d{3})+|\d+)(?:\.\d+)?"
+NUMBER_RE = re.compile(rf"(?<![A-Z0-9]){PRICE_PATTERN}(?![A-Z0-9])")
+TP_PRICE_RE = re.compile(rf"\bTP(?:\d+|-\s*\d+|\s*#\s*\d+)?\b[^0-9]{{0,20}}(?:\d+\)\s*)?({PRICE_PATTERN})", re.IGNORECASE)
+TAKE_PROFIT_PRICE_RE = re.compile(rf"\b(?:TAKE[-\s]*PROFIT|PROFIT\s*TARGETS?|TARGET\s*\d*|OBJETIVO)\b[^0-9]{{0,20}}(?:\d+\)\s*)?({PRICE_PATTERN})", re.IGNORECASE)
 LABEL_PATTERNS = {
-    "entry": re.compile(r"\b(?:ENTRY|ENTRADA|OPEN|PRICE|BUY(?:\s+LIMIT)?|SELL(?:\s+LIMIT)?)\b[^0-9]{0,20}(\d+(?:\.\d+)?(?:\s*[-/]\s*\d+(?:\.\d+)?)?)", re.IGNORECASE),
-    "stop_loss": re.compile(r"\b(?:SL|STOP\s*LOSS|STOP|S/L)\b[^0-9]{0,20}(\d+(?:\.\d+)?)", re.IGNORECASE),
-    "take_profit": re.compile(r"\b(?:TP(?:\d+|\s*[-#]\s*\d+)?|TAKE\s*PROFIT|TARGET|OBJETIVO)\b[^0-9]{0,20}(\d+(?:\.\d+)?)", re.IGNORECASE),
+    "entry": re.compile(rf"\b(?:ENTRY(?:\s+(?:PRICE|POINT|ZONE|LEVEL|TARGETS?))?|ENTER|ENTRADA|OPEN|PRICE|BUY(?:\s+LIMIT)?|SELL(?:\s+LIMIT)?)\b[^0-9]{{0,40}}(?:\d+\)\s*)?({PRICE_PATTERN}(?:\s*[-/]\s*{PRICE_PATTERN})?)", re.IGNORECASE),
+    "stop_loss": re.compile(rf"\b(?:SL|STOP[-\s]*LOSS|STOPLOSS|STOP|S/L|STOP\s*(?:TARGETS?|LOSS\s*TARGET)?)\b[^0-9]{{0,20}}(?:\d+\)\s*)?({PRICE_PATTERN})", re.IGNORECASE),
+    "take_profit": TP_PRICE_RE,
 }
 
 
@@ -435,7 +464,7 @@ def parse_offline_inputs(input_paths: list[Path]) -> list[dict[str, Any]]:
 def parse_signal(message: dict[str, Any], allowed_symbols: set[str], aliases: dict[str, str]) -> dict[str, Any]:
     text = str(message.get("text") or "")
     upper_text = text.upper()
-    normalized_text = upper_text.replace("#", " ").replace("/", "").replace("_", "")
+    normalized_text = upper_text.replace("#", " ").replace("_", " ")
     direction_match = DIRECTION_RE.search(normalized_text)
     symbol, symbol_status = extract_symbol(upper_text, normalized_text, allowed_symbols, aliases)
     direction = None
@@ -476,6 +505,14 @@ def parse_signal(message: dict[str, Any], allowed_symbols: set[str], aliases: di
 
 
 def extract_symbol(raw_text: str, text: str, allowed_symbols: set[str], aliases: dict[str, str]) -> tuple[str | None, str]:
+    for base, quote in re.findall(r"#?\b([A-Z]{2,8})\s*/\s*([A-Z]{2,8})\b", raw_text.upper()):
+        mapped = aliases.get(f"{base}{quote}", f"{base}{quote}")
+        if mapped in allowed_symbols:
+            return mapped, "confirmed"
+    for base in re.findall(r"#?\b([A-Z]{2,8})\s*/\s*USDT\b", raw_text.upper()):
+        mapped = aliases.get(f"{base}USD", f"{base}USD")
+        if mapped in allowed_symbols:
+            return mapped, "confirmed"
     cashtag_tokens = [item.upper() for item in re.findall(r"#([A-Z]{1,8}\d{0,3})\b", raw_text)]
     tokens = [*cashtag_tokens, *re.findall(r"[A-Z]{2,12}\d{0,3}", text)]
     for token in tokens:
@@ -505,7 +542,7 @@ def parse_entry(text: str) -> float | None:
     if not match:
         return None
     raw = match.group(1)
-    numbers = [float(item) for item in NUMBER_RE.findall(raw)]
+    numbers = [parse_number(item) for item in NUMBER_RE.findall(raw)]
     if not numbers:
         return None
     return sum(numbers) / len(numbers)
@@ -523,7 +560,7 @@ def infer_entry(text: str, symbol: str | None, direction_match: re.Match[str] | 
         start = head.find(symbol) + len(symbol)
     if direction_match:
         start = max(start, direction_match.end())
-    numbers = [float(item) for item in NUMBER_RE.findall(head[start:])]
+    numbers = [parse_number(item) for item in NUMBER_RE.findall(head[start:])]
     if not numbers:
         return None
     return sum(numbers[:2]) / min(len(numbers), 2)
@@ -533,14 +570,31 @@ def parse_first_label(text: str, label: str) -> float | None:
     match = LABEL_PATTERNS[label].search(text)
     if not match:
         return None
-    try:
-        return float(match.group(1))
-    except ValueError:
-        return None
+    return parse_number(match.group(1))
 
 
 def parse_take_profits(text: str) -> list[float]:
-    return [float(match.group(1)) for match in LABEL_PATTERNS["take_profit"].finditer(text)]
+    matches: list[tuple[int, float]] = []
+
+    for match in TP_PRICE_RE.finditer(text):
+        matches.append((match.start(1), parse_number(match.group(1))))
+
+    for match in TAKE_PROFIT_PRICE_RE.finditer(text):
+        value = parse_number(match.group(1))
+        prefix = text[match.end() - len(match.group(1)) - 8 : match.end() - len(match.group(1))]
+        if value <= 10 and re.search(r"\bTP\s*#?\s*$|\bTP\d+\W*$", prefix, re.IGNORECASE):
+            continue
+        matches.append((match.start(1), value))
+
+    deduped: list[float] = []
+    for _, value in sorted(matches, key=lambda item: item[0]):
+        if value not in deduped:
+            deduped.append(value)
+    return deduped
+
+
+def parse_number(value: str) -> float:
+    return float(value.replace(",", ""))
 
 
 def compact_text(text: str, limit: int = 180) -> str:
@@ -610,8 +664,7 @@ def validate_candidate(candidate: dict[str, Any], params: dict[str, Any], symbol
         candidate["market_valid"] = False
         candidate["discard_reason"] = market_state_reason
 
-    candidate["risk_usd"] = None
-    candidate["size"] = "TBD"
+    apply_position_sizing(candidate, float(params.get("max_risk_usd", 2.0)))
     return candidate
 
 
@@ -651,15 +704,8 @@ def validate_crypto_proxy(candidate: dict[str, Any], params: dict[str, Any]) -> 
 def validate_yahoo_proxy(candidate: dict[str, Any]) -> None:
     asset = str(candidate.get("asset") or "")
     proxy_symbol = YAHOO_PROXY_SYMBOLS[asset]
-    encoded = urllib.parse.quote(proxy_symbol, safe="")
-    url = f"https://query1.finance.yahoo.com/v8/finance/chart/{encoded}?range=1d&interval=1m"
-    request = urllib.request.Request(url, headers={"User-Agent": "trading-session/1.0"})
     try:
-        with urllib.request.urlopen(request, timeout=10) as response:
-            payload = json.loads(response.read().decode("utf-8"))
-        result = (payload.get("chart", {}).get("result") or [])[0]
-        meta = result.get("meta", {})
-        current = meta.get("regularMarketPrice") or meta.get("chartPreviousClose")
+        current = fetch_yahoo_current(asset)
     except Exception as exc:
         candidate["market_valid"] = False
         candidate.setdefault("missing", []).append("market_data")
@@ -679,6 +725,113 @@ def validate_yahoo_proxy(candidate: dict[str, Any]) -> None:
     }
     candidate["source_context"]["market_symbol"] = proxy_symbol
     candidate["source_context"]["market_proxy"] = "yahoo_finance_chart"
+
+
+def fetch_yahoo_current(asset: str) -> float | None:
+    proxy_symbol = YAHOO_PROXY_SYMBOLS.get(asset)
+    if not proxy_symbol:
+        return None
+    encoded = urllib.parse.quote(proxy_symbol, safe="")
+    url = f"https://query1.finance.yahoo.com/v8/finance/chart/{encoded}?range=1d&interval=1m"
+    request = urllib.request.Request(url, headers={"User-Agent": "trading-session/1.0"})
+    with urllib.request.urlopen(request, timeout=10) as response:
+        payload = json.loads(response.read().decode("utf-8"))
+    result = (payload.get("chart", {}).get("result") or [])[0]
+    meta = result.get("meta", {})
+    current = meta.get("regularMarketPrice") or meta.get("chartPreviousClose")
+    return float(current) if current not in (None, "") else None
+
+
+def apply_position_sizing(candidate: dict[str, Any], max_risk_usd: float) -> None:
+    sizing = estimate_fbs_lot_size(candidate, max_risk_usd)
+    if not sizing:
+        candidate["risk_usd"] = None
+        candidate["size"] = "TBD"
+        return
+
+    candidate["risk_usd"] = sizing["risk_usd"]
+    candidate["size"] = sizing["size"]
+    candidate["position_sizing"] = sizing
+    candidate["volume_estimate"] = {
+        "units": sizing["lot_size"],
+        "unit": "lot",
+        "notional_usd": sizing.get("notional_usd"),
+    }
+    candidate["sizing_note"] = sizing["note"]
+
+
+def estimate_fbs_lot_size(candidate: dict[str, Any], max_risk_usd: float) -> dict[str, Any] | None:
+    asset = str(candidate.get("asset") or "")
+    direction = candidate.get("direction")
+    entry = candidate.get("entry")
+    stop_loss = candidate.get("stop_loss")
+    take_profits = candidate.get("take_profits") or []
+    if direction not in {"BUY", "SELL"} or entry is None or stop_loss is None:
+        return None
+
+    contract_size = fbs_contract_size(asset)
+    quote_currency = asset[3:6] if is_forex_symbol(asset) else "USD" if asset in METAL_CONTRACT_SIZES else None
+    if contract_size is None or quote_currency is None:
+        return None
+
+    quote_to_usd = quote_currency_to_usd(quote_currency)
+    if quote_to_usd is None:
+        return None
+
+    entry_f = float(entry)
+    stop_f = float(stop_loss)
+    risk_per_lot_usd = abs(entry_f - stop_f) * contract_size * quote_to_usd
+    if risk_per_lot_usd <= 0:
+        return None
+
+    raw_lots = max_risk_usd / risk_per_lot_usd
+    lot_size = round(max(MIN_LOT, int(raw_lots / LOT_STEP) * LOT_STEP), 2)
+    risk_usd = round(risk_per_lot_usd * lot_size, 2)
+    reward_usd = None
+    if take_profits:
+        reward_usd = round(abs(float(take_profits[0]) - entry_f) * contract_size * quote_to_usd * lot_size, 2)
+    notional_usd = round(entry_f * contract_size * quote_to_usd * lot_size, 2)
+    note = (
+        f"lotaje indicativo FBS: {lot_size:.2f} lot, riesgo aprox {risk_usd:.2f} USD"
+        + (f", TP1 aprox {reward_usd:.2f} USD" if reward_usd is not None else "")
+        + "; confirmar valor de punto en FBS antes de abrir"
+    )
+    return {
+        "lot_size": lot_size,
+        "size": f"{lot_size:.2f} lot",
+        "risk_usd": risk_usd,
+        "max_risk_usd": round(max_risk_usd, 2),
+        "risk_per_lot_usd": round(risk_per_lot_usd, 2),
+        "tp1_profit_usd": reward_usd,
+        "notional_usd": notional_usd,
+        "contract_size": contract_size,
+        "quote_currency": quote_currency,
+        "quote_to_usd": round(quote_to_usd, 8),
+        "note": note,
+    }
+
+
+def fbs_contract_size(asset: str) -> int | None:
+    if is_forex_symbol(asset):
+        return FOREX_CONTRACT_SIZE
+    return METAL_CONTRACT_SIZES.get(asset)
+
+
+def is_forex_symbol(asset: str) -> bool:
+    return len(asset) == 6 and asset[:3] in FOREX_CURRENCIES and asset[3:] in FOREX_CURRENCIES
+
+
+def quote_currency_to_usd(currency: str) -> float | None:
+    if currency == "USD":
+        return 1.0
+    proxy = QUOTE_TO_USD_PROXY.get(currency)
+    if not proxy:
+        return None
+    asset, inverse = proxy
+    price = fetch_yahoo_current(asset)
+    if price in (None, 0):
+        return None
+    return 1 / price if inverse else price
 
 
 def validate_trade_structure(candidate: dict[str, Any]) -> str | None:
