@@ -14,7 +14,7 @@ sources:
         markets: ["crypto_cfd", "forex", "metals", "indices", "energies"]
       - id: "m15_signals_llc"
         handle: "@M15_SIGNALS_LLC"
-        enabled: true
+        enabled: false
         priority: 3
         max_age_hours: 24
         markets: ["crypto_cfd", "forex", "metals", "indices", "energies"]
@@ -26,13 +26,13 @@ sources:
         markets: ["metals"]
       - id: "viewxuk50"
         handle: "@ViewXuk50"
-        enabled: true
+        enabled: false
         priority: 3
         max_age_hours: 24
         markets: ["indices", "metals", "forex"]
       - id: "goldvlp7"
         handle: "@Goldvlp7"
-        enabled: true
+        enabled: false
         priority: 2
         max_age_hours: 24
         markets: ["metals"]
@@ -44,19 +44,19 @@ sources:
         markets: ["indices", "forex", "metals"]
       - id: "tradewith_forexking786"
         handle: "@Tradewith_Forexking786"
-        enabled: true
+        enabled: false
         priority: 3
         max_age_hours: 24
         markets: ["forex", "metals", "indices"]
       - id: "starxhuk_6273"
         handle: "@StarXHuk_6273"
-        enabled: true
+        enabled: false
         priority: 3
         max_age_hours: 24
         markets: ["forex", "metals", "indices", "energies"]
       - id: "technicalpips6273"
         handle: "@TechnicalPips6273"
-        enabled: true
+        enabled: false
         priority: 3
         max_age_hours: 24
         markets: ["forex", "metals", "indices", "energies"]
@@ -68,7 +68,7 @@ sources:
         markets: ["metals"]
       - id: "nassniperhuk50"
         handle: "@nassniperhuk50"
-        enabled: true
+        enabled: false
         priority: 3
         max_age_hours: 24
         markets: ["indices", "metals", "forex"]
@@ -80,7 +80,7 @@ sources:
         markets: ["forex", "metals"]
       - id: "pipxpert"
         handle: "@pipxpert"
-        enabled: true
+        enabled: false
         priority: 2
         max_age_hours: 24
         markets: ["forex", "metals"]
@@ -88,13 +88,13 @@ sources:
         handle: "@forexvisitsignals"
         enabled: true
         priority: 2
-        max_age_hours: 24
+        max_age_hours: 6
         markets: ["crypto_cfd", "forex", "metals"]
       - id: "unitedsignalsfx"
         handle: "@UnitedSignalsFX"
         enabled: true
         priority: 2
-        max_age_hours: 24
+        max_age_hours: 6
         markets: ["forex", "metals", "indices", "energies", "stocks"]
       - id: "tradingcartelfree"
         handle: "@tradingcartelfree"
@@ -116,124 +116,244 @@ sources:
         markets: ["forex", "metals"]
       - id: "briantradingforex"
         handle: "@briantradingforex"
-        enabled: true
+        enabled: false
         priority: 2
         max_age_hours: 24
         markets: ["metals"]
       - id: "tradingpromoney"
         handle: "@Tradingpromoney"
-        enabled: true
+        enabled: false
         priority: 2
         max_age_hours: 24
         markets: ["metals"]
       - id: "forexsignals"
         handle: "@forexsignals"
-        enabled: true
+        enabled: false
         priority: 2
         max_age_hours: 24
         markets: ["forex", "metals"]
       - id: "tradewindonesia"
         handle: "@TradeWIndonesia"
-        enabled: true
+        enabled: false
         priority: 3
         max_age_hours: 24
         markets: ["metals"]
       - id: "freeforexpipssignals"
         handle: "@freeforexpipssignals"
-        enabled: true
+        enabled: false
         priority: 2
         max_age_hours: 24
         markets: ["forex"]
       - id: "directforextrades"
         handle: "@Directforextrades"
-        enabled: true
+        enabled: false
         priority: 2
         max_age_hours: 24
         markets: ["forex", "metals"]
       - id: "azizhalikov"
         handle: "@azizhalikov"
-        enabled: true
+        enabled: false
         priority: 3
         max_age_hours: 24
         markets: ["metals"]
       - id: "gold_signals"
         handle: "@Gold_Signals"
-        enabled: true
+        enabled: false
         priority: 2
         max_age_hours: 24
         markets: ["metals", "forex"]
       - id: "forexnitrosignal"
         handle: "@forexnitrosignal"
-        enabled: true
+        enabled: false
         priority: 3
         max_age_hours: 24
         markets: ["metals"]
       - id: "thedarkcryptoss"
         handle: "@thedarkcryptoss"
-        enabled: true
+        enabled: false
         priority: 3
         max_age_hours: 24
         markets: ["crypto_cfd"]
       - id: "binancefutures_trader"
         handle: "@Binancefutures_Trader"
-        enabled: true
+        enabled: false
         priority: 3
         max_age_hours: 24
         markets: ["crypto_cfd"]
       - id: "quotexelitetrader"
         handle: "@quotexelitetrader"
-        enabled: true
+        enabled: false
         priority: 3
         max_age_hours: 24
         markets: ["metals"]
       - id: "fullmargintradinganalysis"
         handle: "@fullmargintradinganalysis"
-        enabled: true
+        enabled: false
         priority: 3
         max_age_hours: 24
         markets: ["metals", "forex"]
       - id: "hkpdear481"
         handle: "@HkpDear481"
-        enabled: true
+        enabled: false
         priority: 3
         max_age_hours: 24
         markets: ["metals"]
       - id: "atp_fx"
         handle: "@ATP_Fx"
-        enabled: true
+        enabled: false
         priority: 3
         max_age_hours: 24
         markets: ["metals", "forex"]
       - id: "nasgold1"
         handle: "@nasgold1"
-        enabled: true
+        enabled: false
         priority: 2
         max_age_hours: 24
         markets: ["metals", "indices"]
       - id: "pionex_usa"
         handle: "@pionex_usa"
-        enabled: true
+        enabled: false
         priority: 3
         max_age_hours: 24
         markets: ["crypto_cfd"]
       - id: "signalprovider6"
         handle: "@signalprovider6"
-        enabled: true
+        enabled: false
         priority: 3
         max_age_hours: 24
         markets: ["metals", "indices"]
       - id: "cryptofreesignal"
         handle: "@cryptofreesignal"
-        enabled: true
+        enabled: false
         priority: 3
         max_age_hours: 24
         markets: ["metals", "crypto_cfd"]
       - id: "gold_scalping_signals"
         handle: "@Gold_scalping_signals"
-        enabled: true
+        enabled: false
         priority: 3
         max_age_hours: 24
         markets: ["metals"]
+      - id: "goldforexsignalsoriginal"
+        handle: "@goldforexsignalsoriginal"
+        enabled: false
+        priority: 3
+        max_age_hours: 24
+        markets: ["forex", "metals", "indices", "crypto_cfd"]
+      - id: "goldsignals_fx"
+        handle: "@goldsignals_fx"
+        enabled: false
+        priority: 3
+        max_age_hours: 24
+        markets: ["forex", "metals", "indices", "crypto_cfd"]
+      - id: "gold_signalb"
+        handle: "@gold_signalb"
+        enabled: false
+        priority: 3
+        max_age_hours: 24
+        markets: ["forex", "metals"]
+      - id: "free_signals"
+        handle: "@free_signals"
+        enabled: false
+        priority: 3
+        max_age_hours: 24
+        markets: ["forex", "metals"]
+      - id: "tradinggainx"
+        handle: "@tradinggainx"
+        enabled: false
+        priority: 3
+        max_age_hours: 24
+        markets: ["crypto_cfd"]
+      - id: "thefxsupportsignals"
+        handle: "@thefxsupportsignals"
+        enabled: false
+        priority: 3
+        max_age_hours: 24
+        markets: ["forex", "metals"]
+      - id: "coin_signals"
+        handle: "@coin_signals"
+        enabled: false
+        priority: 3
+        max_age_hours: 24
+        markets: ["crypto_cfd", "metals"]
+      - id: "anabelsignals"
+        handle: "@anabelsignals"
+        enabled: false
+        priority: 3
+        max_age_hours: 24
+        markets: ["forex", "metals"]
+      - id: "free_xauusd_signale"
+        handle: "@free_xauusd_signale"
+        enabled: false
+        priority: 3
+        max_age_hours: 24
+        markets: ["forex", "metals", "indices"]
+      - id: "free_forexsignals09"
+        handle: "@free_forexsignals09"
+        enabled: false
+        priority: 3
+        max_age_hours: 24
+        markets: ["forex", "metals", "crypto_cfd"]
+      - id: "gold_forexsignals"
+        handle: "@gold_forexsignals"
+        enabled: false
+        priority: 3
+        max_age_hours: 24
+        markets: ["forex", "metals"]
+      - id: "forexxauusdeurusd"
+        handle: "@forexxauusdeurusd"
+        enabled: false
+        priority: 3
+        max_age_hours: 24
+        markets: ["forex", "metals"]
+      - id: "forexsignalsstreet"
+        handle: "@forexsignalsstreet"
+        enabled: false
+        priority: 3
+        max_age_hours: 24
+        markets: ["forex", "metals"]
+      - id: "algobotannouncements"
+        handle: "@AlgoBotAnnouncements"
+        enabled: false
+        priority: 3
+        max_age_hours: 24
+        markets: ["crypto_cfd", "forex", "metals"]
+      - id: "learn2tradenews"
+        handle: "@learn2tradenews"
+        enabled: true
+        priority: 3
+        max_age_hours: 24
+        markets: ["crypto_cfd", "forex", "metals"]
+      - id: "vasilytrading"
+        handle: "@VasilyTrading"
+        enabled: false
+        priority: 2
+        max_age_hours: 12
+        markets: ["forex", "metals", "energies", "indices"]
+      - id: "prosignalsfxx"
+        handle: "@prosignalsfxx"
+        enabled: false
+        priority: 3
+        max_age_hours: 12
+        markets: ["forex", "metals", "energies", "indices"]
+      - id: "bullbearfx"
+        handle: "@bullbearfx"
+        enabled: false
+        priority: 3
+        max_age_hours: 12
+        markets: ["forex", "metals"]
+      - id: "sureshot_fx"
+        handle: "@sureshot_fx"
+        enabled: false
+        priority: 3
+        max_age_hours: 12
+        markets: ["forex", "metals", "indices", "crypto_cfd"]
+      - id: "top_tradingsignals"
+        handle: "@top_tradingsignals"
+        enabled: false
+        priority: 3
+        max_age_hours: 12
+        markets: ["forex", "metals", "indices"]
     symbol_aliases:
       GOLD: "XAUUSD"
       SILVER: "XAGUSD"

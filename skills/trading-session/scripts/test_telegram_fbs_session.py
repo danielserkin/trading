@@ -13,7 +13,7 @@ import run_telegram_fbs_session as session
 
 class TelegramFbsParserTest(unittest.TestCase):
     def setUp(self) -> None:
-        self.allowed = {"AAPL", "BTCUSD", "EURUSD", "NZDCHF", "XAUUSD", "US100", "DOGUSD"}
+        self.allowed = {"AAPL", "BTCUSD", "EURUSD", "NZDCHF", "XAUUSD", "US30", "US100", "DOGUSD"}
         self.aliases = dict(session.SYMBOL_ALIASES)
 
     def parse(self, text: str) -> dict:
@@ -59,6 +59,26 @@ class TelegramFbsParserTest(unittest.TestCase):
         self.assertEqual(candidate["entry"], 4084.5)
         self.assertEqual(candidate["stop_loss"], 4055)
         self.assertEqual(candidate["take_profits"], [4097, 4104])
+
+    def test_parse_compact_symbol_direction(self) -> None:
+        candidate = self.parse("US30SELL 52970 TP 52930 TP 52870 SL 53100")
+        self.assertEqual(candidate["asset"], "US30")
+        self.assertEqual(candidate["direction"], "SELL")
+        self.assertEqual(candidate["entry"], 52970)
+        self.assertEqual(candidate["stop_loss"], 53100)
+        self.assertEqual(candidate["take_profits"], [52930, 52870])
+
+    def test_parse_compact_alias_direction(self) -> None:
+        candidate = self.parse("GOLDSELL 4066/4068 SL 4076 TP 4060")
+        self.assertEqual(candidate["asset"], "XAUUSD")
+        self.assertEqual(candidate["direction"], "SELL")
+        self.assertEqual(candidate["entry"], 4067)
+
+    def test_parse_compact_direction_symbol(self) -> None:
+        candidate = self.parse("BUYUS100 28400 SL 28300 TP 28600")
+        self.assertEqual(candidate["asset"], "US100")
+        self.assertEqual(candidate["direction"], "BUY")
+        self.assertEqual(candidate["entry"], 28400)
 
     def test_reject_signal_after_tp_hit(self) -> None:
         candidate = self.parse("BUY XAUUSD Entry 4087 SL 4055 TP 4097")

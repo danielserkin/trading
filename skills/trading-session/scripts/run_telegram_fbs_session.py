@@ -274,6 +274,7 @@ AMBIGUOUS_SHORT_STOCK_TOKENS = {
 }
 
 DIRECTION_RE = re.compile(r"\b(BUY|SELL|LONG|SHORT)\b", re.IGNORECASE)
+COMPACT_DIRECTION_WORDS = {"BUY": "BUY", "LONG": "BUY", "SELL": "SELL", "SHORT": "SELL"}
 PRICE_PATTERN = r"(?:\d{1,3}(?:,\d{3})+|\d+)(?:\.\d+)?"
 NUMBER_RE = re.compile(rf"(?<![A-Z0-9]){PRICE_PATTERN}(?![A-Z0-9])")
 TP_PRICE_RE = re.compile(rf"\bTP(?:\d+|-\s*\d+|\s*#\s*\d+)?\b[^0-9]{{0,20}}(?:\d+\)\s*)?({PRICE_PATTERN})", re.IGNORECASE)
@@ -467,9 +468,7 @@ def parse_signal(message: dict[str, Any], allowed_symbols: set[str], aliases: di
     normalized_text = upper_text.replace("#", " ").replace("_", " ")
     direction_match = DIRECTION_RE.search(normalized_text)
     symbol, symbol_status = extract_symbol(upper_text, normalized_text, allowed_symbols, aliases)
-    direction = None
-    if direction_match:
-        direction = "BUY" if direction_match.group(1).upper() in {"BUY", "LONG"} else "SELL"
+    direction = extract_direction(normalized_text, direction_match, symbol, allowed_symbols, aliases)
 
     entry = parse_entry(normalized_text) or infer_entry(normalized_text, symbol, direction_match)
     stop_loss = parse_first_label(normalized_text, "stop_loss")
@@ -504,6 +503,33 @@ def parse_signal(message: dict[str, Any], allowed_symbols: set[str], aliases: di
     return candidate
 
 
+def extract_direction(
+    text: str,
+    direction_match: re.Match[str] | None,
+    symbol: str | None,
+    allowed_symbols: set[str],
+    aliases: dict[str, str],
+) -> str | None:
+    if direction_match:
+        return COMPACT_DIRECTION_WORDS[direction_match.group(1).upper()]
+
+    compact = re.sub(r"[^A-Z0-9]", "", text.upper())
+    symbol_tokens = set(allowed_symbols)
+    symbol_tokens.update(aliases)
+    if symbol:
+        symbol_tokens.add(symbol)
+    for token in sorted(symbol_tokens, key=len, reverse=True):
+        if token in AMBIGUOUS_SHORT_STOCK_TOKENS:
+            continue
+        mapped = aliases.get(token, token)
+        if mapped not in allowed_symbols:
+            continue
+        for raw_direction, normalized_direction in COMPACT_DIRECTION_WORDS.items():
+            if f"{token}{raw_direction}" in compact or f"{raw_direction}{token}" in compact:
+                return normalized_direction
+    return None
+
+
 def extract_symbol(raw_text: str, text: str, allowed_symbols: set[str], aliases: dict[str, str]) -> tuple[str | None, str]:
     for base, quote in re.findall(r"#?\b([A-Z]{2,8})\s*/\s*([A-Z]{2,8})\b", raw_text.upper()):
         mapped = aliases.get(f"{base}{quote}", f"{base}{quote}")
@@ -522,6 +548,9 @@ def extract_symbol(raw_text: str, text: str, allowed_symbols: set[str], aliases:
         if alias in allowed_symbols:
             return alias, "confirmed"
     compact = text.replace(" ", "")
+    for token, alias in sorted(aliases.items(), key=lambda item: len(item[0]), reverse=True):
+        if alias in allowed_symbols and token in compact:
+            return alias, "confirmed"
     for symbol in sorted(allowed_symbols, key=len, reverse=True):
         if symbol in AMBIGUOUS_SHORT_STOCK_TOKENS:
             continue

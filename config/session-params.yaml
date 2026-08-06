@@ -1,0 +1,29 @@
+capital_usd: 100
+max_risk_usd: 20
+signal_window_hours: 24
+max_final_candidates: 5
+primary_count: 3
+backup_count: 2
+mode: "recommend_only"
+broker: "fbs"
+primary_source: "telegram_signals"
+market_proxy: "binance"
+min_rr: 1.6
+market_data:
+  max_spread_points: null
+  max_entry_distance_percent: 1.2
+scoring_weights:
+  expert_signal: 1.2
+  channel_priority: 1.0
+  source_quality: 1.2
+  freshness: 1.0
+  risk_reward: 1.2
+  entry_distance: 1.0
+  spread_liquidity: 0.8
+  signal_clarity: 1.0
+  broker_universe: 1.0
+source_trust:
+  telegram_signal: 4
+  binance_market: 4
+  coingecko_market: 3
+  crypto_regime: 2
