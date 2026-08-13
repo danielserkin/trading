@@ -1,4 +1,4 @@
 interface:
   display_name: "Trading Session"
-  short_description: "Analiza fuentes y arma shortlist trading"
-  default_prompt: "Use $trading-session to run today's assisted trading session from configured trading sources."
+  short_description: "Valida señales y publica oportunidades FBS"
+  default_prompt: "Use $trading-session to run today’s FBS session, derive conditional opportunities when needed, and publish the summary to Telegram."

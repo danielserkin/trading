@@ -1,6 +1,7 @@
 # Local secrets and sessions
 .env
 .env.*
+!.env.telegram.example
 *.session
 *.session-journal
 telegram.session*

@@ -23,7 +23,9 @@ from typing import Any
 from fetch_binance_market import get_json as binance_get_json
 from normalize_candidates import normalize
 from run_crypto_web_session import FBS_CRYPTO_SYMBOL_MAP, fetch_fear_greed, load_simple_yaml
-from score_candidates import render_report, risk_reward
+from score_candidates import rank_candidates, render_report, risk_reward
+from derive_opportunities import derive_opportunities
+from publish_telegram_summary import publish as publish_telegram_summary
 
 
 FOREX_CURRENCIES = {"AUD", "CAD", "CHF", "CNH", "EUR", "GBP", "HKD", "JPY", "MXN", "NOK", "NZD", "SEK", "SGD", "TRY", "USD", "ZAR"}
@@ -31,6 +33,11 @@ FOREX_CONTRACT_SIZE = 100000
 METAL_CONTRACT_SIZES = {
     "XAUUSD": 100,
     "XAGUSD": 5000,
+}
+INDEX_CONTRACT_SIZES = {
+    # Observed on the FBS demo account: 0.01 lot moves about USD 0.10/point.
+    # Confirm the contract specification in the target FBS account before live use.
+    "US30": 10,
 }
 MIN_LOT = 0.01
 LOT_STEP = 0.01
@@ -284,6 +291,11 @@ LABEL_PATTERNS = {
     "stop_loss": re.compile(rf"\b(?:SL|STOP[-\s]*LOSS|STOPLOSS|STOP|S/L|STOP\s*(?:TARGETS?|LOSS\s*TARGET)?)\b[^0-9]{{0,20}}(?:\d+\)\s*)?({PRICE_PATTERN})", re.IGNORECASE),
     "take_profit": TP_PRICE_RE,
 }
+EXPLICIT_ENTRY_RE = re.compile(
+    rf"\b(?:ENTRY(?:\s+(?:PRICE|POINT|ZONE|LEVEL|TARGETS?))?|ENTER|ENTRADA|OPEN|PRICE)\b"
+    rf"[^0-9]{{0,40}}(?:\d+\)\s*)?({PRICE_PATTERN}(?:\s*[-/]\s*{PRICE_PATTERN})?)",
+    re.IGNORECASE,
+)
 
 
 @dataclass(frozen=True)
@@ -308,12 +320,20 @@ def session_params(config_dir: Path) -> dict[str, Any]:
     example = load_simple_yaml(config_dir / "session-params.example.yaml")
     local = load_simple_yaml(config_dir / "session-params.yaml")
     merged: dict[str, Any] = {
-        "capital_usd": 100.0,
-        "max_risk_usd": 2.0,
+        "capital_usd": 1000.0,
+        "max_risk_usd": 20.0,
         "signal_window_hours": 24,
         "max_final_candidates": 5,
         "primary_count": 3,
         "backup_count": 2,
+        "fallback_opportunities": {
+            "enabled": True,
+            "target_primary_candidates": 3,
+            "lookback_hours": 72,
+            "allow_reversal": True,
+            "min_rr": 1.6,
+            "no_trade_placeholders": True,
+        },
     }
     merged.update(example or {})
     merged.update(local or {})
@@ -395,7 +415,8 @@ async def fetch_telegram_messages(config_dir: Path, limit_per_channel: int, defa
                     if not message.message:
                         continue
                     message_date = message.date.astimezone(timezone.utc) if message.date.tzinfo else message.date.replace(tzinfo=timezone.utc)
-                    max_age = timedelta(hours=channel.max_age_hours or default_window_hours)
+                    fallback_hours = int(session_params(config_dir).get("fallback_opportunities", {}).get("lookback_hours", 72))
+                    max_age = timedelta(hours=max(channel.max_age_hours or default_window_hours, fallback_hours))
                     if utc_now() - message_date > max_age:
                         continue
                     messages.append(
@@ -567,7 +588,9 @@ def is_plausible_stock_symbol(token: str) -> bool:
 
 
 def parse_entry(text: str) -> float | None:
-    match = LABEL_PATTERNS["entry"].search(text)
+    # Prefer an explicit label so digits in symbols such as US30 are not
+    # mistaken for the price following a leading BUY/SELL token.
+    match = EXPLICIT_ENTRY_RE.search(text) or LABEL_PATTERNS["entry"].search(text)
     if not match:
         return None
     raw = match.group(1)
@@ -635,6 +658,8 @@ def validate_candidate(candidate: dict[str, Any], params: dict[str, Any], symbol
     candidate["broker"] = "fbs"
     candidate["broker_symbol"] = candidate.get("asset")
     candidate["signal_status"] = "vigente"
+    candidate["candidate_origin"] = "expert_signal"
+    candidate["analyst_status"] = "automated_validation"
     candidate["market_valid"] = True
     candidate["source_context"] = {
         "broker": "fbs",
@@ -645,6 +670,7 @@ def validate_candidate(candidate: dict[str, Any], params: dict[str, Any], symbol
 
     timestamp = parse_datetime(candidate.get("timestamp"))
     if timestamp:
+        candidate["valid_until"] = (timestamp + timedelta(hours=int(params.get("signal_window_hours", 24)))).isoformat()
         freshness = max(0, int((utc_now() - timestamp).total_seconds() / 60))
         candidate["freshness_minutes"] = freshness
         if freshness > int(params.get("signal_window_hours", 24)) * 60:
@@ -693,8 +719,36 @@ def validate_candidate(candidate: dict[str, Any], params: dict[str, Any], symbol
         candidate["market_valid"] = False
         candidate["discard_reason"] = market_state_reason
 
-    apply_position_sizing(candidate, float(params.get("max_risk_usd", 2.0)))
+    if candidate.get("source_context", {}).get("market_proxy") == "yahoo_finance_chart" and candidate.get("market_valid"):
+        candidate["execution_bias"] = "orden pendiente"
+        candidate["modification_note"] = "El tipo de orden se estima con un proxy; FBS debe aceptar la entrada respecto de su Bid/Ask actual."
+
+    assign_pending_order(candidate)
+    apply_position_sizing(candidate, float(params.get("max_risk_usd", 20.0)))
     return candidate
+
+
+def assign_pending_order(candidate: dict[str, Any]) -> None:
+    """Choose the pending-order type from direction and entry/current relation."""
+    direction = candidate.get("direction")
+    entry = candidate.get("entry")
+    current = candidate.get("current_price")
+    if direction not in {"BUY", "SELL"} or entry is None or current in (None, "TBD"):
+        candidate["pending_order_type"] = "TBD"
+        return
+    entry_f = float(entry)
+    current_f = float(current)
+    if direction == "BUY":
+        order_type = "BUY STOP" if entry_f >= current_f else "BUY LIMIT"
+        alternate = "BUY LIMIT" if order_type == "BUY STOP" else "BUY STOP"
+    else:
+        order_type = "SELL STOP" if entry_f <= current_f else "SELL LIMIT"
+        alternate = "SELL LIMIT" if order_type == "SELL STOP" else "SELL STOP"
+    candidate["pending_order_type"] = order_type
+    candidate["alternate_order_type"] = alternate
+    candidate["order_instruction"] = (
+        f"Intentar {order_type} en {entry_f:.8g}; si FBS exige {alternate} para esa misma entrada, usarlo sin cambiar entrada, SL, TP ni lote."
+    )
 
 
 def validate_crypto_proxy(candidate: dict[str, Any], params: dict[str, Any]) -> None:
@@ -799,7 +853,7 @@ def estimate_fbs_lot_size(candidate: dict[str, Any], max_risk_usd: float) -> dic
         return None
 
     contract_size = fbs_contract_size(asset)
-    quote_currency = asset[3:6] if is_forex_symbol(asset) else "USD" if asset in METAL_CONTRACT_SIZES else None
+    quote_currency = asset[3:6] if is_forex_symbol(asset) else "USD" if asset in METAL_CONTRACT_SIZES or asset in INDEX_CONTRACT_SIZES else None
     if contract_size is None or quote_currency is None:
         return None
 
@@ -843,7 +897,7 @@ def estimate_fbs_lot_size(candidate: dict[str, Any], max_risk_usd: float) -> dic
 def fbs_contract_size(asset: str) -> int | None:
     if is_forex_symbol(asset):
         return FOREX_CONTRACT_SIZE
-    return METAL_CONTRACT_SIZES.get(asset)
+    return METAL_CONTRACT_SIZES.get(asset) or INDEX_CONTRACT_SIZES.get(asset)
 
 
 def is_forex_symbol(asset: str) -> bool:
@@ -890,16 +944,31 @@ def validate_current_market_state(candidate: dict[str, Any]) -> str | None:
     current_f = float(current)
     stop_f = float(stop_loss)
     first_tp = float(take_profits[0])
+    entry = candidate.get("entry")
     if direction == "BUY":
         if current_f <= stop_f:
             return "sl_already_hit"
         if current_f >= first_tp:
             return "tp_already_hit"
+        if entry is not None:
+            original_risk = float(entry) - stop_f
+            if original_risk > 0 and (current_f - stop_f) / original_risk < 0.35:
+                return "too_close_to_stop"
+            original_reward = first_tp - float(entry)
+            if original_reward > 0 and (current_f - float(entry)) / original_reward > 0.7:
+                return "move_mostly_consumed"
     if direction == "SELL":
         if current_f >= stop_f:
             return "sl_already_hit"
         if current_f <= first_tp:
             return "tp_already_hit"
+        if entry is not None:
+            original_risk = stop_f - float(entry)
+            if original_risk > 0 and (stop_f - current_f) / original_risk < 0.35:
+                return "too_close_to_stop"
+            original_reward = float(entry) - first_tp
+            if original_reward > 0 and (float(entry) - current_f) / original_reward > 0.7:
+                return "move_mostly_consumed"
     return None
 
 
@@ -934,10 +1003,11 @@ def dedupe(candidates: list[dict[str, Any]]) -> list[dict[str, Any]]:
         if key in seen:
             candidate["signal_status"] = "duplicada"
             candidate["market_valid"] = False
+            candidate["discard_reason"] = "duplicate_trade_idea"
             candidate.setdefault("missing", []).append("duplicate")
         else:
             seen.add(key)
-            unique.append(candidate)
+        unique.append(candidate)
     return unique
 
 
@@ -954,6 +1024,10 @@ def run_session(config_dir: Path, limit_per_channel: int, input_paths: list[Path
     candidates = [parse_signal(message, allowed_symbols, aliases) for message in messages]
     candidates = [validate_candidate(candidate, params, symbols_by_market, fear_greed) for candidate in candidates]
     candidates = dedupe(candidates)
+    derived, fallback_metadata = derive_opportunities(candidates, params, FBS_CRYPTO_SYMBOL_MAP, YAHOO_PROXY_SYMBOLS)
+    for candidate in derived:
+        apply_position_sizing(candidate, float(params.get("max_risk_usd", 20.0)))
+    candidates.extend(derived)
     metadata = {
         "broker": "fbs",
         "broker_symbols": sorted(allowed_symbols),
@@ -965,8 +1039,23 @@ def run_session(config_dir: Path, limit_per_channel: int, input_paths: list[Path
         "fear_greed": fear_greed,
         "mode": "recommend_only",
         "market_scope": sorted(symbols_by_market),
+        "fallback_opportunities": fallback_metadata,
     }
     return candidates + errors, metadata
+
+
+def preflight(input_paths: list[Path]) -> list[str]:
+    """Return blocking setup errors before any report files are written."""
+    errors = []
+    if input_paths:
+        return errors
+    try:
+        import telethon  # noqa: F401
+    except ImportError:
+        errors.append("Telethon is required. Run: python3 -m pip install --user -r skills/trading-session/requirements.txt")
+    if not os.getenv("TELEGRAM_API_ID") or not os.getenv("TELEGRAM_API_HASH"):
+        errors.append("TELEGRAM_API_ID and TELEGRAM_API_HASH are required; load .env.telegram before running the session")
+    return errors
 
 
 def main() -> int:
@@ -977,6 +1066,11 @@ def main() -> int:
     parser.add_argument("--output-dir", type=Path, default=Path("sessions") / date.today().isoformat())
     args = parser.parse_args()
 
+    setup_errors = preflight(args.input)
+    if setup_errors:
+        print(json.dumps({"status": "preflight_failed", "errors": setup_errors}, indent=2))
+        return 2
+
     params = session_params(args.config_dir)
     candidates, metadata = run_session(args.config_dir, args.limit_per_channel, args.input)
     args.output_dir.mkdir(parents=True, exist_ok=True)
@@ -986,8 +1080,25 @@ def main() -> int:
     candidates_path.write_text(json.dumps(candidates, indent=2, sort_keys=True) + "\n")
     metadata_path.write_text(json.dumps(metadata, indent=2, sort_keys=True) + "\n")
     report_path.write_text(render_report(candidates, float(params["max_risk_usd"]), metadata))
-    print(json.dumps({"candidates": str(candidates_path), "metadata": str(metadata_path), "report": str(report_path), "count": len(candidates)}, indent=2))
-    return 0
+    token = os.getenv("TELEGRAM_BOT_TOKEN", "").strip()
+    chat_id = os.getenv("TELEGRAM_TARGET_CHAT_ID", "").strip()
+    delivery_settings = params.get("telegram_delivery") or {}
+    delivery_mode = delivery_settings.get("enabled", "auto")
+    delivery: dict[str, Any] = {"status": "disabled" if delivery_mode is False else "not_configured"}
+    exit_code = 0
+    should_attempt_delivery = delivery_mode is True or (delivery_mode == "auto" and bool(token or chat_id))
+    if should_attempt_delivery:
+        try:
+            if not token or not chat_id:
+                raise ValueError("Both TELEGRAM_BOT_TOKEN and TELEGRAM_TARGET_CHAT_ID are required")
+            delivery = publish_telegram_summary(candidates_path, metadata_path, float(params["max_risk_usd"]), token, chat_id)
+        except Exception as exc:
+            delivery = {"status": "delivery_failed", "error": str(exc)}
+            exit_code = 2
+    delivery_path = args.output_dir / "telegram-delivery.json"
+    delivery_path.write_text(json.dumps(delivery, indent=2, sort_keys=True) + "\n")
+    print(json.dumps({"candidates": str(candidates_path), "metadata": str(metadata_path), "report": str(report_path), "delivery": delivery, "count": len(candidates)}, indent=2))
+    return exit_code
 
 
 if __name__ == "__main__":

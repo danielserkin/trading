@@ -10,6 +10,23 @@ from pathlib import Path
 from typing import Any
 
 
+REASON_LABELS = {
+    "higher_timeframes_not_aligned": "1h y 4h no están alineados",
+    "15m_opposes_higher_timeframes": "15m contradice la tendencia principal",
+    "volume_confirmation_missing": "falta confirmación de volumen",
+    "buy_overextended_rsi": "compra sobreextendida por RSI",
+    "sell_overextended_rsi": "venta sobreextendida por RSI",
+    "market_data_error": "falló el proveedor de mercado",
+    "market_proxy_unavailable": "no hay proxy de mercado compatible",
+    "insufficient_closed_candles": "faltan velas cerradas",
+}
+
+
+def reason_label(reason: Any) -> str:
+    value = str(reason)
+    return REASON_LABELS.get(value, value.replace("_", " "))
+
+
 def risk_reward(candidate: dict[str, Any]) -> float | None:
     entry = candidate.get("entry")
     sl = candidate.get("stop_loss")
@@ -83,7 +100,7 @@ def score(candidate: dict[str, Any], max_risk_usd: float) -> tuple[int, list[str
     return stars, reasons or ["candidate accepted"]
 
 
-def render_report(candidates: list[dict[str, Any]], max_risk_usd: float, metadata: dict[str, Any] | None = None) -> str:
+def rank_candidates(candidates: list[dict[str, Any]], max_risk_usd: float) -> tuple[list[tuple[int, list[str], dict[str, Any]]], list[tuple[dict[str, Any], str]]]:
     ranked = []
     discarded = []
     for candidate in candidates:
@@ -118,6 +135,9 @@ def render_report(candidates: list[dict[str, Any]], max_risk_usd: float, metadat
         if candidate.get("market_valid") is False:
             discarded.append((candidate, candidate.get("discard_reason") or candidate.get("signal_status") or "market_validation_failed"))
             continue
+        if candidate.get("risk_usd") is None:
+            discarded.append((candidate, "risk_unavailable"))
+            continue
         rr = risk_reward(candidate)
         if rr is not None and rr < 1.5:
             discarded.append((candidate, "risk_above_limit"))
@@ -128,7 +148,19 @@ def render_report(candidates: list[dict[str, Any]], max_risk_usd: float, metadat
         stars, reasons = score(candidate, max_risk_usd)
         ranked.append((stars, reasons, candidate))
 
-    ranked.sort(key=lambda item: (item[0], float(item[2].get("quality_score") or 0)), reverse=True)
+    ranked.sort(
+        key=lambda item: (
+            1 if item[2].get("candidate_origin", "expert_signal") == "expert_signal" else 0,
+            item[0],
+            float(item[2].get("quality_score") or 0),
+        ),
+        reverse=True,
+    )
+    return ranked, discarded
+
+
+def render_report(candidates: list[dict[str, Any]], max_risk_usd: float, metadata: dict[str, Any] | None = None) -> str:
+    ranked, discarded = rank_candidates(candidates, max_risk_usd)
     top = [item for item in ranked if item[2].get("signal_status") != "llegada_tarde"][:3]
     top_ids = {id(item[2]) for item in top}
     backup = [item for item in ranked if id(item[2]) not in top_ids][:5 - len(top)]
@@ -149,6 +181,9 @@ def render_report(candidates: list[dict[str, Any]], max_risk_usd: float, metadat
         "| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |",
     ]
     lines.extend(_candidate_rows(top, 1))
+    target = int(((metadata or {}).get("fallback_opportunities") or {}).get("target", 3))
+    no_trade_slots = max(0, target - len(top))
+    lines.extend(_no_trade_rows(no_trade_slots, len(top) + 1, metadata))
     lines.extend([
         "",
         "## Backup Candidates",
@@ -177,6 +212,15 @@ def render_report(candidates: list[dict[str, Any]], max_risk_usd: float, metadat
         "- Recommendations only. User must decide execution manually.",
     ])
     return "\n".join(lines) + "\n"
+
+
+def _no_trade_rows(count: int, start_rank: int, metadata: dict[str, Any] | None) -> list[str]:
+    rejections = ((metadata or {}).get("fallback_opportunities") or {}).get("rejections") or []
+    reasons = ", ".join(dict.fromkeys(reason_label(item.get("reason")) for item in rejections[:4])) or "sin configuración técnica con evidencia suficiente"
+    return [
+        f"| {start_rank + offset} | * | system | fallback_engine | NO TRADE | WAIT | - | - | - | - | - | 0 | - | - | - | - | No operar: {reasons} |"
+        for offset in range(count)
+    ]
 
 
 def _candidate_rows(items: list[tuple[int, list[str], dict[str, Any]]], start_rank: int) -> list[str]:
@@ -253,6 +297,8 @@ def _format_volume_estimate(candidate: dict[str, Any]) -> str:
 
 def _why(candidate: dict[str, Any], reasons: list[str]) -> str:
     parts = []
+    if candidate.get("pending_order_type"):
+        parts.append(f"orden={candidate['pending_order_type']}")
     if candidate.get("execution_bias"):
         parts.append(str(candidate["execution_bias"]))
     if candidate.get("setup_type"):
@@ -261,6 +307,14 @@ def _why(candidate: dict[str, Any], reasons: list[str]) -> str:
         parts.append(str(candidate["signal_status"]))
     if candidate.get("modification_note"):
         parts.append(str(candidate["modification_note"]))
+    if candidate.get("candidate_origin"):
+        parts.append(f"origen={candidate['candidate_origin']}")
+    if candidate.get("order_instruction"):
+        parts.append(str(candidate["order_instruction"]))
+    if candidate.get("invalidation_condition"):
+        parts.append(str(candidate["invalidation_condition"]))
+    if candidate.get("seed_message_url"):
+        parts.append(f"semilla={candidate['seed_message_url']}")
     if candidate.get("sizing_note"):
         parts.append(str(candidate["sizing_note"]))
     parts.extend(reasons[:2])

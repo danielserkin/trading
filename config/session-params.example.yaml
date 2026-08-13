@@ -1,6 +1,6 @@
 # Copy to config/session-params.yaml and tune after reviews.
-capital_usd: 100
-max_risk_usd: 2
+capital_usd: 1000
+max_risk_usd: 20
 signal_window_hours: 24
 max_final_candidates: 5
 primary_count: 3
@@ -13,6 +13,18 @@ min_rr: 1.6
 market_data:
   max_spread_points: null
   max_entry_distance_percent: 1.2
+fallback_opportunities:
+  enabled: true
+  target_primary_candidates: 3
+  lookback_hours: 72
+  allow_reversal: true
+  intervals: ["15m", "1h", "4h"]
+  min_rr: 1.6
+  no_trade_placeholders: true
+telegram_delivery:
+  enabled: "auto"
+  send_on_no_trade: true
+  new_message_per_run: true
 scoring_weights:
   expert_signal: 1.2
   channel_priority: 1.0

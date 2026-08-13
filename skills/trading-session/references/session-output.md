@@ -23,7 +23,7 @@ Use the same columns for primary and backup tables:
 Rules:
 
 - `Stars` must be one to five literal `*` characters.
-- `Source` must be `telegram_signal` for the active Telegram/FBS workflow.
+- `Source` must be `telegram_signal` for original expert signals or `telegram_derived` for independently recalculated re-entry/reversal setups.
 - `Provider` should be the Telegram channel id.
 - `Asset` must be a configured FBS symbol, such as `BTCUSD`, `EURUSD`, or `XAUUSD`.
 - `Entry` must be the executable side of the quote: `Ask` for `BUY`, `Bid` for `SELL`.
@@ -32,6 +32,9 @@ Rules:
 - `Volume Est.` may show estimated lots and TP1 profit for forex/metals, or estimated asset units from a public market proxy. It is still an estimate that must be confirmed in FBS.
 - `Evidence` must summarize the Telegram message and any public proxy market data used for validation.
 - `Why` must include vigencia/status and any `modification_note` when the expert entry is no longer directly actionable.
+- `Why` must state the pending-order type and exact mechanical instruction; it must not delegate candle analysis to the user.
+- Derived rows must identify `reentry` or `technical_reversal`, include the pending order and expiry/cancellation rule, and link back to the seed message when available.
+- Always show three evaluated primary slots. Use a `NO TRADE` row when evidence is insufficient; do not represent it as a valid candidate.
 
 ## Discarded Signals
 
@@ -50,6 +53,10 @@ Allowed reasons include:
 - `spread_too_high`
 - `risk_above_limit`
 - `parse_uncertain`
+- `too_close_to_stop`
+- `move_mostly_consumed`
+- `higher_timeframes_not_aligned`
+- `volume_confirmation_missing`
 
 ## Data Used
 
@@ -59,3 +66,5 @@ Include:
 - Broker universe: FBS.
 - FBS crypto CFD symbols allowed.
 - Symbols scanned and session params used.
+- Fallback attempts, accepted derived setups, rejection reasons, and `NO TRADE` slot count.
+- Telegram delivery status is written separately to `telegram-delivery.json`.

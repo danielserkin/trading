@@ -86,6 +86,12 @@ class TelegramFbsParserTest(unittest.TestCase):
         reason = session.validate_current_market_state(candidate)
         self.assertEqual(reason, "tp_already_hit")
 
+    def test_reject_signal_too_close_to_stop(self) -> None:
+        candidate = self.parse("BUY GBPUSD Entry 1.3458 SL 1.3452 TP 1.3468")
+        candidate["current_price"] = 1.3453
+        reason = session.validate_current_market_state(candidate)
+        self.assertEqual(reason, "too_close_to_stop")
+
     def test_parse_confirmed_stock_cashtag(self) -> None:
         candidate = self.parse("BUY #AAPL Entry 210 SL 204 TP 222")
         self.assertEqual(candidate["asset"], "AAPL")
@@ -125,12 +131,13 @@ class TelegramFbsParserTest(unittest.TestCase):
         )
         self.assertIsNone(candidate["asset"])
 
-    def test_dedupe_keeps_first_signal(self) -> None:
+    def test_dedupe_keeps_duplicate_as_auditable_rejection(self) -> None:
         first = self.parse("BUY BTCUSD 118000 SL 117000 TP 120000")
         second = self.parse("LONG BTCUSD 118000 SL 117000 TP 120000")
         unique = session.dedupe([first, second])
-        self.assertEqual(len(unique), 1)
+        self.assertEqual(len(unique), 2)
         self.assertIn("duplicate", second["missing"])
+        self.assertEqual(second["discard_reason"], "duplicate_trade_idea")
 
     def test_forex_lot_size_uses_quote_currency_conversion(self) -> None:
         original_fetch = session.fetch_yahoo_current
@@ -144,6 +151,42 @@ class TelegramFbsParserTest(unittest.TestCase):
         self.assertEqual(sizing["size"], "0.10 lot")
         self.assertEqual(sizing["risk_usd"], 2.0)
         self.assertEqual(sizing["tp1_profit_usd"], 4.0)
+
+    def test_us30_minimum_lot_risks_eleven_dollars(self) -> None:
+        candidate = self.parse("BUY US30 Entry 54036.6 SL 53926.6 TP 54336.6")
+        sizing = session.estimate_fbs_lot_size(candidate, 20.0)
+        self.assertIsNotNone(sizing)
+        self.assertEqual(sizing["size"], "0.01 lot")
+        self.assertEqual(sizing["risk_usd"], 11.0)
+
+    def test_us30_does_not_round_above_risk_limit(self) -> None:
+        candidate = self.parse("BUY US30 Entry 54036.6 SL 53926.6 TP 54336.6")
+        sizing = session.estimate_fbs_lot_size(candidate, 20.0)
+        self.assertLessEqual(sizing["risk_usd"], 20.0)
+
+    def test_assigns_pending_order_from_entry_relation(self) -> None:
+        cases = [
+            ("BUY", 101, 100, "BUY STOP"),
+            ("BUY", 99, 100, "BUY LIMIT"),
+            ("SELL", 99, 100, "SELL STOP"),
+            ("SELL", 101, 100, "SELL LIMIT"),
+        ]
+        for direction, entry, current, expected in cases:
+            with self.subTest(expected=expected):
+                candidate = {"direction": direction, "entry": entry, "current_price": current}
+                session.assign_pending_order(candidate)
+                self.assertEqual(candidate["pending_order_type"], expected)
+                self.assertIn(expected, candidate["order_instruction"])
+                self.assertIn(candidate["alternate_order_type"], candidate["order_instruction"])
+                self.assertIn("sin cambiar entrada, SL, TP ni lote", candidate["order_instruction"])
+
+    def test_minimum_lot_over_limit_is_ranked_as_risk_rejection(self) -> None:
+        candidate = self.parse("BUY US30 Entry 54036.6 SL 53826.6 TP 54636.6")
+        candidate.update({"market_valid": True, "signal_status": "vigente"})
+        session.apply_position_sizing(candidate, 20.0)
+        ranked, discarded = session.rank_candidates([candidate], 20.0)
+        self.assertEqual(ranked, [])
+        self.assertEqual(discarded[0][1], "risk_above_limit")
 
 
 if __name__ == "__main__":
