@@ -9,6 +9,7 @@ mt5-credentials.*
 
 # Generated trading artifacts
 sessions/*/
+sessions/idea-ledger.json
 !sessions/.gitkeep
 inputs/*
 !inputs/.gitkeep

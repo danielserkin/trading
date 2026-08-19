@@ -5,7 +5,7 @@ from __future__ import annotations
 
 import argparse
 import json
-from datetime import date
+from datetime import date, datetime, timezone
 from pathlib import Path
 from typing import Any
 
@@ -48,63 +48,117 @@ def risk_reward(candidate: dict[str, Any]) -> float | None:
     return reward / risk
 
 
-def score(candidate: dict[str, Any], max_risk_usd: float) -> tuple[int, list[str]]:
-    reasons: list[str] = []
+DEFAULT_SCORING_WEIGHTS = {
+    "expert_signal": 1.2,
+    "channel_priority": 1.0,
+    "source_quality": 1.2,
+    "freshness": 1.0,
+    "risk_reward": 1.2,
+    "entry_distance": 1.0,
+    "spread_liquidity": 0.8,
+    "signal_clarity": 1.0,
+    "broker_universe": 1.0,
+    "timeframe_alignment": 1.2,
+    "origin_quality": 1.0,
+}
+
+
+def _freshness(candidate: dict[str, Any]) -> float:
+    if candidate.get("signal_status") not in {"vigente", "cerca_de_entrada"}:
+        return 0.0
+    valid_until = candidate.get("valid_until")
+    if not valid_until:
+        return 0.65
+    try:
+        expires = datetime.fromisoformat(str(valid_until).replace("Z", "+00:00"))
+        expires = expires.astimezone(timezone.utc) if expires.tzinfo else expires.replace(tzinfo=timezone.utc)
+        return 1.0 if expires > datetime.now(timezone.utc) else 0.0
+    except ValueError:
+        return 0.5
+
+
+def _alignment(candidate: dict[str, Any]) -> float:
+    analysis = candidate.get("analysis") if isinstance(candidate.get("analysis"), dict) else {}
+    direction = candidate.get("direction")
+    trends = [analysis.get(f"trend_{interval}") for interval in ("15m", "1h", "4h")]
+    if trends[1:] == [direction, direction]:
+        return 1.0 if trends[0] == direction else 0.55 if trends[0] == "NEUTRAL" else 0.0
+    return 0.5 if not any(trends) else 0.0
+
+
+def score(
+    candidate: dict[str, Any],
+    max_risk_usd: float,
+    scoring_weights: dict[str, Any] | None = None,
+    source_trust: dict[str, Any] | None = None,
+) -> tuple[int, list[str]]:
+    weights = {**DEFAULT_SCORING_WEIGHTS, **(scoring_weights or {})}
+    trusts = source_trust or {"telegram_signal": 4, "telegram_derived": 3, "binance_market": 4}
     rr = risk_reward(candidate)
-    points = 1
-    source_trust = {
-        "binance_market": 1,
-        "telegram_signal": 1,
-    }.get(candidate.get("source"), 0)
-
-    if candidate.get("expert_signal"):
-        points += 1
-        reasons.append("expert signal")
-    if candidate.get("signal_status") in {"vigente", "cerca_de_entrada"}:
-        points += 1
-        reasons.append(str(candidate["signal_status"]))
-    channel_priority = candidate.get("channel_priority")
-    if channel_priority is not None and int(channel_priority) <= 2:
-        points += 1
-        reasons.append("priority channel")
-    if candidate.get("confidence") == "high":
-        points += 1
-        reasons.append("clear signal")
-    if source_trust > 0:
-        points += source_trust
-        reasons.append("verifiable source")
-    if rr is not None and rr >= 1.5:
-        points += 1
-        reasons.append(f"R/R {rr:.2f}")
-    if float(candidate.get("quality_score") or 0) >= 4:
-        points += 1
-        reasons.append("strong technical quality")
-    risk_usd = candidate.get("risk_usd")
-    if risk_usd is not None and float(risk_usd) <= max_risk_usd:
-        points += 1
-        reasons.append("risk within limit")
-    if candidate.get("market_valid", True):
-        points += 1
-        reasons.append("market validated")
-
-    stars = max(1, min(points, 5))
-    if candidate.get("source") == "binance_market":
-        quality_score = float(candidate.get("quality_score") or 0)
-        if quality_score < 3:
-            stars = min(stars, 3)
-        elif quality_score < 4:
-            stars = min(stars, 4)
-    if candidate.get("signal_status") == "llegada_tarde":
-        stars = min(stars, 3)
-
-    return stars, reasons or ["candidate accepted"]
+    analysis = candidate.get("analysis") if isinstance(candidate.get("analysis"), dict) else {}
+    priority = int(candidate.get("channel_priority") or 4)
+    confidence = {"high": 1.0, "medium": 0.65, "low": 0.3}.get(str(candidate.get("confidence")), 0.5)
+    origin = str(candidate.get("candidate_origin") or "expert_signal")
+    origin_quality = {"expert_signal": 1.0, "reentry": 0.85, "technical_reversal": 0.65}.get(origin, 0.5)
+    evidence_available = any(analysis.get(key) is not None for key in ("spread", "volume_ratio_15m"))
+    distance = candidate.get("entry_distance_percent")
+    entry_quality = max(0.0, 1.0 - float(distance) / 1.2) if distance is not None else 0.5
+    max_trust = max([float(value) for value in trusts.values()] or [1.0])
+    source_key = str(candidate.get("source") or "")
+    source_value = float(trusts.get(source_key, trusts.get("telegram_signal", 0))) / max_trust
+    components = {
+        "expert_signal": 1.0 if candidate.get("expert_signal") else 0.35,
+        "channel_priority": max(0.0, min(1.0, (4 - priority) / 3)),
+        "source_quality": source_value,
+        "freshness": _freshness(candidate),
+        "risk_reward": min(1.0, (rr or 0.0) / 2.0),
+        "entry_distance": entry_quality,
+        "spread_liquidity": 1.0 if evidence_available else 0.35,
+        "signal_clarity": confidence,
+        "broker_universe": 1.0 if candidate.get("market_valid", True) else 0.0,
+        "timeframe_alignment": _alignment(candidate),
+        "origin_quality": origin_quality,
+    }
+    weighted = {name: round(value * float(weights.get(name, 0.0)), 4) for name, value in components.items()}
+    maximum = sum(max(0.0, float(weights.get(name, 0.0))) for name in components) or 1.0
+    total = round(sum(weighted.values()), 4)
+    ratio = total / maximum
+    stars = 5 if ratio >= 0.85 else 4 if ratio >= 0.70 else 3 if ratio >= 0.55 else 2 if ratio >= 0.40 else 1
+    reasons = [
+        f"score {total:.2f}/{maximum:.2f}",
+        "alineación completa" if components["timeframe_alignment"] == 1.0 else "15m neutral/limitado",
+        f"origen {origin}",
+        f"R/R {rr:.2f}" if rr is not None else "R/R no disponible",
+    ]
+    if not evidence_available:
+        reasons.append("sin volumen/spread confirmado")
+    candidate["score_total"] = total
+    candidate["score_max"] = round(maximum, 4)
+    candidate["score_components"] = weighted
+    candidate["score_factors"] = {name: round(value, 4) for name, value in components.items()}
+    return stars, reasons
 
 
-def rank_candidates(candidates: list[dict[str, Any]], max_risk_usd: float) -> tuple[list[tuple[int, list[str], dict[str, Any]]], list[tuple[dict[str, Any], str]]]:
+def rank_candidates(
+    candidates: list[dict[str, Any]],
+    max_risk_usd: float,
+    scoring_weights: dict[str, Any] | None = None,
+    source_trust: dict[str, Any] | None = None,
+) -> tuple[list[tuple[int, list[str], dict[str, Any]]], list[tuple[dict[str, Any], str]]]:
     ranked = []
     discarded = []
     for candidate in candidates:
         missing = candidate.get("missing") or []
+        valid_until = candidate.get("valid_until")
+        if valid_until:
+            try:
+                expires = datetime.fromisoformat(str(valid_until).replace("Z", "+00:00"))
+                expires = expires.astimezone(timezone.utc) if expires.tzinfo else expires.replace(tzinfo=timezone.utc)
+                if expires <= datetime.now(timezone.utc):
+                    candidate["signal_status"] = "vencida"
+                    candidate["discard_reason"] = "expired_at_ranking"
+            except ValueError:
+                pass
         if candidate.get("signal_status") in {"vencida", "duplicada", "incompleta", "descartada"}:
             discarded.append((candidate, candidate.get("discard_reason") or candidate.get("signal_status")))
             continue
@@ -145,12 +199,12 @@ def rank_candidates(candidates: list[dict[str, Any]], max_risk_usd: float) -> tu
         if candidate.get("risk_usd") is not None and float(candidate["risk_usd"]) > max_risk_usd:
             discarded.append((candidate, "risk_above_limit"))
             continue
-        stars, reasons = score(candidate, max_risk_usd)
+        stars, reasons = score(candidate, max_risk_usd, scoring_weights, source_trust)
         ranked.append((stars, reasons, candidate))
 
     ranked.sort(
         key=lambda item: (
-            1 if item[2].get("candidate_origin", "expert_signal") == "expert_signal" else 0,
+            float(item[2].get("score_total") or 0),
             item[0],
             float(item[2].get("quality_score") or 0),
         ),
@@ -160,7 +214,8 @@ def rank_candidates(candidates: list[dict[str, Any]], max_risk_usd: float) -> tu
 
 
 def render_report(candidates: list[dict[str, Any]], max_risk_usd: float, metadata: dict[str, Any] | None = None) -> str:
-    ranked, discarded = rank_candidates(candidates, max_risk_usd)
+    metadata = metadata or {}
+    ranked, discarded = rank_candidates(candidates, max_risk_usd, metadata.get("scoring_weights"), metadata.get("source_trust"))
     top = [item for item in ranked if item[2].get("signal_status") != "llegada_tarde"][:3]
     top_ids = {id(item[2]) for item in top}
     backup = [item for item in ranked if id(item[2]) not in top_ids][:5 - len(top)]
@@ -297,6 +352,8 @@ def _format_volume_estimate(candidate: dict[str, Any]) -> str:
 
 def _why(candidate: dict[str, Any], reasons: list[str]) -> str:
     parts = []
+    if candidate.get("score_total") is not None:
+        parts.append(f"score={candidate['score_total']}/{candidate.get('score_max', 'TBD')}")
     if candidate.get("pending_order_type"):
         parts.append(f"orden={candidate['pending_order_type']}")
     if candidate.get("execution_bias"):

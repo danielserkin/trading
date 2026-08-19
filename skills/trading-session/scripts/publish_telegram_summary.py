@@ -67,6 +67,7 @@ def _candidate_line(rank: int, candidate: dict[str, Any]) -> str:
         except ValueError:
             validity = str(valid_until)
     risk_text = f"${float(risk):.2f}" if isinstance(risk, (int, float)) else "TBD"
+    score_text = f"{float(candidate.get('score_total')):.2f}/{float(candidate.get('score_max')):.2f}" if candidate.get("score_total") is not None else "TBD"
     return (
         f"{direction_icon} <b>{rank}. {html.escape(str(candidate.get('asset', '')))} {html.escape(direction)}</b>\n"
         f"└ 🧩 {html.escape(origin_label)}\n"
@@ -75,13 +76,14 @@ def _candidate_line(rank: int, candidate: dict[str, Any]) -> str:
         f"└ 🛑 SL: <code>{html.escape(str(candidate.get('stop_loss', '-')))}</code>\n"
         f"└ ✅ TP1: <code>{html.escape(str(tp))}</code>  |  ⚖️ R/R: <b>{rr:.2f}</b>\n"
         f"└ 💵 Riesgo: <b>{risk_text}</b>  |  📦 Tamaño: <b>{html.escape(str(size))}</b>\n"
+        f"└ 📐 Calidad: <b>{score_text}</b>  |  ID: <code>{html.escape(str(candidate.get('idea_id', 'TBD')))}</code>\n"
         f"└ ⏳ Válida hasta: <b>{html.escape(validity)}</b>\n"
-        f"\n⚡ <b>Ejecución</b>\n{html.escape(str(instruction))}"
+        f"\n⚡ <b>Ejecución</b>\n{html.escape(str(instruction))}\nUna sola entrada por ID; no reingresar tras TP o SL."
     )
 
 
 def build_summary(candidates: list[dict[str, Any]], metadata: dict[str, Any], max_risk_usd: float) -> str:
-    ranked, _ = rank_candidates(candidates, max_risk_usd)
+    ranked, _ = rank_candidates(candidates, max_risk_usd, metadata.get("scoring_weights"), metadata.get("source_trust"))
     top = [item for item in ranked if item[2].get("signal_status") != "llegada_tarde"][:3]
     lines = [
         "📊 <b>SESIÓN DE TRADING · FBS</b>",

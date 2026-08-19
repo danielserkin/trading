@@ -8,7 +8,7 @@ import os
 import sys
 import unittest
 import urllib.error
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from unittest.mock import patch
 
@@ -61,9 +61,10 @@ class DerivedOpportunityTest(unittest.TestCase):
 
     def test_summary_fills_three_slots_with_no_trade(self) -> None:
         candidate, _ = derived.build_derived_candidate(self.seed, snapshot("BUY"), 1.6, True, self.now)
-        candidate.update({"risk_usd": 2.0, "size": "test size"})
+        candidate.update({"risk_usd": 2.0, "size": "test size", "valid_until": (datetime.now(timezone.utc) + timedelta(hours=2)).isoformat()})
         summary = publisher.build_summary([candidate], {"telegram_messages_reviewed": 12, "fallback_opportunities": {}}, 2.0)
         self.assertIn("1. BTCUSD BUY", summary)
+        self.assertIn("Una sola entrada por ID", summary)
         self.assertEqual(summary.count("NO TRADE"), 2)
         self.assertLessEqual(len(summary), 4096)
 

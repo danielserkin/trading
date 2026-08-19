@@ -5,10 +5,13 @@ from __future__ import annotations
 
 import unittest
 import sys
+import tempfile
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import run_telegram_fbs_session as session
+import score_candidates as scoring
 
 
 class TelegramFbsParserTest(unittest.TestCase):
@@ -138,6 +141,46 @@ class TelegramFbsParserTest(unittest.TestCase):
         self.assertEqual(len(unique), 2)
         self.assertIn("duplicate", second["missing"])
         self.assertEqual(second["discard_reason"], "duplicate_trade_idea")
+        self.assertEqual(first["idea_id"], second["idea_id"])
+
+    def test_published_idea_is_rejected_across_runs(self) -> None:
+        candidate = self.parse("BUY BTCUSD 118000 SL 117000 TP 120000")
+        candidate.update({"market_valid": True, "signal_status": "vigente"})
+        session.dedupe([candidate])
+        with tempfile.TemporaryDirectory() as directory:
+            ledger_path = Path(directory) / "idea-ledger.json"
+            session.record_published_ideas(ledger_path, [candidate])
+            published = set(session.load_idea_ledger(ledger_path)["published_ideas"])
+            repeated = self.parse("BUY BTCUSD 118000 SL 117000 TP 120000")
+            session.dedupe([repeated], published)
+        self.assertEqual(repeated["discard_reason"], "idea_already_published")
+        self.assertEqual(repeated["signal_status"], "duplicada")
+
+    def test_expired_candidate_is_rejected_at_ranking(self) -> None:
+        candidate = self.parse("BUY BTCUSD 118000 SL 117000 TP 120000")
+        candidate.update({
+            "market_valid": True, "signal_status": "vigente", "risk_usd": 20.0,
+            "valid_until": (datetime.now(timezone.utc) - timedelta(seconds=1)).isoformat(),
+        })
+        ranked, discarded = scoring.rank_candidates([candidate], 20.0)
+        self.assertEqual(ranked, [])
+        self.assertEqual(discarded[0][1], "expired_at_ranking")
+
+    def test_configured_weight_changes_score_and_ranking(self) -> None:
+        base = {
+            "asset": "EURUSD", "direction": "BUY", "entry": 1.1, "stop_loss": 1.09,
+            "take_profits": [1.12], "risk_usd": 20.0, "market_valid": True,
+            "signal_status": "vigente", "confidence": "medium", "channel_priority": 2,
+            "source": "telegram_derived", "candidate_origin": "technical_reversal",
+            "analysis": {"trend_15m": "NEUTRAL", "trend_1h": "BUY", "trend_4h": "BUY"},
+        }
+        aligned = dict(base, asset="GBPUSD", analysis={"trend_15m": "BUY", "trend_1h": "BUY", "trend_4h": "BUY"})
+        weights = {name: 0.0 for name in scoring.DEFAULT_SCORING_WEIGHTS}
+        weights["timeframe_alignment"] = 5.0
+        ranked, _ = scoring.rank_candidates([base, aligned], 20.0, weights, {"telegram_derived": 3})
+        self.assertEqual(ranked[0][2]["asset"], "GBPUSD")
+        self.assertGreater(aligned["score_total"], base["score_total"])
+        self.assertIn("timeframe_alignment", aligned["score_components"])
 
     def test_forex_lot_size_uses_quote_currency_conversion(self) -> None:
         original_fetch = session.fetch_yahoo_current

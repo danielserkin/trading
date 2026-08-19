@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import argparse
 import asyncio
+import hashlib
 import json
 import os
 import re
@@ -989,10 +990,27 @@ def parse_datetime(value: Any) -> datetime | None:
     return parsed.astimezone(timezone.utc) if parsed.tzinfo else parsed.replace(tzinfo=timezone.utc)
 
 
-def dedupe(candidates: list[dict[str, Any]]) -> list[dict[str, Any]]:
+def idea_id(candidate: dict[str, Any]) -> str | None:
+    if not candidate.get("asset") or candidate.get("direction") not in {"BUY", "SELL"}:
+        return None
+    values = [candidate.get("entry"), candidate.get("stop_loss"), *(candidate.get("take_profits") or [])]
+    if any(value in (None, "") for value in values):
+        return None
+    normalized = "|".join([
+        str(candidate["asset"]).upper(), str(candidate["direction"]),
+        *(f"{float(value):.8f}" for value in values),
+    ])
+    return hashlib.sha256(normalized.encode("utf-8")).hexdigest()[:20]
+
+
+def dedupe(candidates: list[dict[str, Any]], previously_published: set[str] | None = None) -> list[dict[str, Any]]:
     seen: set[tuple[Any, ...]] = set()
+    published = previously_published or set()
     unique = []
     for candidate in candidates:
+        candidate_id = idea_id(candidate)
+        if candidate_id:
+            candidate["idea_id"] = candidate_id
         key = (
             candidate.get("asset"),
             candidate.get("direction"),
@@ -1000,7 +1018,12 @@ def dedupe(candidates: list[dict[str, Any]]) -> list[dict[str, Any]]:
             round(float(candidate.get("stop_loss") or 0), 6),
             tuple(round(float(tp), 6) for tp in candidate.get("take_profits") or []),
         )
-        if key in seen:
+        if candidate_id in published:
+            candidate["signal_status"] = "duplicada"
+            candidate["market_valid"] = False
+            candidate["discard_reason"] = "idea_already_published"
+            candidate.setdefault("missing", []).append("duplicate")
+        elif key in seen:
             candidate["signal_status"] = "duplicada"
             candidate["market_valid"] = False
             candidate["discard_reason"] = "duplicate_trade_idea"
@@ -1009,6 +1032,34 @@ def dedupe(candidates: list[dict[str, Any]]) -> list[dict[str, Any]]:
             seen.add(key)
         unique.append(candidate)
     return unique
+
+
+def load_idea_ledger(path: Path) -> dict[str, Any]:
+    if not path.exists():
+        return {"published_ideas": {}}
+    try:
+        payload = json.loads(path.read_text())
+    except (OSError, json.JSONDecodeError):
+        return {"published_ideas": {}}
+    if not isinstance(payload, dict) or not isinstance(payload.get("published_ideas"), dict):
+        return {"published_ideas": {}}
+    return payload
+
+
+def record_published_ideas(path: Path, candidates: list[dict[str, Any]]) -> None:
+    ledger = load_idea_ledger(path)
+    published = ledger["published_ideas"]
+    recorded_at = datetime.now(timezone.utc).isoformat()
+    for candidate in candidates:
+        candidate_id = candidate.get("idea_id") or idea_id(candidate)
+        if candidate_id:
+            published[candidate_id] = {
+                "asset": candidate.get("asset"), "direction": candidate.get("direction"),
+                "entry": candidate.get("entry"), "stop_loss": candidate.get("stop_loss"),
+                "take_profits": candidate.get("take_profits") or [], "published_at": recorded_at,
+            }
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(ledger, indent=2, sort_keys=True) + "\n")
 
 
 def run_session(config_dir: Path, limit_per_channel: int, input_paths: list[Path]) -> tuple[list[dict[str, Any]], dict[str, Any]]:
@@ -1028,6 +1079,7 @@ def run_session(config_dir: Path, limit_per_channel: int, input_paths: list[Path
     for candidate in derived:
         apply_position_sizing(candidate, float(params.get("max_risk_usd", 20.0)))
     candidates.extend(derived)
+    candidates = dedupe(candidates)
     metadata = {
         "broker": "fbs",
         "broker_symbols": sorted(allowed_symbols),
@@ -1040,6 +1092,8 @@ def run_session(config_dir: Path, limit_per_channel: int, input_paths: list[Path
         "mode": "recommend_only",
         "market_scope": sorted(symbols_by_market),
         "fallback_opportunities": fallback_metadata,
+        "scoring_weights": params.get("scoring_weights") or {},
+        "source_trust": params.get("source_trust") or {},
     }
     return candidates + errors, metadata
 
@@ -1073,10 +1127,14 @@ def main() -> int:
 
     params = session_params(args.config_dir)
     candidates, metadata = run_session(args.config_dir, args.limit_per_channel, args.input)
+    ledger_path = args.output_dir.parent / "idea-ledger.json"
+    ledger = load_idea_ledger(ledger_path)
+    candidates = dedupe(candidates, set(ledger["published_ideas"]))
     args.output_dir.mkdir(parents=True, exist_ok=True)
     candidates_path = args.output_dir / "telegram-fbs-candidates.json"
     metadata_path = args.output_dir / "telegram-fbs-metadata.json"
     report_path = args.output_dir / "session-report.md"
+    ranked, _ = rank_candidates(candidates, float(params["max_risk_usd"]), params.get("scoring_weights"), params.get("source_trust"))
     candidates_path.write_text(json.dumps(candidates, indent=2, sort_keys=True) + "\n")
     metadata_path.write_text(json.dumps(metadata, indent=2, sort_keys=True) + "\n")
     report_path.write_text(render_report(candidates, float(params["max_risk_usd"]), metadata))
@@ -1092,6 +1150,9 @@ def main() -> int:
             if not token or not chat_id:
                 raise ValueError("Both TELEGRAM_BOT_TOKEN and TELEGRAM_TARGET_CHAT_ID are required")
             delivery = publish_telegram_summary(candidates_path, metadata_path, float(params["max_risk_usd"]), token, chat_id)
+            if delivery.get("status") == "sent":
+                delivered = [item[2] for item in ranked if item[2].get("signal_status") != "llegada_tarde"][:3]
+                record_published_ideas(ledger_path, delivered)
         except Exception as exc:
             delivery = {"status": "delivery_failed", "error": str(exc)}
             exit_code = 2

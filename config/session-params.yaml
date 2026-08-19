@@ -22,8 +22,11 @@ scoring_weights:
   spread_liquidity: 0.8
   signal_clarity: 1.0
   broker_universe: 1.0
+  timeframe_alignment: 1.2
+  origin_quality: 1.0
 source_trust:
   telegram_signal: 4
+  telegram_derived: 3
   binance_market: 4
   coingecko_market: 3
   crypto_regime: 2

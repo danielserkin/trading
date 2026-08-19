@@ -221,7 +221,7 @@ def build_derived_candidate(seed: dict[str, Any], snapshot: dict[str, Any], min_
         "invalidation_condition": invalidation, "technical_evidence": evidence,
         "evidence": evidence, "valid_until": valid_until,
         "source_context": {"market_proxy": snapshot.get("provider"), "market_symbol": snapshot.get("market_symbol"), "seed_direction": seed_direction},
-        "analysis": {"bid": snapshot.get("bid"), "ask": snapshot.get("ask"), "rsi_15m": round(rsi_values["15m"], 2), "rsi_1h": round(rsi_values["1h"], 2), "rsi_4h": round(rsi_values["4h"], 2), "atr_15m": round(volatility, 8), "volume_ratio_15m": round(volume_ratio, 4) if volume_ratio is not None else None},
+        "analysis": {"bid": snapshot.get("bid"), "ask": snapshot.get("ask"), "trend_15m": trends["15m"], "trend_1h": trends["1h"], "trend_4h": trends["4h"], "rsi_15m": round(rsi_values["15m"], 2), "rsi_1h": round(rsi_values["1h"], 2), "rsi_4h": round(rsi_values["4h"], 2), "atr_15m": round(volatility, 8), "volume_ratio_15m": round(volume_ratio, 4) if volume_ratio is not None else None},
         "missing": [],
     }, "accepted"
 
