@@ -1,0 +1,4 @@
+interface:
+  display_name: "Active Trade Manager"
+  short_description: "Gestiona y protege operaciones abiertas FBS"
+  default_prompt: "Use $active-trade-manager to review the latest FBS screenshots, recommend exact management actions, and notify Telegram."
