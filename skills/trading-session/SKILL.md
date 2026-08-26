@@ -17,7 +17,7 @@ python3 -c "import telethon" || python3 -m pip install --user -r skills/trading-
 python3 skills/trading-session/scripts/run_telegram_fbs_session.py
 ```
 
-4. If network access fails, retry the same command with network permission. Never fall back to stale prices.
+4. The runner always requires live network access for Telegram and current market data. If the execution environment sandboxes network access, request network permission on the initial runner invocation; do not perform an expected-to-fail offline attempt. If an already network-enabled invocation fails transiently, retry the same command. Never fall back to stale prices.
 5. Read `sessions/YYYY-MM-DD/session-report.md` and verify each candidate against its current price, SL, TP, trigger, higher-timeframe context, and overextension checks.
 6. Summarize messages reviewed, candidates reviewed, valid candidates, the three evaluated slots, backups, primary discard reasons, and Telegram delivery status.
 

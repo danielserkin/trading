@@ -86,6 +86,24 @@ class DerivedOpportunityTest(unittest.TestCase):
                 publisher.bot_api(secret, "sendMessage", {"chat_id": "-1", "text": "test"})
         self.assertNotIn(secret, str(caught.exception))
 
+    def test_binance_endpoint_fallback_keeps_live_data_requirement(self) -> None:
+        with patch.object(derived, "BINANCE_BASE_URLS", ("https://blocked", "https://working")), patch.object(
+            derived, "_get_json", side_effect=[urllib.error.HTTPError("https://blocked", 451, "blocked", {}, None), {"bidPrice": "10", "askPrice": "11"}]
+        ):
+            payload, endpoint = derived._binance_json("/api/v3/ticker/bookTicker?symbol=BTCUSDT")
+        self.assertEqual(endpoint, "https://working")
+        self.assertEqual(payload["askPrice"], "11")
+
+    def test_fallback_is_not_accepted_until_risk_is_available(self) -> None:
+        metadata = session.finalize_fallback_metadata(
+            [{"asset": "DE30", "risk_usd": None}],
+            {"accepted": 1, "rejections": []},
+            20.0,
+        )
+        self.assertEqual(metadata["technical_accepted"], 1)
+        self.assertEqual(metadata["accepted"], 0)
+        self.assertEqual(metadata["rejections"], [{"asset": "DE30", "reason": "risk_unavailable"}])
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -234,7 +234,7 @@ YAHOO_PROXY_SYMBOLS = {
     "US100": "NQ=F",
     "US500": "ES=F",
     "AUS200": "SPI=F",
-    "DE30": "FDAX.DE",
+    "DE30": "^GDAXI",
     "FRA40": "FCE.PA",
     "UK100": "Z.F",
     "JP225": "NKD=F",
@@ -286,7 +286,11 @@ COMPACT_DIRECTION_WORDS = {"BUY": "BUY", "LONG": "BUY", "SELL": "SELL", "SHORT":
 PRICE_PATTERN = r"(?:\d{1,3}(?:,\d{3})+|\d+)(?:\.\d+)?"
 NUMBER_RE = re.compile(rf"(?<![A-Z0-9]){PRICE_PATTERN}(?![A-Z0-9])")
 TP_PRICE_RE = re.compile(rf"\bTP(?:\d+|-\s*\d+|\s*#\s*\d+)?\b[^0-9]{{0,20}}(?:\d+\)\s*)?({PRICE_PATTERN})", re.IGNORECASE)
-TAKE_PROFIT_PRICE_RE = re.compile(rf"\b(?:TAKE[-\s]*PROFIT|PROFIT\s*TARGETS?|TARGET\s*\d*|OBJETIVO)\b[^0-9]{{0,20}}(?:\d+\)\s*)?({PRICE_PATTERN})", re.IGNORECASE)
+TAKE_PROFIT_PRICE_RE = re.compile(
+    rf"\b(?:TAKE[-\s]*PROFIT|TAKE(?=\s*[-:=@])|PROFIT\s*TARGETS?|TARGET\s*\d*|OBJETIVO)\b"
+    rf"[^0-9]{{0,20}}(?:\d+\)\s*)?({PRICE_PATTERN})",
+    re.IGNORECASE,
+)
 LABEL_PATTERNS = {
     "entry": re.compile(rf"\b(?:ENTRY(?:\s+(?:PRICE|POINT|ZONE|LEVEL|TARGETS?))?|ENTER|ENTRADA|OPEN|PRICE|BUY(?:\s+LIMIT)?|SELL(?:\s+LIMIT)?)\b[^0-9]{{0,40}}(?:\d+\)\s*)?({PRICE_PATTERN}(?:\s*[-/]\s*{PRICE_PATTERN})?)", re.IGNORECASE),
     "stop_loss": re.compile(rf"\b(?:SL|STOP[-\s]*LOSS|STOPLOSS|STOP|S/L|STOP\s*(?:TARGETS?|LOSS\s*TARGET)?)\b[^0-9]{{0,20}}(?:\d+\)\s*)?({PRICE_PATTERN})", re.IGNORECASE),
@@ -425,6 +429,7 @@ async def fetch_telegram_messages(config_dir: Path, limit_per_channel: int, defa
                             "channel": channel.id,
                             "handle": channel.handle,
                             "priority": channel.priority,
+                            "max_age_hours": channel.max_age_hours or default_window_hours,
                             "text": message.message,
                             "timestamp": message_date.isoformat(),
                             "message_id": message.id,
@@ -513,10 +518,11 @@ def parse_signal(message: dict[str, Any], allowed_symbols: set[str], aliases: di
         "expert_signal": True,
         "parsed_by": "regex_v1",
         "channel_priority": message.get("priority", 3),
+        "max_age_hours": message.get("max_age_hours"),
         "image_evidence": "media_attached" if message.get("has_media") else "",
     }
     candidate = normalize(item, "telegram_signal")
-    candidate.update({key: value for key, value in item.items() if key not in candidate or key in {"message_id", "message_url", "raw_text", "channel_priority", "expert_signal", "parsed_by", "image_evidence"}})
+    candidate.update({key: value for key, value in item.items() if key not in candidate or key in {"message_id", "message_url", "raw_text", "channel_priority", "max_age_hours", "expert_signal", "parsed_by", "image_evidence"}})
     if symbol_status == "missing":
         candidate.setdefault("missing", []).append("broker_universe")
     elif symbol_status == "plausible_unconfirmed":
@@ -671,10 +677,11 @@ def validate_candidate(candidate: dict[str, Any], params: dict[str, Any], symbol
 
     timestamp = parse_datetime(candidate.get("timestamp"))
     if timestamp:
-        candidate["valid_until"] = (timestamp + timedelta(hours=int(params.get("signal_window_hours", 24)))).isoformat()
+        validity_hours = int(candidate.get("max_age_hours") or params.get("signal_window_hours", 24))
+        candidate["valid_until"] = (timestamp + timedelta(hours=validity_hours)).isoformat()
         freshness = max(0, int((utc_now() - timestamp).total_seconds() / 60))
         candidate["freshness_minutes"] = freshness
-        if freshness > int(params.get("signal_window_hours", 24)) * 60:
+        if freshness > validity_hours * 60:
             candidate["signal_status"] = "vencida"
             candidate["market_valid"] = False
             candidate.setdefault("missing", []).append("freshness")
@@ -1078,13 +1085,25 @@ def run_session(config_dir: Path, limit_per_channel: int, input_paths: list[Path
     derived, fallback_metadata = derive_opportunities(candidates, params, FBS_CRYPTO_SYMBOL_MAP, YAHOO_PROXY_SYMBOLS)
     for candidate in derived:
         apply_position_sizing(candidate, float(params.get("max_risk_usd", 20.0)))
+    fallback_metadata = finalize_fallback_metadata(
+        derived, fallback_metadata, float(params.get("max_risk_usd", 20.0))
+    )
     candidates.extend(derived)
     candidates = dedupe(candidates)
+    current_time = utc_now()
+    telegram_candidates = [item for item in candidates if item.get("source") == "telegram_signal"]
+
+    def is_inside_signal_window(item: dict[str, Any]) -> bool:
+        expires = parse_datetime(item.get("valid_until"))
+        return bool(expires and expires > current_time)
+
     metadata = {
         "broker": "fbs",
         "broker_symbols": sorted(allowed_symbols),
         "sources": ["telegram_channels", "fbs_allowlist", "market_validators"],
         "telegram_messages_reviewed": len(messages),
+        "telegram_current_window_messages": sum(1 for item in telegram_candidates if is_inside_signal_window(item)),
+        "telegram_fallback_seed_messages": sum(1 for item in telegram_candidates if not is_inside_signal_window(item)),
         "telegram_channels": [channel.id for channel in channel_configs(config_dir, int(params.get("signal_window_hours", 24))) if channel.enabled],
         "candidate_count": len(candidates),
         "error_count": len(errors),
@@ -1096,6 +1115,24 @@ def run_session(config_dir: Path, limit_per_channel: int, input_paths: list[Path
         "source_trust": params.get("source_trust") or {},
     }
     return candidates + errors, metadata
+
+
+def finalize_fallback_metadata(derived: list[dict[str, Any]], metadata: dict[str, Any], max_risk_usd: float) -> dict[str, Any]:
+    result = dict(metadata)
+    result["technical_accepted"] = int(result.get("accepted", len(derived)))
+    tradable = []
+    rejections = list(result.get("rejections") or [])
+    for candidate in derived:
+        risk = candidate.get("risk_usd")
+        if risk is None:
+            rejections.append({"asset": candidate.get("asset"), "reason": "risk_unavailable"})
+        elif float(risk) > max_risk_usd:
+            rejections.append({"asset": candidate.get("asset"), "reason": "risk_above_limit"})
+        else:
+            tradable.append(candidate)
+    result["accepted"] = len(tradable)
+    result["rejections"] = rejections
+    return result
 
 
 def preflight(input_paths: list[Path]) -> list[str]:
@@ -1135,6 +1172,9 @@ def main() -> int:
     metadata_path = args.output_dir / "telegram-fbs-metadata.json"
     report_path = args.output_dir / "session-report.md"
     ranked, _ = rank_candidates(candidates, float(params["max_risk_usd"]), params.get("scoring_weights"), params.get("source_trust"))
+    primary = [item for item in ranked if item[2].get("signal_status") != "llegada_tarde"][: int(params.get("primary_count", 3))]
+    fallback_metadata = metadata.get("fallback_opportunities") or {}
+    fallback_metadata["no_trade_slots"] = max(0, int(fallback_metadata.get("target", 3)) - len(primary))
     candidates_path.write_text(json.dumps(candidates, indent=2, sort_keys=True) + "\n")
     metadata_path.write_text(json.dumps(metadata, indent=2, sort_keys=True) + "\n")
     report_path.write_text(render_report(candidates, float(params["max_risk_usd"]), metadata))

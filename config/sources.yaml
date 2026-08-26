@@ -80,9 +80,9 @@ sources:
         markets: ["forex", "metals"]
       - id: "pipxpert"
         handle: "@pipxpert"
-        enabled: false
+        enabled: true
         priority: 2
-        max_age_hours: 24
+        max_age_hours: 12
         markets: ["forex", "metals"]
       - id: "forexvisitsignals"
         handle: "@forexvisitsignals"
@@ -158,9 +158,9 @@ sources:
         markets: ["metals"]
       - id: "gold_signals"
         handle: "@Gold_Signals"
-        enabled: false
+        enabled: true
         priority: 2
-        max_age_hours: 24
+        max_age_hours: 12
         markets: ["metals", "forex"]
       - id: "forexnitrosignal"
         handle: "@forexnitrosignal"
@@ -206,9 +206,9 @@ sources:
         markets: ["metals", "forex"]
       - id: "nasgold1"
         handle: "@nasgold1"
-        enabled: false
+        enabled: true
         priority: 2
-        max_age_hours: 24
+        max_age_hours: 12
         markets: ["metals", "indices"]
       - id: "pionex_usa"
         handle: "@pionex_usa"

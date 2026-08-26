@@ -50,6 +50,19 @@ class TelegramFbsParserTest(unittest.TestCase):
         self.assertEqual(candidate["stop_loss"], 1.083)
         self.assertEqual(candidate["take_profits"], [1.092])
 
+    def test_parse_take_shorthand_with_dash(self) -> None:
+        candidate = self.parse(
+            "#EURUSD: Long Trade Explained\n"
+            "Buy EURUSD\nEntry - 1.1662\nStop - 1.1654\nTake - 1.1677\nOur Risk - 1%"
+        )
+        self.assertEqual(candidate["entry"], 1.1662)
+        self.assertEqual(candidate["stop_loss"], 1.1654)
+        self.assertEqual(candidate["take_profits"], [1.1677])
+
+    def test_bare_take_without_separator_is_not_a_target(self) -> None:
+        candidate = self.parse("BUY EURUSD Entry 1.1000 SL 1.0950 Please take 1% risk")
+        self.assertEqual(candidate["take_profits"], [])
+
     def test_alias_maps_gold(self) -> None:
         candidate = self.parse("SELL GOLD 2415 SL 2428 TP 2390")
         self.assertEqual(candidate["asset"], "XAUUSD")
@@ -165,6 +178,24 @@ class TelegramFbsParserTest(unittest.TestCase):
         ranked, discarded = scoring.rank_candidates([candidate], 20.0)
         self.assertEqual(ranked, [])
         self.assertEqual(discarded[0][1], "expired_at_ranking")
+
+    def test_channel_window_overrides_global_signal_window(self) -> None:
+        candidate = self.parse("BUY BTCUSD 118000 SL 117000 TP 120000")
+        candidate.update({
+            "timestamp": (datetime.now(timezone.utc) - timedelta(hours=7)).isoformat(),
+            "max_age_hours": 6,
+        })
+        original_validator = session.validate_crypto_proxy
+        session.validate_crypto_proxy = lambda item, params: item.update({"current_price": 118000.0})
+        try:
+            validated = session.validate_candidate(candidate, {"signal_window_hours": 24, "min_rr": 1.6, "max_risk_usd": 20}, {"crypto_cfd": ["BTCUSD"]}, {})
+        finally:
+            session.validate_crypto_proxy = original_validator
+        self.assertEqual(validated["signal_status"], "vencida")
+        self.assertIn("freshness", validated["missing"])
+
+    def test_de30_uses_available_yahoo_index_proxy(self) -> None:
+        self.assertEqual(session.YAHOO_PROXY_SYMBOLS["DE30"], "^GDAXI")
 
     def test_configured_weight_changes_score_and_ranking(self) -> None:
         base = {

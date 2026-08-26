@@ -11,7 +11,13 @@ from datetime import datetime, timedelta, timezone
 from typing import Any, Callable
 
 
-BINANCE_BASE_URL = "https://api.binance.com"
+BINANCE_BASE_URLS = (
+    "https://api.binance.com",
+    "https://api1.binance.com",
+    "https://api2.binance.com",
+    "https://api3.binance.com",
+    "https://api.binance.us",
+)
 YAHOO_BASE_URL = "https://query1.finance.yahoo.com/v8/finance/chart"
 
 
@@ -49,9 +55,19 @@ def _get_json(url: str) -> Any:
         return json.loads(response.read().decode("utf-8"))
 
 
+def _binance_json(path: str) -> tuple[Any, str]:
+    errors = []
+    for base_url in BINANCE_BASE_URLS:
+        try:
+            return _get_json(f"{base_url}{path}"), base_url
+        except Exception as exc:
+            errors.append(f"{base_url}: {exc}")
+    raise RuntimeError("all Binance endpoints failed: " + "; ".join(errors))
+
+
 def _binance_rows(symbol: str, interval: str) -> list[dict[str, float]]:
     query = urllib.parse.urlencode({"symbol": symbol, "interval": interval, "limit": 90})
-    payload = _get_json(f"{BINANCE_BASE_URL}/api/v3/klines?{query}")
+    payload, _ = _binance_json(f"/api/v3/klines?{query}")
     return [
         {"open": float(row[1]), "high": float(row[2]), "low": float(row[3]), "close": float(row[4]), "volume": float(row[5]), "closed_at": float(row[6]) / 1000}
         for row in payload[:-1]
@@ -94,8 +110,8 @@ def fetch_snapshot(asset: str, crypto_map: dict[str, str], yahoo_map: dict[str, 
     if asset in crypto_map:
         market_symbol = crypto_map[asset]
         rows = {interval: _binance_rows(market_symbol, interval) for interval in ("15m", "1h", "4h")}
-        ticker = _get_json(f"{BINANCE_BASE_URL}/api/v3/ticker/bookTicker?{urllib.parse.urlencode({'symbol': market_symbol})}")
-        return {"provider": "binance_public_api", "market_symbol": market_symbol, "bid": float(ticker["bidPrice"]), "ask": float(ticker["askPrice"]), "rows": rows}
+        ticker, endpoint = _binance_json(f"/api/v3/ticker/bookTicker?{urllib.parse.urlencode({'symbol': market_symbol})}")
+        return {"provider": "binance_public_api", "market_symbol": market_symbol, "market_endpoint": endpoint, "bid": float(ticker["bidPrice"]), "ask": float(ticker["askPrice"]), "rows": rows}
     if asset in yahoo_map:
         market_symbol = yahoo_map[asset]
         rows = {interval: _yahoo_rows(market_symbol, interval) for interval in ("15m", "1h", "4h")}

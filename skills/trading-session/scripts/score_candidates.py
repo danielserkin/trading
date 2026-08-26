@@ -385,7 +385,11 @@ def _metadata_summary(metadata: dict[str, Any] | None) -> list[str]:
     if metadata.get("scanned_symbols") is not None:
         lines.append(f"- Symbols scanned: {metadata['scanned_symbols']}")
     if metadata.get("telegram_messages_reviewed") is not None:
-        lines.append(f"- Telegram messages reviewed: {metadata['telegram_messages_reviewed']}")
+        lines.append(f"- Telegram messages captured (up to fallback window): {metadata['telegram_messages_reviewed']}")
+    if metadata.get("telegram_current_window_messages") is not None:
+        lines.append(f"- Telegram messages in current signal window: {metadata['telegram_current_window_messages']}")
+    if metadata.get("telegram_fallback_seed_messages") is not None:
+        lines.append(f"- Historical fallback seeds: {metadata['telegram_fallback_seed_messages']}")
     if metadata.get("broker"):
         lines.append(f"- Broker universe: {metadata['broker']}")
     fear_greed = metadata.get("fear_greed") or {}
@@ -407,7 +411,9 @@ def _data_used(metadata: dict[str, Any] | None) -> list[str]:
     ]
     if metadata.get("telegram_channels") is not None:
         lines.append(f"- Telegram channels: {', '.join(metadata.get('telegram_channels') or []) or 'none'}")
-        lines.append(f"- Telegram messages reviewed: {metadata.get('telegram_messages_reviewed', 'TBD')}")
+        lines.append(f"- Telegram messages captured (up to fallback window): {metadata.get('telegram_messages_reviewed', 'TBD')}")
+        lines.append(f"- Telegram messages in current signal window: {metadata.get('telegram_current_window_messages', 'TBD')}")
+        lines.append(f"- Historical fallback seeds: {metadata.get('telegram_fallback_seed_messages', 'TBD')}")
     else:
         lines.extend([
             f"- CoinGecko markets reviewed: {metadata.get('coingecko_markets', 'TBD')}",
