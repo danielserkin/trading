@@ -213,6 +213,23 @@ class TelegramFbsParserTest(unittest.TestCase):
         self.assertGreater(aligned["score_total"], base["score_total"])
         self.assertIn("timeframe_alignment", aligned["score_components"])
 
+    def test_primary_selection_uses_three_distinct_assets(self) -> None:
+        def candidate(asset: str, score_hint: float) -> dict:
+            return {
+                "asset": asset, "direction": "BUY", "entry": 100.0, "stop_loss": 99.0,
+                "take_profits": [101.7], "risk_usd": 20.0, "market_valid": True,
+                "signal_status": "vigente", "confidence": "high", "channel_priority": 2,
+                "source": "technical_market_scan", "candidate_origin": "market_scan",
+                "quality_score": score_hint,
+                "analysis": {"trend_15m": "BUY", "trend_1h": "BUY", "trend_4h": "BUY", "volume_ratio_15m": 1.0},
+            }
+        ranked, _ = scoring.rank_candidates([
+            candidate("EURUSD", 5.0), candidate("EURUSD", 4.9), candidate("GBPUSD", 4.8), candidate("XAUUSD", 4.7)
+        ], 20.0)
+        selected = scoring.select_distinct_candidates(ranked, 3)
+        self.assertEqual(len(selected), 3)
+        self.assertEqual(len({item[2]["asset"] for item in selected}), 3)
+
     def test_forex_lot_size_uses_quote_currency_conversion(self) -> None:
         original_fetch = session.fetch_yahoo_current
         session.fetch_yahoo_current = lambda asset: 1.0 if asset == "USDCHF" else None

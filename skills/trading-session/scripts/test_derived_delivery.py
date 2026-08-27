@@ -46,7 +46,7 @@ class DerivedOpportunityTest(unittest.TestCase):
         self.assertEqual(reason, "accepted")
         self.assertEqual(candidate["candidate_origin"], "reentry")
         self.assertEqual(candidate["direction"], "BUY")
-        self.assertGreaterEqual((candidate["take_profits"][0] - candidate["entry"]) / (candidate["entry"] - candidate["stop_loss"]), 1.59)
+        self.assertGreaterEqual((candidate["take_profits"][0] - candidate["entry"]) / (candidate["entry"] - candidate["stop_loss"]), 1.6)
 
     def test_builds_clearly_labeled_reversal(self) -> None:
         candidate, reason = derived.build_derived_candidate(self.seed, snapshot("SELL"), 1.6, True, self.now)
@@ -58,6 +58,32 @@ class DerivedOpportunityTest(unittest.TestCase):
         candidate, reason = derived.build_derived_candidate(self.seed, snapshot("SELL"), 1.6, False, self.now)
         self.assertIsNone(candidate)
         self.assertEqual(reason, "higher_timeframes_not_aligned")
+
+    def test_market_scan_candidate_has_full_analysis_and_pending_order(self) -> None:
+        candidate, reason = derived.build_market_scan_candidate("EURUSD", snapshot("BUY"), 1.6, self.now, 4)
+        self.assertEqual(reason, "accepted")
+        self.assertEqual(candidate["source"], "technical_market_scan")
+        self.assertEqual(candidate["candidate_origin"], "market_scan")
+        self.assertIn(candidate["pending_order_type"], {"BUY STOP", "BUY LIMIT"})
+        self.assertIn("trend_15m", candidate["analysis"])
+        self.assertIn("rsi_4h", candidate["analysis"])
+        self.assertIn("atr_15m", candidate["analysis"])
+        self.assertGreaterEqual((candidate["take_profits"][0] - candidate["entry"]) / (candidate["entry"] - candidate["stop_loss"]), 1.6)
+
+    def test_market_scan_fills_three_assets_when_seeded_coverage_is_empty(self) -> None:
+        assets = ["EURUSD", "GBPUSD", "XAUUSD"]
+        candidates, metadata = derived.derive_opportunities(
+            [],
+            {"min_rr": 1.6, "fallback_opportunities": {"target_primary_candidates": 3, "market_scan": {"candidate_pool_size": 3, "max_workers": 2}}},
+            {},
+            {asset: asset for asset in assets},
+            scan_assets=assets,
+            snapshot_fetcher=lambda asset, crypto, yahoo: snapshot("BUY"),
+            now=self.now,
+        )
+        self.assertEqual({candidate["asset"] for candidate in candidates}, set(assets))
+        self.assertTrue(all(candidate["source"] == "technical_market_scan" for candidate in candidates))
+        self.assertEqual(metadata["market_scan_accepted"], 3)
 
     def test_summary_fills_three_slots_with_no_trade(self) -> None:
         candidate, _ = derived.build_derived_candidate(self.seed, snapshot("BUY"), 1.6, True, self.now)

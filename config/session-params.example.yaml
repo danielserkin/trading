@@ -16,15 +16,23 @@ market_data:
 fallback_opportunities:
   enabled: true
   target_primary_candidates: 3
-  lookback_hours: 72
+  lookback_hours: 168
   allow_reversal: true
   intervals: ["15m", "1h", "4h"]
   min_rr: 1.6
   no_trade_placeholders: true
+  market_scan:
+    enabled: true
+    max_assets: 45
+    max_workers: 8
+    candidate_pool_size: 9
+    validity_hours: 4
 telegram_delivery:
   enabled: "auto"
   send_on_no_trade: true
   new_message_per_run: true
+run_history:
+  enabled: true
 scoring_weights:
   expert_signal: 1.2
   channel_priority: 1.0
@@ -40,6 +48,7 @@ scoring_weights:
 source_trust:
   telegram_signal: 4
   telegram_derived: 3
+  technical_market_scan: 3
   binance_market: 4
   coingecko_market: 3
   crypto_regime: 2

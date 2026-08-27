@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Run a Telegram-signal driven FBS recommendation session.
 
-This runner treats Telegram channels as the primary signal source. Market data is
-used only to validate freshness, tradability, entry distance, and risk/reward.
+This runner treats Telegram channels as the primary signal source, then exhausts
+recalculated re-entries and a technical FBS-universe scan when coverage is short.
 It never places orders.
 """
 
@@ -24,7 +24,7 @@ from typing import Any
 from fetch_binance_market import get_json as binance_get_json
 from normalize_candidates import normalize
 from run_crypto_web_session import FBS_CRYPTO_SYMBOL_MAP, fetch_fear_greed, load_simple_yaml
-from score_candidates import rank_candidates, render_report, risk_reward
+from score_candidates import rank_candidates, render_report, risk_reward, select_distinct_candidates
 from derive_opportunities import derive_opportunities
 from publish_telegram_summary import publish as publish_telegram_summary
 
@@ -834,7 +834,11 @@ def fetch_yahoo_current(asset: str) -> float | None:
 
 
 def apply_position_sizing(candidate: dict[str, Any], max_risk_usd: float) -> None:
-    sizing = estimate_fbs_lot_size(candidate, max_risk_usd)
+    try:
+        sizing = estimate_fbs_lot_size(candidate, max_risk_usd)
+    except Exception as exc:
+        candidate["sizing_error"] = str(exc)
+        sizing = None
     if not sizing:
         candidate["risk_usd"] = None
         candidate["size"] = "TBD"
@@ -1082,7 +1086,18 @@ def run_session(config_dir: Path, limit_per_channel: int, input_paths: list[Path
     candidates = [parse_signal(message, allowed_symbols, aliases) for message in messages]
     candidates = [validate_candidate(candidate, params, symbols_by_market, fear_greed) for candidate in candidates]
     candidates = dedupe(candidates)
-    derived, fallback_metadata = derive_opportunities(candidates, params, FBS_CRYPTO_SYMBOL_MAP, YAHOO_PROXY_SYMBOLS)
+    modeled_scan_assets = sorted({
+        *symbols_by_market.get("forex", []),
+        *symbols_by_market.get("metals", []),
+        *(asset for asset in symbols_by_market.get("indices", []) if fbs_contract_size(asset) is not None),
+    })
+    derived, fallback_metadata = derive_opportunities(
+        candidates,
+        params,
+        FBS_CRYPTO_SYMBOL_MAP,
+        YAHOO_PROXY_SYMBOLS,
+        scan_assets=modeled_scan_assets,
+    )
     for candidate in derived:
         apply_position_sizing(candidate, float(params.get("max_risk_usd", 20.0)))
     fallback_metadata = finalize_fallback_metadata(
@@ -1110,6 +1125,8 @@ def run_session(config_dir: Path, limit_per_channel: int, input_paths: list[Path
         "fear_greed": fear_greed,
         "mode": "recommend_only",
         "market_scope": sorted(symbols_by_market),
+        "scanned_symbols": fallback_metadata.get("market_scan_attempted", 0),
+        "modeled_scan_assets": modeled_scan_assets,
         "fallback_opportunities": fallback_metadata,
         "scoring_weights": params.get("scoring_weights") or {},
         "source_trust": params.get("source_trust") or {},
@@ -1164,6 +1181,8 @@ def main() -> int:
 
     params = session_params(args.config_dir)
     candidates, metadata = run_session(args.config_dir, args.limit_per_channel, args.input)
+    run_id = utc_now().strftime("%H%M%S-%f")
+    metadata["run_id"] = run_id
     ledger_path = args.output_dir.parent / "idea-ledger.json"
     ledger = load_idea_ledger(ledger_path)
     candidates = dedupe(candidates, set(ledger["published_ideas"]))
@@ -1172,7 +1191,7 @@ def main() -> int:
     metadata_path = args.output_dir / "telegram-fbs-metadata.json"
     report_path = args.output_dir / "session-report.md"
     ranked, _ = rank_candidates(candidates, float(params["max_risk_usd"]), params.get("scoring_weights"), params.get("source_trust"))
-    primary = [item for item in ranked if item[2].get("signal_status") != "llegada_tarde"][: int(params.get("primary_count", 3))]
+    primary = select_distinct_candidates(ranked, int(params.get("primary_count", 3)))
     fallback_metadata = metadata.get("fallback_opportunities") or {}
     fallback_metadata["no_trade_slots"] = max(0, int(fallback_metadata.get("target", 3)) - len(primary))
     candidates_path.write_text(json.dumps(candidates, indent=2, sort_keys=True) + "\n")
@@ -1191,14 +1210,24 @@ def main() -> int:
                 raise ValueError("Both TELEGRAM_BOT_TOKEN and TELEGRAM_TARGET_CHAT_ID are required")
             delivery = publish_telegram_summary(candidates_path, metadata_path, float(params["max_risk_usd"]), token, chat_id)
             if delivery.get("status") == "sent":
-                delivered = [item[2] for item in ranked if item[2].get("signal_status") != "llegada_tarde"][:3]
+                delivered = [item[2] for item in select_distinct_candidates(ranked, 3)]
                 record_published_ideas(ledger_path, delivered)
         except Exception as exc:
             delivery = {"status": "delivery_failed", "error": str(exc)}
             exit_code = 2
     delivery_path = args.output_dir / "telegram-delivery.json"
     delivery_path.write_text(json.dumps(delivery, indent=2, sort_keys=True) + "\n")
-    print(json.dumps({"candidates": str(candidates_path), "metadata": str(metadata_path), "report": str(report_path), "delivery": delivery, "count": len(candidates)}, indent=2))
+    history_path = None
+    history_settings = params.get("run_history") or {}
+    if history_settings.get("enabled", True) is not False:
+        history_path = args.output_dir / "runs" / run_id
+        history_path.mkdir(parents=True, exist_ok=False)
+        for source_path in (candidates_path, metadata_path, report_path, delivery_path):
+            (history_path / source_path.name).write_text(source_path.read_text())
+    print(json.dumps({
+        "candidates": str(candidates_path), "metadata": str(metadata_path), "report": str(report_path),
+        "history": str(history_path) if history_path else None, "delivery": delivery, "count": len(candidates),
+    }, indent=2))
     return exit_code
 
 

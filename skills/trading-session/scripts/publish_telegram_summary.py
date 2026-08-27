@@ -14,7 +14,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
-from score_candidates import rank_candidates, reason_label, risk_reward
+from score_candidates import rank_candidates, reason_label, risk_reward, select_distinct_candidates
 
 
 def bot_api(token: str, method: str, payload: dict[str, Any] | None = None) -> dict[str, Any]:
@@ -56,6 +56,7 @@ def _candidate_line(rank: int, candidate: dict[str, Any]) -> str:
         "expert_signal": "Señal experta",
         "reentry": "Reentrada técnica",
         "technical_reversal": "Reversión técnica",
+        "market_scan": "Scanner técnico FBS",
     }.get(str(origin), str(origin).replace("_", " ").title())
     risk = candidate.get("risk_usd")
     size = candidate.get("size") or "TBD"
@@ -84,7 +85,7 @@ def _candidate_line(rank: int, candidate: dict[str, Any]) -> str:
 
 def build_summary(candidates: list[dict[str, Any]], metadata: dict[str, Any], max_risk_usd: float) -> str:
     ranked, _ = rank_candidates(candidates, max_risk_usd, metadata.get("scoring_weights"), metadata.get("source_trust"))
-    top = [item for item in ranked if item[2].get("signal_status") != "llegada_tarde"][:3]
+    top = select_distinct_candidates(ranked, 3)
     lines = [
         "📊 <b>SESIÓN DE TRADING · FBS</b>",
         "━━━━━━━━━━━━━━━━━━━━",

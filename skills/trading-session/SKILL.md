@@ -1,6 +1,6 @@
 ---
 name: trading-session
-description: Run an assisted FBS trading session from configured Telegram expert channels, validate signals with current market data, derive conditional re-entry or reversal opportunities when fewer than three clean signals exist, render the daily report, and publish its summary to Telegram. Use immediately when the user says "nueva sesión", "nueva session", "iniciar sesión de trading", or otherwise asks for a new trading session, FBS signal review, Telegram delivery setup, or daily candidate report. Treat those short phrases as commands to run the workflow, not as greetings or requests for clarification. Never execute orders.
+description: Run an assisted FBS trading session that seeks three analyzed, distinct trade options by validating Telegram signals, recalculating re-entries/reversals, and scanning the modeled FBS universe when coverage is short. Render the daily report and publish its summary to Telegram. Use immediately when the user says "nueva sesión", "nueva session", "iniciar sesión de trading", or otherwise asks for a new trading session, FBS signal review, Telegram delivery setup, or daily candidate report. Treat those short phrases as commands to run the workflow, not as greetings or requests for clarification. Never execute orders.
 ---
 
 # Trading Session
@@ -48,7 +48,7 @@ When both bot variables exist, every successful runner invocation publishes a ne
 
 ## Candidate policy
 
-- Treat Telegram as the idea source and market APIs only as validation evidence.
+- Treat Telegram as the first idea source. When it cannot supply three clean assets, market APIs may originate independently labeled technical setups from closed candles; never attribute those setups to an expert.
 - Accept an original signal only with recognized FBS asset, direction, entry, SL, TP, acceptable R/R, fresh market data, and a live path between SL and TP.
 - Reject a signal already at SL/TP, too close to SL, mostly consumed toward TP, stale, structurally invalid, or dependent on an unconfirmed proxy.
 - Use Binance Ask for crypto BUY and Bid for crypto SELL. For Yahoo-backed markets, require confirmation of executable Bid/Ask and spread in FBS.
@@ -59,19 +59,21 @@ When both bot variables exist, every successful runner invocation publishes a ne
 
 ## Fallback opportunities
 
-When fewer than three original candidates survive, run `scripts/derive_opportunities.py` through the main runner:
+When fewer than three original candidates survive, run `scripts/derive_opportunities.py` through the main runner and exhaust the configured coverage layers:
 
-- Use only recognizable expert seeds from the configured 72-hour fallback window.
+- First use recognizable expert seeds from the configured fallback window and recalculate all levels from current closed-candle data.
 - Require closed `15m`, `1h`, and `4h` candles, aligned higher timeframes, controlled RSI, ATR-based structure, and volume confirmation when available.
-- Recalculate pending entry, order type, SL, TP, R/R, and two-hour validity from closed-candle data before publishing.
+- If seeded opportunities remain insufficient, scan configured FBS assets whose risk and lot size can be modeled. Evaluate continuation, pullback, breakout, and conditional-confirmation structures. A conditional setup must require activation through its exact pending-order trigger.
+- Recalculate pending entry, order type, SL, TP, R/R, and setup-specific validity from closed-candle data before publishing.
 - Label same-direction ideas `reentry` and opposite-direction ideas `technical_reversal`. Never attribute a reversal to the expert channel.
-- Produce at most one derived setup per asset.
-- Fill any remaining primary slots with `NO TRADE` and the missing confirmation. Never weaken thresholds merely to force three trades.
+- Label independent scanner ideas `market_scan` with their public provider and complete technical evidence.
+- Produce at most one primary setup per asset and select three different assets. Prefer three valid options on every execution, while preserving the configured R/R, risk, freshness, structure, overextension, and sizing requirements.
+- Fill a remaining primary slot with `NO TRADE` only after all configured sources, re-entry seeds, and modeled scan assets are exhausted. Record the scan count and missing confirmation; never invent levels or publish random filler.
 
 ## Output and safety
 
-Write stable artifacts under `sessions/YYYY-MM-DD/`: candidates JSON, metadata JSON, Markdown report, and Telegram delivery status. Keep three evaluated primary slots plus up to two backups.
+Write stable latest-snapshot artifacts under `sessions/YYYY-MM-DD/`: candidates JSON, metadata JSON, Markdown report, and Telegram delivery status. Also preserve every invocation under `sessions/YYYY-MM-DD/runs/<run-id>/` when run history is enabled. Keep three evaluated primary slots plus up to two backups.
 
-Treat the dated files as the latest snapshot: another run on the same day replaces them, while configured Telegram delivery publishes a new channel message for every run.
+Treat the dated root files as the latest snapshot; another run on the same day replaces them without deleting the immutable per-run copy. Configured Telegram delivery publishes a new channel message for every run.
 
 Provide analysis only. Do not place, modify, or cancel live orders. Do not promise profit or invent missing prices, levels, evidence, or broker specifications.

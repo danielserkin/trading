@@ -4,11 +4,15 @@
 from __future__ import annotations
 
 import json
+import math
 import statistics
 import urllib.parse
 import urllib.request
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime, timedelta, timezone
 from typing import Any, Callable
+
+from fetch_binance_market import _select_setup
 
 
 BINANCE_BASE_URLS = (
@@ -47,6 +51,20 @@ def _atr(rows: list[dict[str, float]], length: int = 14) -> float:
         previous_close = rows[index - 1]["close"]
         ranges.append(max(row["high"] - row["low"], abs(row["high"] - previous_close), abs(row["low"] - previous_close)))
     return _mean(ranges[-length:])
+
+
+def _rounded_trade_levels(direction: str, entry: float, stop: float, min_rr: float) -> tuple[float, float, float]:
+    """Round levels while keeping the published R/R at or above the configured minimum."""
+    rounded_entry = round(entry, 8)
+    rounded_stop = round(stop, 8)
+    scale = 100_000_000
+    if direction == "BUY":
+        raw_target = rounded_entry + (rounded_entry - rounded_stop) * min_rr
+        rounded_target = math.ceil(raw_target * scale) / scale
+    else:
+        raw_target = rounded_entry - (rounded_stop - rounded_entry) * min_rr
+        rounded_target = math.floor(raw_target * scale) / scale
+    return rounded_entry, rounded_stop, rounded_target
 
 
 def _get_json(url: str) -> Any:
@@ -209,6 +227,7 @@ def build_derived_candidate(seed: dict[str, Any], snapshot: dict[str, Any], min_
     if risk_percent > 5:
         return None, "stop_distance_excessive"
 
+    rounded_entry, rounded_stop, rounded_take_profit = _rounded_trade_levels(direction, entry, stop, min_rr)
     evidence = (
         f"Semilla {seed.get('channel')} {seed_direction}; tendencias 15m/1h/4h="
         f"{trends['15m']}/{trends['1h']}/{trends['4h']}; RSI="
@@ -218,15 +237,15 @@ def build_derived_candidate(seed: dict[str, Any], snapshot: dict[str, Any], min_
     valid_until = (now + timedelta(hours=2)).isoformat()
     alternate_order_type = "BUY LIMIT" if pending_order_type == "BUY STOP" else "SELL LIMIT"
     order_instruction = (
-        f"Intentar {pending_order_type} en {entry:.8g}; si FBS exige {alternate_order_type} para esa misma entrada, "
+        f"Intentar {pending_order_type} en {rounded_entry:.8g}; si FBS exige {alternate_order_type} para esa misma entrada, "
         "usarlo sin cambiar entrada, SL, TP ni lote."
     )
     invalidation = f"Cancelar la orden pendiente si no se activa antes de {valid_until}."
     return {
         "source": "telegram_derived", "provider": seed.get("channel") or seed.get("provider"),
-        "asset": seed["asset"], "direction": direction, "entry": round(entry, 8),
-        "current_price": round(current, 8), "stop_loss": round(stop, 8),
-        "take_profits": [round(take_profit, 8)], "timestamp": now.isoformat(),
+        "asset": seed["asset"], "direction": direction, "entry": rounded_entry,
+        "current_price": round(current, 8), "stop_loss": rounded_stop,
+        "take_profits": [rounded_take_profit], "timestamp": now.isoformat(),
         "expert_signal": False, "candidate_origin": origin, "signal_status": "vigente",
         "analyst_status": "prevalidated", "execution_bias": "orden pendiente",
         "market_valid": True, "confidence": "medium", "quality_score": 3.5,
@@ -242,9 +261,158 @@ def build_derived_candidate(seed: dict[str, Any], snapshot: dict[str, Any], min_
     }, "accepted"
 
 
+def build_market_scan_candidate(
+    asset: str,
+    snapshot: dict[str, Any],
+    min_rr: float,
+    now: datetime,
+    validity_hours: int = 4,
+) -> tuple[dict[str, Any] | None, str]:
+    """Build a fully recalculated technical setup without attributing it to Telegram."""
+    rows_by_interval = snapshot.get("rows") or {}
+    if any(len(rows_by_interval.get(interval) or []) < 52 for interval in ("15m", "1h", "4h")):
+        return None, "insufficient_closed_candles"
+
+    rows_15 = rows_by_interval["15m"]
+    closes = {interval: [row["close"] for row in rows_by_interval[interval]] for interval in ("15m", "1h", "4h")}
+    trends = {interval: _trend(rows_by_interval[interval]) for interval in ("15m", "1h", "4h")}
+    rsi_values = {interval: _rsi(closes[interval]) for interval in ("15m", "1h", "4h")}
+    volatility = _atr(rows_15)
+    if volatility <= 0:
+        return None, "invalid_atr"
+
+    current = closes["15m"][-1]
+    recent = rows_15[-20:]
+    recent_high = max(row["high"] for row in recent[:-1])
+    recent_low = min(row["low"] for row in recent[:-1])
+    range_position = (current - recent_low) / (recent_high - recent_low) if recent_high > recent_low else 0.5
+    volumes = [row["volume"] for row in rows_15[-21:]]
+    positive_volumes = [value for value in volumes[:-1] if value > 0]
+    volume_ratio = volumes[-1] / _mean(positive_volumes) if positive_volumes and volumes[-1] > 0 else None
+
+    setup = _select_setup(
+        current=current,
+        fast=_sma(closes["15m"], 12),
+        slow=_sma(closes["15m"], 30),
+        fast_1h=_sma(closes["1h"], 20),
+        slow_1h=_sma(closes["1h"], 50),
+        fast_4h=_sma(closes["4h"], 20),
+        slow_4h=_sma(closes["4h"], 50),
+        rsi_15m=rsi_values["15m"],
+        rsi_1h=rsi_values["1h"],
+        rsi_4h=rsi_values["4h"],
+        volume_ratio=volume_ratio if volume_ratio is not None else 1.0,
+        range_position=range_position,
+        recent_high=recent_high,
+        recent_low=recent_low,
+        volatility=volatility,
+        min_rr=min_rr,
+    )
+    setup_tier = "strict"
+
+    if setup is None:
+        directional_votes = {
+            direction: sum(trends[interval] == direction for interval in ("15m", "1h", "4h"))
+            for direction in ("BUY", "SELL")
+        }
+        direction = max(directional_votes, key=directional_votes.get)
+        higher_support = trends["4h"] == direction and trends["1h"] in {direction, "NEUTRAL"}
+        multi_timeframe_support = directional_votes[direction] >= 2 and trends["4h"] != ("SELL" if direction == "BUY" else "BUY")
+        overextended = (
+            direction == "BUY" and (rsi_values["15m"] > 70 or rsi_values["1h"] > 72 or rsi_values["4h"] > 72)
+        ) or (
+            direction == "SELL" and (rsi_values["15m"] < 30 or rsi_values["1h"] < 28 or rsi_values["4h"] < 28)
+        )
+        if not (higher_support or multi_timeframe_support):
+            return None, "multi_timeframe_confirmation_missing"
+        if overextended:
+            return None, "market_scan_overextended_rsi"
+        if volume_ratio is not None and volume_ratio < 0.65:
+            return None, "volume_confirmation_missing"
+        setup = {
+            "setup_type": "conditional_confirmation",
+            "execution_bias": "solo con activación de la orden pendiente",
+            "direction": direction,
+            "condition": "dos marcos apoyan la dirección y la entrada exige ruptura confirmatoria de 15m",
+        }
+        setup_tier = "conditional"
+
+    direction = str(setup["direction"])
+    setup_type = str(setup["setup_type"])
+    if setup_type == "pullback":
+        if direction == "BUY":
+            entry = min(current - 0.25 * volatility, float(snapshot.get("ask") or current))
+            stop = min(recent_low - 0.2 * volatility, entry - volatility)
+            pending_order_type = "BUY LIMIT"
+        else:
+            entry = max(current + 0.25 * volatility, float(snapshot.get("bid") or current))
+            stop = max(recent_high + 0.2 * volatility, entry + volatility)
+            pending_order_type = "SELL LIMIT"
+    else:
+        if direction == "BUY":
+            trigger = recent[-1]["high"] + 0.05 * volatility
+            entry = max(trigger, float(snapshot.get("ask") or trigger))
+            stop = min(recent_low - 0.2 * volatility, entry - volatility)
+            pending_order_type = "BUY STOP"
+        else:
+            trigger = recent[-1]["low"] - 0.05 * volatility
+            entry = min(trigger, float(snapshot.get("bid") or trigger))
+            stop = max(recent_high + 0.2 * volatility, entry + volatility)
+            pending_order_type = "SELL STOP"
+
+    risk_percent = abs(entry - stop) / entry * 100 if entry else 100
+    if risk_percent > 5:
+        return None, "stop_distance_excessive"
+    take_profit = entry + (entry - stop) * min_rr if direction == "BUY" else entry - (stop - entry) * min_rr
+    rounded_entry, rounded_stop, rounded_take_profit = _rounded_trade_levels(direction, entry, stop, min_rr)
+    valid_until = (now + timedelta(hours=max(2, validity_hours))).isoformat()
+    alternate_order_type = "BUY LIMIT" if pending_order_type == "BUY STOP" else "BUY STOP" if pending_order_type == "BUY LIMIT" else "SELL LIMIT" if pending_order_type == "SELL STOP" else "SELL STOP"
+    order_instruction = (
+        f"Intentar {pending_order_type} en {rounded_entry:.8g}; si FBS exige {alternate_order_type} para esa misma entrada, "
+        "usarlo sin cambiar entrada, SL, TP ni lote."
+    )
+    spread = None
+    if snapshot.get("bid") is not None and snapshot.get("ask") is not None:
+        spread = float(snapshot["ask"]) - float(snapshot["bid"])
+    evidence = (
+        f"Scanner técnico {setup_type} ({setup_tier}); tendencias 15m/1h/4h="
+        f"{trends['15m']}/{trends['1h']}/{trends['4h']}; RSI="
+        f"{rsi_values['15m']:.1f}/{rsi_values['1h']:.1f}/{rsi_values['4h']:.1f}; "
+        f"ATR15={volatility:.8g}; posición_rango={range_position:.2f}"
+        + (f"; volumen_relativo={volume_ratio:.2f}" if volume_ratio is not None else "; volumen no disponible en el proxy")
+        + f"; condición={setup.get('condition')}"
+    )
+    alignment_score = directional_votes[direction] if setup_tier == "conditional" else sum(trends[interval] == direction for interval in ("15m", "1h", "4h"))
+    quality_score = 3.0 + min(1.0, alignment_score / 3) + min(1.0, volume_ratio or 0.75)
+    return {
+        "source": "technical_market_scan", "provider": snapshot.get("provider") or "market_scanner",
+        "asset": asset, "direction": direction, "entry": rounded_entry,
+        "current_price": round(current, 8), "stop_loss": rounded_stop,
+        "take_profits": [rounded_take_profit], "timestamp": now.isoformat(),
+        "expert_signal": False, "candidate_origin": "market_scan", "signal_status": "vigente",
+        "analyst_status": "prevalidated", "execution_bias": setup.get("execution_bias"),
+        "market_valid": True, "confidence": "high" if setup_tier == "strict" else "medium",
+        "quality_score": round(quality_score, 4), "channel_priority": 3,
+        "setup_type": setup_type, "pending_order_type": pending_order_type,
+        "alternate_order_type": alternate_order_type, "order_instruction": order_instruction,
+        "invalidation_condition": f"Cancelar la orden pendiente si no se activa antes de {valid_until}.",
+        "technical_evidence": evidence, "evidence": evidence, "valid_until": valid_until,
+        "source_context": {"market_proxy": snapshot.get("provider"), "market_symbol": snapshot.get("market_symbol"), "scan_tier": setup_tier},
+        "analysis": {
+            "bid": snapshot.get("bid"), "ask": snapshot.get("ask"), "spread": round(spread, 8) if spread is not None else None,
+            "trend_15m": trends["15m"], "trend_1h": trends["1h"], "trend_4h": trends["4h"],
+            "rsi_15m": round(rsi_values["15m"], 2), "rsi_1h": round(rsi_values["1h"], 2), "rsi_4h": round(rsi_values["4h"], 2),
+            "atr_15m": round(volatility, 8), "volume_ratio_15m": round(volume_ratio, 4) if volume_ratio is not None else None,
+            "range_position_20": round(range_position, 4),
+        },
+        "missing": [],
+    }, "accepted"
+
+
 def derive_opportunities(
     candidates: list[dict[str, Any]], params: dict[str, Any], crypto_map: dict[str, str], yahoo_map: dict[str, str],
     *, snapshot_fetcher: Callable[[str, dict[str, str], dict[str, str]], dict[str, Any] | None] = fetch_snapshot,
+    scan_assets: list[str] | None = None,
     now: datetime | None = None,
 ) -> tuple[list[dict[str, Any]], dict[str, Any]]:
     settings = params.get("fallback_opportunities") or {}
@@ -269,7 +437,7 @@ def derive_opportunities(
 
     valid_items = [item for item in candidates if is_complete_valid(item)]
     valid_assets = {str(item.get("asset")) for item in valid_items}
-    needed = max(0, target - len(valid_items))
+    needed = max(0, target - len(valid_assets))
     if needed == 0:
         return [], {"target": target, "attempted": 0, "accepted": 0, "rejections": []}
 
@@ -298,4 +466,54 @@ def derive_opportunities(
                 break
         else:
             rejections.append({"asset": asset, "reason": reason})
-    return derived, {"target": target, "attempted": len(attempted_assets - valid_assets), "accepted": len(derived), "rejections": rejections, "no_trade_slots": max(0, needed - len(derived))}
+
+    market_settings = settings.get("market_scan") or {}
+    market_attempted = 0
+    market_accepted = 0
+    pool_target = max(needed, int(market_settings.get("candidate_pool_size", 9)))
+    remaining = max(0, pool_target - len(derived))
+    if remaining and market_settings.get("enabled", True) is not False:
+        universe = sorted(set(scan_assets or list(yahoo_map) + list(crypto_map)) - attempted_assets)
+        max_assets = int(market_settings.get("max_assets", len(universe)))
+        universe = universe[:max_assets]
+        market_attempted = len(universe)
+        snapshots: dict[str, dict[str, Any] | None] = {}
+        workers = max(1, min(int(market_settings.get("max_workers", 8)), 16))
+        with ThreadPoolExecutor(max_workers=workers) as executor:
+            futures = {executor.submit(snapshot_fetcher, asset, crypto_map, yahoo_map): asset for asset in universe}
+            for future in as_completed(futures):
+                asset = futures[future]
+                try:
+                    snapshots[asset] = future.result()
+                except Exception as exc:
+                    snapshots[asset] = None
+                    rejections.append({"asset": asset, "reason": "market_data_error", "error": str(exc)})
+
+        scan_candidates = []
+        validity_hours = int(market_settings.get("validity_hours", 4))
+        for asset in universe:
+            snapshot = snapshots.get(asset)
+            if not snapshot:
+                if not any(item.get("asset") == asset and item.get("reason") == "market_data_error" for item in rejections):
+                    rejections.append({"asset": asset, "reason": "market_proxy_unavailable"})
+                continue
+            candidate, reason = build_market_scan_candidate(asset, snapshot, minimum_rr, now, validity_hours)
+            if candidate:
+                scan_candidates.append(candidate)
+            else:
+                rejections.append({"asset": asset, "reason": reason})
+        scan_candidates.sort(key=lambda item: (float(item.get("quality_score") or 0), str(item.get("asset"))), reverse=True)
+        accepted_scan = scan_candidates[:remaining]
+        derived.extend(accepted_scan)
+        market_accepted = len(accepted_scan)
+
+    return derived, {
+        "target": target,
+        "attempted": len(attempted_assets - valid_assets) + market_attempted,
+        "accepted": len(derived),
+        "rejections": rejections,
+        "no_trade_slots": max(0, needed - len(derived)),
+        "seeded_accepted": len(derived) - market_accepted,
+        "market_scan_attempted": market_attempted,
+        "market_scan_accepted": market_accepted,
+    }

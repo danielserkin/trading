@@ -19,6 +19,8 @@ REASON_LABELS = {
     "market_data_error": "falló el proveedor de mercado",
     "market_proxy_unavailable": "no hay proxy de mercado compatible",
     "insufficient_closed_candles": "faltan velas cerradas",
+    "multi_timeframe_confirmation_missing": "faltan dos marcos temporales confirmando la dirección",
+    "market_scan_overextended_rsi": "el scanner encontró RSI sobreextendido",
 }
 
 
@@ -83,6 +85,8 @@ def _alignment(candidate: dict[str, Any]) -> float:
     trends = [analysis.get(f"trend_{interval}") for interval in ("15m", "1h", "4h")]
     if trends[1:] == [direction, direction]:
         return 1.0 if trends[0] == direction else 0.55 if trends[0] == "NEUTRAL" else 0.0
+    if sum(trend == direction for trend in trends) >= 2 and trends[2] != ({"BUY": "SELL", "SELL": "BUY"}.get(direction)):
+        return 0.75
     return 0.5 if not any(trends) else 0.0
 
 
@@ -93,13 +97,13 @@ def score(
     source_trust: dict[str, Any] | None = None,
 ) -> tuple[int, list[str]]:
     weights = {**DEFAULT_SCORING_WEIGHTS, **(scoring_weights or {})}
-    trusts = source_trust or {"telegram_signal": 4, "telegram_derived": 3, "binance_market": 4}
+    trusts = source_trust or {"telegram_signal": 4, "telegram_derived": 3, "technical_market_scan": 3, "binance_market": 4}
     rr = risk_reward(candidate)
     analysis = candidate.get("analysis") if isinstance(candidate.get("analysis"), dict) else {}
     priority = int(candidate.get("channel_priority") or 4)
     confidence = {"high": 1.0, "medium": 0.65, "low": 0.3}.get(str(candidate.get("confidence")), 0.5)
     origin = str(candidate.get("candidate_origin") or "expert_signal")
-    origin_quality = {"expert_signal": 1.0, "reentry": 0.85, "technical_reversal": 0.65}.get(origin, 0.5)
+    origin_quality = {"expert_signal": 1.0, "reentry": 0.85, "market_scan": 0.8, "technical_reversal": 0.65}.get(origin, 0.5)
     evidence_available = any(analysis.get(key) is not None for key in ("spread", "volume_ratio_15m"))
     distance = candidate.get("entry_distance_percent")
     entry_quality = max(0.0, 1.0 - float(distance) / 1.2) if distance is not None else 0.5
@@ -193,8 +197,9 @@ def rank_candidates(
             discarded.append((candidate, "risk_unavailable"))
             continue
         rr = risk_reward(candidate)
-        if rr is not None and rr < 1.5:
-            discarded.append((candidate, "risk_above_limit"))
+        minimum_rr = float(candidate.get("minimum_rr") or 1.6)
+        if rr is not None and rr + 1e-6 < minimum_rr:
+            discarded.append((candidate, f"rr_below_{minimum_rr:g}"))
             continue
         if candidate.get("risk_usd") is not None and float(candidate["risk_usd"]) > max_risk_usd:
             discarded.append((candidate, "risk_above_limit"))
@@ -213,12 +218,38 @@ def rank_candidates(
     return ranked, discarded
 
 
+def select_distinct_candidates(
+    ranked: list[tuple[int, list[str], dict[str, Any]]],
+    count: int,
+    *,
+    excluded_ids: set[int] | None = None,
+    excluded_assets: set[str] | None = None,
+) -> list[tuple[int, list[str], dict[str, Any]]]:
+    """Select the best candidates while allowing at most one idea per asset."""
+    selected = []
+    seen_assets: set[str] = set(excluded_assets or set())
+    excluded = excluded_ids or set()
+    for item in ranked:
+        candidate = item[2]
+        if id(candidate) in excluded or candidate.get("signal_status") == "llegada_tarde":
+            continue
+        asset = str(candidate.get("asset") or "")
+        if not asset or asset in seen_assets:
+            continue
+        selected.append(item)
+        seen_assets.add(asset)
+        if len(selected) >= count:
+            break
+    return selected
+
+
 def render_report(candidates: list[dict[str, Any]], max_risk_usd: float, metadata: dict[str, Any] | None = None) -> str:
     metadata = metadata or {}
     ranked, discarded = rank_candidates(candidates, max_risk_usd, metadata.get("scoring_weights"), metadata.get("source_trust"))
-    top = [item for item in ranked if item[2].get("signal_status") != "llegada_tarde"][:3]
+    top = select_distinct_candidates(ranked, 3)
     top_ids = {id(item[2]) for item in top}
-    backup = [item for item in ranked if id(item[2]) not in top_ids][:5 - len(top)]
+    top_assets = {str(item[2].get("asset") or "") for item in top}
+    backup = select_distinct_candidates(ranked, 5 - len(top), excluded_ids=top_ids, excluded_assets=top_assets)
 
     lines = [
         f"# Trading Session - {date.today().isoformat()}",

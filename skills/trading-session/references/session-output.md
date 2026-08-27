@@ -23,8 +23,8 @@ Use the same columns for primary and backup tables:
 Rules:
 
 - `Stars` must be one to five literal `*` characters.
-- `Source` must be `telegram_signal` for original expert signals or `telegram_derived` for independently recalculated re-entry/reversal setups.
-- `Provider` should be the Telegram channel id.
+- `Source` must be `telegram_signal` for original expert signals, `telegram_derived` for recalculated re-entry/reversal setups, or `technical_market_scan` for independent closed-candle setups found after exhausting Telegram coverage.
+- `Provider` should be the Telegram channel id or the public market-data provider for a technical market scan.
 - `Asset` must be a configured FBS symbol, such as `BTCUSD`, `EURUSD`, or `XAUUSD`.
 - `Entry` must be the executable side of the quote: `Ask` for `BUY`, `Bid` for `SELL`.
 - `Current` should include `Bid / Ask` and spread when available, so the user can compare it with the trading platform before placing an order.
@@ -33,7 +33,8 @@ Rules:
 - `Evidence` must summarize the Telegram message and any public proxy market data used for validation.
 - `Why` must include vigencia/status and any `modification_note` when the expert entry is no longer directly actionable.
 - `Why` must state the pending-order type and exact mechanical instruction; it must not delegate candle analysis to the user.
-- Derived rows must identify `reentry` or `technical_reversal`, include the pending order and expiry/cancellation rule, and link back to the seed message when available.
+- Derived rows must identify `reentry`, `technical_reversal`, or `market_scan`, include the pending order and expiry/cancellation rule, and link back to the seed message when available.
+- The three primary rows must use different assets. A technical market-scan row must state its setup family and 15m/1h/4h evidence.
 - Always show three evaluated primary slots. Use a `NO TRADE` row when evidence is insufficient; do not represent it as a valid candidate.
 
 ## Discarded Signals
