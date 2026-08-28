@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-08-28T23:25:45.885Z",
+  "updated_at": "2026-08-28T23:25:47.286Z",
   "session": {
     "schema_version": 1,
     "run_id": "230635-865453",
@@ -306,7 +306,7 @@
         "urgency": "REVISAR"
       },
       "last_check_at": "2026-08-28T23:22:16.779012+00:00",
-      "disabled_at": "2026-08-28T23:25:45.885Z"
+      "disabled_at": "2026-08-28T23:25:47.286Z"
     },
     "34645d424dec7198eb3d": {
       "trade_id": "34645d424dec7198eb3d",
@@ -483,6 +483,11 @@
     },
     {
       "at": "2026-08-28T23:25:45.885Z",
+      "level": "warning",
+      "message": "⏸️ Seguimiento desactivado: AUDCHF"
+    },
+    {
+      "at": "2026-08-28T23:25:47.286Z",
       "level": "warning",
       "message": "⏸️ Seguimiento desactivado: AUDCHF"
     }
