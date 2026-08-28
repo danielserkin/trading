@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-08-28T23:08:25.015510+00:00",
+  "updated_at": "2026-08-28T23:08:38.092023+00:00",
   "session": {
     "schema_version": 1,
     "run_id": "230635-865453",
@@ -273,10 +273,20 @@
           ],
           "confidence": "baja",
           "urgency": "REVISAR"
+        },
+        {
+          "evaluated_at": "2026-08-28T23:08:36.755856+00:00",
+          "action": "EVIDENCIA_INSUFICIENTE",
+          "instruction": "No modificar la operación con estos datos; revisar FBS manualmente.",
+          "reasons": [
+            "La última vela M15 está desactualizada"
+          ],
+          "confidence": "baja",
+          "urgency": "REVISAR"
         }
       ],
       "last_decision": {
-        "evaluated_at": "2026-08-28T23:08:23.872774+00:00",
+        "evaluated_at": "2026-08-28T23:08:36.755856+00:00",
         "action": "EVIDENCIA_INSUFICIENTE",
         "instruction": "No modificar la operación con estos datos; revisar FBS manualmente.",
         "reasons": [
@@ -285,7 +295,7 @@
         "confidence": "baja",
         "urgency": "REVISAR"
       },
-      "last_check_at": "2026-08-28T23:08:23.872774+00:00"
+      "last_check_at": "2026-08-28T23:08:36.755856+00:00"
     },
     "34645d424dec7198eb3d": {
       "trade_id": "34645d424dec7198eb3d",
@@ -319,10 +329,20 @@
           ],
           "confidence": "baja",
           "urgency": "REVISAR"
+        },
+        {
+          "evaluated_at": "2026-08-28T23:08:37.100737+00:00",
+          "action": "EVIDENCIA_INSUFICIENTE",
+          "instruction": "No modificar la operación con estos datos; revisar FBS manualmente.",
+          "reasons": [
+            "La última vela M15 está desactualizada"
+          ],
+          "confidence": "baja",
+          "urgency": "REVISAR"
         }
       ],
       "last_decision": {
-        "evaluated_at": "2026-08-28T23:08:24.039862+00:00",
+        "evaluated_at": "2026-08-28T23:08:37.100737+00:00",
         "action": "EVIDENCIA_INSUFICIENTE",
         "instruction": "No modificar la operación con estos datos; revisar FBS manualmente.",
         "reasons": [
@@ -331,7 +351,7 @@
         "confidence": "baja",
         "urgency": "REVISAR"
       },
-      "last_check_at": "2026-08-28T23:08:24.039862+00:00"
+      "last_check_at": "2026-08-28T23:08:37.100737+00:00"
     }
   },
   "events": [
@@ -407,6 +427,21 @@
     },
     {
       "at": "2026-08-28T23:08:25.015506+00:00",
+      "level": "info",
+      "message": "📡 2 trade(s) evaluados · Telegram sent"
+    },
+    {
+      "at": "2026-08-28T23:08:38.091991+00:00",
+      "level": "warning",
+      "message": "📈 AUDCHF: EVIDENCIA INSUFICIENTE"
+    },
+    {
+      "at": "2026-08-28T23:08:38.092016+00:00",
+      "level": "warning",
+      "message": "📈 USDMXN: EVIDENCIA INSUFICIENTE"
+    },
+    {
+      "at": "2026-08-28T23:08:38.092020+00:00",
       "level": "info",
       "message": "📡 2 trade(s) evaluados · Telegram sent"
     }
