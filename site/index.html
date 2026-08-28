@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#07111f">
+  <meta name="description" content="Panel privado para sesiones y seguimiento informativo de trades FBS.">
+  <title>Trading Control</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="ambient ambient-one"></div>
+  <div class="ambient ambient-two"></div>
+
+  <main class="shell">
+    <header class="topbar">
+      <a class="brand" href="#" aria-label="Trading Control">
+        <span class="brand-mark">TC</span>
+        <span><strong>Trading Control</strong><small>FBS · Assisted desk</small></span>
+      </a>
+      <div class="top-actions">
+        <span id="connection-pill" class="pill pill-offline"><i></i> Sin conectar</span>
+        <button id="settings-button" class="icon-button" aria-label="Configuración">⚙️</button>
+      </div>
+    </header>
+
+    <section class="hero">
+      <div>
+        <p class="eyebrow">CENTRO DE OPERACIONES</p>
+        <h1>Tu sesión, clara.<br><span>Tu riesgo, bajo control.</span></h1>
+        <p class="hero-copy">Analiza señales, prepara órdenes y sigue cada trade desde un solo lugar. Tú confirmas y ejecutas siempre en FBS.</p>
+      </div>
+      <button id="new-session-button" class="primary-button" disabled>
+        <span class="button-icon">🚀</span>
+        <span><strong>Nueva sesión</strong><small>Buscar 3 oportunidades</small></span>
+      </button>
+    </section>
+
+    <section class="stats" aria-label="Resumen de sesión">
+      <article><span>📨</span><div><strong id="stat-messages">—</strong><small>Mensajes revisados</small></div></article>
+      <article><span>🔎</span><div><strong id="stat-symbols">—</strong><small>Símbolos escaneados</small></div></article>
+      <article><span>✅</span><div><strong id="stat-valid">—</strong><small>Candidatos válidos</small></div></article>
+      <article><span>🛡️</span><div><strong id="stat-risk">$20</strong><small>Riesgo máximo</small></div></article>
+    </section>
+
+    <section class="section-heading">
+      <div><p class="eyebrow">SESIÓN ACTUAL</p><h2>Oportunidades evaluadas</h2></div>
+      <div class="session-meta"><span id="session-status" class="status-badge neutral">Sin sesión</span><time id="session-time">—</time></div>
+    </section>
+
+    <section id="cards" class="cards" aria-live="polite">
+      <div class="empty-state">
+        <span>📊</span>
+        <h3>Todo listo para comenzar</h3>
+        <p>Conecta el panel y pulsa “Nueva sesión” para generar tus próximas oportunidades.</p>
+      </div>
+    </section>
+
+    <section class="lower-grid">
+      <article class="panel terminal-panel">
+        <header><div><span class="terminal-dots"><i></i><i></i><i></i></span><strong>Actividad de la sesión</strong></div><button id="clear-local-log" class="text-button">Limpiar vista</button></header>
+        <div id="terminal" class="terminal" role="log" aria-live="polite">
+          <p class="muted"><time>--:--:--</time> Esperando conexión con el servicio…</p>
+        </div>
+      </article>
+
+      <article class="panel monitors-panel">
+        <header><div><span class="panel-icon">📡</span><strong>Seguimientos activos</strong></div><span id="monitor-count" class="counter">0</span></header>
+        <div id="monitor-list" class="monitor-list">
+          <div class="mini-empty">Activa “Administrar trade” en una card.</div>
+        </div>
+      </article>
+    </section>
+
+    <footer><span>🤖 Análisis informativo</span><span>•</span><span>Nunca ejecuta órdenes</span><span>•</span><span>Confirma todo en FBS</span></footer>
+  </main>
+
+  <dialog id="settings-dialog">
+    <form id="settings-form" method="dialog">
+      <div class="dialog-heading"><div><p class="eyebrow">CONEXIÓN</p><h2>Configurar panel</h2></div><button type="button" class="icon-button dialog-close" aria-label="Cerrar">✕</button></div>
+      <label>URL del Worker<input id="api-url-input" type="url" placeholder="https://trading-control.tu-cuenta.workers.dev" required></label>
+      <label>PIN privado<input id="pin-input" type="password" autocomplete="current-password" placeholder="Tu PIN largo y privado" required></label>
+      <p id="settings-error" class="form-error" hidden></p>
+      <button id="connect-button" class="primary-button compact" value="default"><span>🔐</span><strong>Conectar de forma segura</strong></button>
+      <small class="privacy-note">La URL y la sesión temporal se guardan solamente en este navegador. El PIN no se conserva.</small>
+    </form>
+  </dialog>
+
+  <dialog id="monitor-dialog">
+    <form id="monitor-form" method="dialog">
+      <div class="dialog-heading"><div><p class="eyebrow">SEGUIMIENTO</p><h2 id="monitor-dialog-title">Activar trade</h2></div><button type="button" class="icon-button dialog-close" aria-label="Cerrar">✕</button></div>
+      <input id="monitor-trade-id" type="hidden">
+      <div class="form-grid">
+        <label>Entrada real<input id="monitor-entry" type="number" step="any" required></label>
+        <label>SL actual<input id="monitor-sl" type="number" step="any" required></label>
+        <label>TP actual<input id="monitor-tp" type="number" step="any" required></label>
+        <label>Volumen (opcional)<input id="monitor-volume" type="number" step="any" min="0"></label>
+      </div>
+      <label class="confirmation"><input id="monitor-confirm" type="checkbox" required><span>Confirmo que abrí la operación y coloqué estos niveles en FBS.</span></label>
+      <p class="form-error" id="monitor-error" hidden></p>
+      <button class="primary-button compact" value="default"><span>📡</span><strong>Activar seguimiento cada 15 min</strong></button>
+    </form>
+  </dialog>
+
+  <div id="toast" class="toast" role="status"></div>
+  <script src="config.js"></script>
+  <script src="app.js" defer></script>
+</body>
+</html>

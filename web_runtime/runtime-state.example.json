@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "updated_at": null,
+  "session": {
+    "status": "idle",
+    "cards": [],
+    "backups": []
+  },
+  "monitors": {},
+  "events": []
+}

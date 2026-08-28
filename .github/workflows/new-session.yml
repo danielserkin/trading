@@ -1,0 +1,142 @@
+name: New trading session
+
+on:
+  repository_dispatch:
+    types: [new_session]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: trading-engine
+  cancel-in-progress: false
+
+jobs:
+  run_session:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: skills/trading-session/requirements.txt
+      - name: Mark session as running
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RUN_ID: ${{ github.run_id }}-${{ github.run_attempt }}
+          WORKFLOW_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: python3 web_runtime/github_state.py session-running --run-id "$RUN_ID" --workflow-url "$WORKFLOW_URL"
+      - name: Install Telegram reader
+        run: python3 -m pip install -r skills/trading-session/requirements.txt
+      - name: Restore Telegram reader session
+        env:
+          TELEGRAM_SESSION_GZIP_B64: ${{ secrets.TELEGRAM_SESSION_GZIP_B64 }}
+        run: |
+          test -n "$TELEGRAM_SESSION_GZIP_B64"
+          printf '%s' "$TELEGRAM_SESSION_GZIP_B64" | base64 --decode | gzip --decompress > telegram-fbs.session
+          chmod 600 telegram-fbs.session
+      - name: Log market scan start
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python3 web_runtime/github_state.py session-event --message "📡 Telegram conectado · iniciando validación y escaneo de mercado"
+      - name: Run current FBS trading workflow
+        env:
+          TELEGRAM_API_ID: ${{ secrets.TELEGRAM_API_ID }}
+          TELEGRAM_API_HASH: ${{ secrets.TELEGRAM_API_HASH }}
+          TELEGRAM_SESSION: telegram-fbs.session
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_TARGET_CHAT_ID: ${{ secrets.TELEGRAM_TARGET_CHAT_ID }}
+        run: |
+          session_date="$(date -u +%F)"
+          echo "SESSION_DATE=$session_date" >> "$GITHUB_ENV"
+          python3 skills/trading-session/scripts/run_telegram_fbs_session.py --output-dir "sessions/$session_date"
+      - name: Log analysis completion
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python3 web_runtime/github_state.py session-event --level success --message "✅ Mercado analizado · preparando revisión Codex y cards"
+      - name: Upload private session artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: session-artifacts
+          path: sessions/${{ env.SESSION_DATE }}
+          retention-days: 7
+      - name: Record failure
+        if: failure()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python3 web_runtime/github_state.py session-failed --message "El workflow de análisis falló. Revisar el log privado de GitHub Actions."
+
+  codex_review:
+    needs: run_session
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+      - uses: actions/download-artifact@v4
+        with:
+          name: session-artifacts
+          path: session-artifacts
+      - name: Review the three slots with Codex
+        id: codex
+        uses: openai/codex-action@v1
+        with:
+          openai-api-key: ${{ secrets.OPENAI_API_KEY }}
+          prompt-file: .github/codex/prompts/session-review.md
+          model: gpt-5.6-terra
+          effort: medium
+          sandbox: read-only
+          safety-strategy: drop-sudo
+          codex-args: '["--ephemeral","--output-schema",".github/codex/session-review.schema.json"]'
+          output-file: codex-review.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: codex-review
+          path: codex-review.json
+          retention-days: 7
+
+  publish_dashboard:
+    needs: [run_session, codex_review]
+    if: always() && needs.run_session.result == 'success'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+      - uses: actions/download-artifact@v4
+        with:
+          name: session-artifacts
+          path: session-artifacts
+      - uses: actions/download-artifact@v4
+        continue-on-error: true
+        with:
+          name: codex-review
+          path: codex-review-artifact
+      - name: Build stable dashboard payload
+        run: |
+          candidates_file="$(find session-artifacts -name telegram-fbs-candidates.json -print -quit)"
+          test -n "$candidates_file"
+          session_dir="$(dirname "$candidates_file")"
+          python3 web_runtime/export_session.py --session-dir "$session_dir" --output dashboard-session.json
+      - name: Publish cards and Codex review
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          review="$(find codex-review-artifact -name codex-review.json -print -quit 2>/dev/null || true)"
+          if test -n "$review"; then
+            python3 web_runtime/github_state.py session-complete --result dashboard-session.json --review "$review"
+          else
+            python3 web_runtime/github_state.py session-complete --result dashboard-session.json
+          fi
+      - name: Record dashboard publication failure
+        if: failure()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python3 web_runtime/github_state.py session-failed --message "La sesión terminó, pero no se pudieron publicar las cards. Revisar el log privado de GitHub Actions."

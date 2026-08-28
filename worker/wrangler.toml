@@ -1,0 +1,10 @@
+name = "trading-control"
+main = "src/index.js"
+compatibility_date = "2026-08-01"
+
+[triggers]
+crons = ["7,22,37,52 * * * *"]
+
+[vars]
+DATA_BRANCH = "runtime-data"
+ALLOWED_ORIGIN = "*"

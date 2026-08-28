@@ -1,0 +1,11 @@
+{
+  "type": "object",
+  "properties": {
+    "status": {"type": "string", "enum": ["approved", "needs_attention"]},
+    "summary": {"type": "string"},
+    "issues": {"type": "array", "items": {"type": "string"}},
+    "checked_slots": {"type": "integer", "minimum": 0, "maximum": 3}
+  },
+  "required": ["status", "summary", "issues", "checked_slots"],
+  "additionalProperties": false
+}

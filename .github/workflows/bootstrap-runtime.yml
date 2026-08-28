@@ -1,0 +1,40 @@
+name: Initialize dashboard state
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "web_runtime/runtime-state.example.json"
+      - ".github/workflows/bootstrap-runtime.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: trading-runtime
+  cancel-in-progress: false
+
+jobs:
+  initialize:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+      - name: Create runtime-data branch when missing
+        run: |
+          if git ls-remote --exit-code --heads origin runtime-data >/dev/null 2>&1; then
+            echo "runtime-data already exists"
+            exit 0
+          fi
+          state_file="$RUNNER_TEMP/state.json"
+          cp web_runtime/runtime-state.example.json "$state_file"
+          git switch --orphan runtime-data
+          mkdir -p runtime
+          cp "$state_file" runtime/state.json
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add runtime/state.json
+          git commit -m "runtime: initialize dashboard state"
+          git push origin runtime-data

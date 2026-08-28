@@ -23,6 +23,13 @@ __pycache__/
 .pytest_cache/
 .ruff_cache/
 .mypy_cache/
+worker/node_modules/
+
+# Local dashboard runtime outputs
+current-state.json
+monitor-results.json
+dashboard-session.json
+codex-review.json
 
 # OS/editor
 .DS_Store

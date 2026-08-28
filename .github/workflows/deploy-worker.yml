@@ -1,0 +1,50 @@
+name: Deploy control Worker
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "worker/**"
+      - ".github/workflows/deploy-worker.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: worker
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: worker/package-lock.json
+      - run: npm ci
+      - name: Synchronize Worker secrets
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          GH_TOKEN_VALUE: ${{ secrets.WORKER_GITHUB_TOKEN }}
+          APP_PIN_VALUE: ${{ secrets.APP_PIN }}
+          APP_SESSION_SECRET_VALUE: ${{ secrets.APP_SESSION_SECRET }}
+        run: |
+          test -n "$CLOUDFLARE_API_TOKEN"
+          test -n "$CLOUDFLARE_ACCOUNT_ID"
+          test -n "$GH_TOKEN_VALUE"
+          test -n "$APP_PIN_VALUE"
+          test -n "$APP_SESSION_SECRET_VALUE"
+          printf '%s' "$GH_TOKEN_VALUE" | npx wrangler secret put GH_TOKEN
+          printf '%s' "$APP_PIN_VALUE" | npx wrangler secret put APP_PIN
+          printf '%s' "$APP_SESSION_SECRET_VALUE" | npx wrangler secret put APP_SESSION_SECRET
+      - name: Deploy Worker and 15-minute scheduler
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          GH_OWNER_VALUE: ${{ github.repository_owner }}
+          GH_REPO_VALUE: ${{ github.event.repository.name }}
+        run: npx wrangler deploy --var "GH_OWNER:$GH_OWNER_VALUE" --var "GH_REPO:$GH_REPO_VALUE"
