@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-08-28T23:07:27.157808+00:00",
+  "updated_at": "2026-08-28T23:07:59.025Z",
   "session": {
     "schema_version": 1,
     "run_id": "230635-865453",
@@ -12,7 +12,7 @@
       "valid_candidates": 9,
       "messages_reviewed": 0,
       "symbols_scanned": 39,
-      "max_risk_usd": 20.0
+      "max_risk_usd": 20
     },
     "cards": [
       {
@@ -230,7 +230,33 @@
     "review": null,
     "completed_at": "2026-08-28T23:07:27.157773+00:00"
   },
-  "monitors": {},
+  "monitors": {
+    "df7e021461678e8051d3": {
+      "trade_id": "df7e021461678e8051d3",
+      "activation_id": "6382268f-baa5-428a-be0e-c48d67b4e22e",
+      "enabled": true,
+      "status": "active",
+      "asset": "AUDCHF",
+      "direction": "BUY",
+      "order_type": "BUY STOP",
+      "entry": 0.57898287,
+      "stop_loss": 0.57812501,
+      "original_sl": 0.57812501,
+      "current_sl": 0.57812501,
+      "take_profit": 0.58035545,
+      "original_tp": 0.58035545,
+      "current_tp": 0.58035545,
+      "volume": 0.18,
+      "valid_until": "2026-08-29T03:06:29.741161+00:00",
+      "proxy_symbol": null,
+      "provider": "yahoo_finance_chart",
+      "source": "technical_market_scan",
+      "session_run_id": "230635-865453",
+      "activated_at": "2026-08-28T23:07:59.025Z",
+      "history": [],
+      "last_decision": null
+    }
+  },
   "events": [
     {
       "at": "2026-08-28T23:06:10.323Z",
@@ -266,6 +292,11 @@
       "at": "2026-08-28T23:07:27.157805+00:00",
       "level": "success",
       "message": "📲 Telegram: sent"
+    },
+    {
+      "at": "2026-08-28T23:07:59.025Z",
+      "level": "success",
+      "message": "📡 Seguimiento activado: AUDCHF BUY"
     }
   ]
 }
