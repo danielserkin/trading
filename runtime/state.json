@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-08-28T23:22:17.905387+00:00",
+  "updated_at": "2026-08-28T23:25:45.885Z",
   "session": {
     "schema_version": 1,
     "run_id": "230635-865453",
@@ -234,8 +234,8 @@
     "df7e021461678e8051d3": {
       "trade_id": "df7e021461678e8051d3",
       "activation_id": "d6436f6c-cd74-4f1d-91ea-412b6020768d",
-      "enabled": true,
-      "status": "active",
+      "enabled": false,
+      "status": "paused",
       "asset": "AUDCHF",
       "direction": "BUY",
       "order_type": "BUY STOP",
@@ -305,7 +305,8 @@
         "confidence": "baja",
         "urgency": "REVISAR"
       },
-      "last_check_at": "2026-08-28T23:22:16.779012+00:00"
+      "last_check_at": "2026-08-28T23:22:16.779012+00:00",
+      "disabled_at": "2026-08-28T23:25:45.885Z"
     },
     "34645d424dec7198eb3d": {
       "trade_id": "34645d424dec7198eb3d",
@@ -479,6 +480,11 @@
       "at": "2026-08-28T23:22:17.905384+00:00",
       "level": "info",
       "message": "📡 2 trade(s) evaluados · Telegram sent"
+    },
+    {
+      "at": "2026-08-28T23:25:45.885Z",
+      "level": "warning",
+      "message": "⏸️ Seguimiento desactivado: AUDCHF"
     }
   ]
 }
