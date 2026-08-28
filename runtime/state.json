@@ -1,12 +1,12 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-08-28T23:25:49.247Z",
+  "updated_at": "2026-08-28T23:26:23.173Z",
   "session": {
     "schema_version": 1,
     "run_id": "230635-865453",
     "date": "session-artifacts",
     "generated_at": "2026-08-28T23:07:26.811308+00:00",
-    "status": "completed",
+    "status": "queued",
     "summary": {
       "candidates_reviewed": 9,
       "valid_candidates": 9,
@@ -228,7 +228,9 @@
       "status": "sent"
     },
     "review": null,
-    "completed_at": "2026-08-28T23:07:27.157773+00:00"
+    "completed_at": "2026-08-28T23:07:27.157773+00:00",
+    "request_id": "0a7dac74-47ec-46fd-b5bd-9066c9aaf01a",
+    "requested_at": "2026-08-28T23:26:23.173Z"
   },
   "monitors": {
     "df7e021461678e8051d3": {
@@ -496,6 +498,11 @@
       "at": "2026-08-28T23:25:49.247Z",
       "level": "warning",
       "message": "⏸️ Seguimiento desactivado: USDMXN"
+    },
+    {
+      "at": "2026-08-28T23:26:23.173Z",
+      "level": "info",
+      "message": "⏳ Nueva sesión enviada a la cola"
     }
   ]
 }
