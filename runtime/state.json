@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-08-28T23:25:47.286Z",
+  "updated_at": "2026-08-28T23:25:49.247Z",
   "session": {
     "schema_version": 1,
     "run_id": "230635-865453",
@@ -311,8 +311,8 @@
     "34645d424dec7198eb3d": {
       "trade_id": "34645d424dec7198eb3d",
       "activation_id": "65b243b4-97c1-49a6-aac9-9060f592a328",
-      "enabled": true,
-      "status": "active",
+      "enabled": false,
+      "status": "paused",
       "asset": "USDMXN",
       "direction": "BUY",
       "order_type": "BUY STOP",
@@ -372,7 +372,8 @@
         "confidence": "baja",
         "urgency": "REVISAR"
       },
-      "last_check_at": "2026-08-28T23:22:16.936026+00:00"
+      "last_check_at": "2026-08-28T23:22:16.936026+00:00",
+      "disabled_at": "2026-08-28T23:25:49.247Z"
     }
   },
   "events": [
@@ -490,6 +491,11 @@
       "at": "2026-08-28T23:25:47.286Z",
       "level": "warning",
       "message": "⏸️ Seguimiento desactivado: AUDCHF"
+    },
+    {
+      "at": "2026-08-28T23:25:49.247Z",
+      "level": "warning",
+      "message": "⏸️ Seguimiento desactivado: USDMXN"
     }
   ]
 }
