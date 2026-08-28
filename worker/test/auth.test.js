@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 
-import {constantTimeEqual, issueToken, verifyToken} from "../src/index.js";
+import worker, {constantTimeEqual, issueToken, verifyToken} from "../src/index.js";
 
 test("constant-time comparison handles matching and empty values", () => {
   assert.equal(constantTimeEqual("same", "same"), true);
@@ -23,4 +23,15 @@ test("issued session token verifies and tampering fails", async () => {
 test("missing signing secret is never authorized", async () => {
   const request = new Request("https://worker.test/state", {headers:{Authorization:"Bearer anything.anything"}});
   assert.equal(await verifyToken(request, {}), false);
+});
+
+test("CORS preflight returns an empty successful response", async () => {
+  const request = new Request("https://worker.test/auth", {
+    method:"OPTIONS",
+    headers:{Origin:"https://danielserkin.github.io"},
+  });
+  const result = await worker.fetch(request, {ALLOWED_ORIGIN:"*"});
+  assert.equal(result.status, 204);
+  assert.equal(await result.text(), "");
+  assert.equal(result.headers.get("Access-Control-Allow-Origin"), "*");
 });

@@ -64,7 +64,8 @@ function allowedOrigin(request, env) {
 }
 
 function response(request, env, payload, status = 200) {
-  return new Response(JSON.stringify(payload), {status, headers:{
+  const responseBody = status === 204 ? null : JSON.stringify(payload);
+  return new Response(responseBody, {status, headers:{
     "Content-Type":"application/json; charset=utf-8",
     "Access-Control-Allow-Origin":allowedOrigin(request, env),
     "Access-Control-Allow-Headers":"Authorization, Content-Type",
