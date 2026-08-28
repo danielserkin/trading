@@ -1,11 +1,19 @@
 {
   "schema_version": 1,
-  "updated_at": null,
+  "updated_at": "2026-08-28T23:06:10.323Z",
   "session": {
-    "status": "idle",
+    "status": "queued",
     "cards": [],
-    "backups": []
+    "backups": [],
+    "request_id": "5c7a5deb-93f4-478b-9671-cdb06e40a4ae",
+    "requested_at": "2026-08-28T23:06:10.323Z"
   },
   "monitors": {},
-  "events": []
+  "events": [
+    {
+      "at": "2026-08-28T23:06:10.323Z",
+      "level": "info",
+      "message": "⏳ Nueva sesión enviada a la cola"
+    }
+  ]
 }
