@@ -1,5 +1,7 @@
 # Trading Control: puesta en marcha
 
+> Ver también: [arquitectura visual, flujos y mapa de secretos](web-dashboard-architecture.md).
+
 ## Qué queda desplegado
 
 - **GitHub Pages** sirve la interfaz estática de `site/`.
