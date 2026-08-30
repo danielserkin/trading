@@ -1,12 +1,12 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-08-30T08:26:15.766Z",
+  "updated_at": "2026-08-30T08:26:26.360065+00:00",
   "session": {
     "schema_version": 1,
-    "run_id": "232645-480725",
+    "run_id": "33301581594-1",
     "date": "session-artifacts",
     "generated_at": "2026-08-28T23:27:38.855063+00:00",
-    "status": "queued",
+    "status": "running",
     "summary": {
       "candidates_reviewed": 9,
       "valid_candidates": 9,
@@ -230,7 +230,9 @@
     "review": null,
     "completed_at": "2026-08-28T23:27:39.099251+00:00",
     "request_id": "738cf107-2331-4116-9d54-ea1e59eb0512",
-    "requested_at": "2026-08-30T08:26:15.766Z"
+    "requested_at": "2026-08-30T08:26:15.766Z",
+    "started_at": "2026-08-30T08:26:26.360035+00:00",
+    "workflow_url": "https://github.com/danielserkin/trading/actions/runs/33301581594"
   },
   "monitors": {
     "df7e021461678e8051d3": {
@@ -538,6 +540,11 @@
       "at": "2026-08-30T08:26:15.766Z",
       "level": "info",
       "message": "⏳ Nueva sesión enviada a la cola"
+    },
+    {
+      "at": "2026-08-30T08:26:26.360058+00:00",
+      "level": "info",
+      "message": "🚀 Codex y el analizador iniciaron una nueva sesión"
     }
   ]
 }
