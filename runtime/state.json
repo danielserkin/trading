@@ -1,18 +1,18 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-08-30T21:47:20.357277+00:00",
+  "updated_at": "2026-08-30T23:34:51.343Z",
   "session": {
     "schema_version": 1,
     "run_id": "214633-937892",
     "date": "session-artifacts",
     "generated_at": "2026-08-30T21:47:20.026499+00:00",
-    "status": "completed",
+    "status": "queued",
     "summary": {
       "candidates_reviewed": 9,
       "valid_candidates": 9,
       "messages_reviewed": 0,
       "symbols_scanned": 39,
-      "max_risk_usd": 20.0
+      "max_risk_usd": 20
     },
     "cards": [
       {
@@ -228,7 +228,9 @@
       "status": "sent"
     },
     "review": null,
-    "completed_at": "2026-08-30T21:47:20.357234+00:00"
+    "completed_at": "2026-08-30T21:47:20.357234+00:00",
+    "request_id": "a6c0169b-7828-4592-b906-7a5841daa2aa",
+    "requested_at": "2026-08-30T23:34:51.343Z"
   },
   "monitors": {
     "df7e021461678e8051d3": {
@@ -601,6 +603,11 @@
       "at": "2026-08-30T21:47:20.357274+00:00",
       "level": "success",
       "message": "📲 Telegram: sent"
+    },
+    {
+      "at": "2026-08-30T23:34:51.343Z",
+      "level": "info",
+      "message": "⏳ Nueva sesión enviada a la cola"
     }
   ]
 }
