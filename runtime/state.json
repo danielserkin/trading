@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-08-30T23:35:05.576219+00:00",
+  "updated_at": "2026-08-30T23:35:13.934733+00:00",
   "session": {
     "schema_version": 1,
     "run_id": "33342190419-1",
@@ -620,6 +620,11 @@
       "at": "2026-08-30T23:35:05.576205+00:00",
       "level": "info",
       "message": "📡 Telegram conectado · iniciando validación y escaneo de mercado"
+    },
+    {
+      "at": "2026-08-30T23:35:13.934720+00:00",
+      "level": "success",
+      "message": "✅ Mercado analizado · preparando revisión Codex y cards"
     }
   ]
 }
