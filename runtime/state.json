@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-08-30T08:26:26.360065+00:00",
+  "updated_at": "2026-08-30T08:26:29.869034+00:00",
   "session": {
     "schema_version": 1,
     "run_id": "33301581594-1",
@@ -545,6 +545,11 @@
       "at": "2026-08-30T08:26:26.360058+00:00",
       "level": "info",
       "message": "🚀 Codex y el analizador iniciaron una nueva sesión"
+    },
+    {
+      "at": "2026-08-30T08:26:29.869014+00:00",
+      "level": "info",
+      "message": "📡 Telegram conectado · iniciando validación y escaneo de mercado"
     }
   ]
 }
