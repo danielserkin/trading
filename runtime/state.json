@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-08-31T03:42:29.548266+00:00",
+  "updated_at": "2026-08-31T04:32:40.958Z",
   "session": {
     "schema_version": 1,
     "run_id": "034145-110143",
@@ -12,7 +12,7 @@
       "valid_candidates": 9,
       "messages_reviewed": 0,
       "symbols_scanned": 39,
-      "max_risk_usd": 20.0
+      "max_risk_usd": 20
     },
     "cards": [
       {
@@ -374,6 +374,31 @@
       },
       "last_check_at": "2026-08-28T23:22:16.936026+00:00",
       "disabled_at": "2026-08-28T23:25:49.247Z"
+    },
+    "9267313c02d043de1d6b": {
+      "trade_id": "9267313c02d043de1d6b",
+      "activation_id": "82126a0d-d786-42ee-9a0d-888b26531832",
+      "enabled": true,
+      "status": "active",
+      "asset": "AUDNZD",
+      "direction": "BUY",
+      "order_type": "BUY STOP",
+      "entry": 1.2109,
+      "stop_loss": 1.2088,
+      "original_sl": 1.2088,
+      "current_sl": 1.2088,
+      "take_profit": 1.2143,
+      "original_tp": 1.2143,
+      "current_tp": 1.2143,
+      "volume": 0.16,
+      "valid_until": "2026-08-31T07:41:41.530144+00:00",
+      "proxy_symbol": null,
+      "provider": "yahoo_finance_chart",
+      "source": "technical_market_scan",
+      "session_run_id": "034145-110143",
+      "activated_at": "2026-08-31T04:32:40.958Z",
+      "history": [],
+      "last_decision": null
     }
   },
   "events": [
@@ -671,6 +696,11 @@
       "at": "2026-08-31T03:42:29.548263+00:00",
       "level": "success",
       "message": "📲 Telegram: sent"
+    },
+    {
+      "at": "2026-08-31T04:32:40.958Z",
+      "level": "success",
+      "message": "📡 Seguimiento activado: AUDNZD BUY"
     }
   ]
 }
