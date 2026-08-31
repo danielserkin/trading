@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-08-31T23:46:49.526082+00:00",
+  "updated_at": "2026-08-31T23:46:54.678965+00:00",
   "session": {
     "schema_version": 1,
     "run_id": "33452097479-1",
@@ -2698,11 +2698,6 @@
   },
   "events": [
     {
-      "at": "2026-08-31T07:22:19.427223+00:00",
-      "level": "info",
-      "message": "📈 USDJPY: CERRAR TODO · proxy 159.68"
-    },
-    {
       "at": "2026-08-31T07:22:19.427229+00:00",
       "level": "info",
       "message": "📡 2 trade(s) evaluados · Telegram sent"
@@ -3446,6 +3441,11 @@
       "at": "2026-08-31T23:46:49.526077+00:00",
       "level": "info",
       "message": "🚀 Codex y el analizador iniciaron una nueva sesión"
+    },
+    {
+      "at": "2026-08-31T23:46:54.678945+00:00",
+      "level": "info",
+      "message": "📡 Telegram conectado · iniciando validación y escaneo de mercado"
     }
   ]
 }
