@@ -1,12 +1,12 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-08-31T19:45:05.379Z",
+  "updated_at": "2026-08-31T19:45:15.084717+00:00",
   "session": {
     "schema_version": 1,
-    "run_id": "152417-433654",
+    "run_id": "33432272047-1",
     "date": "session-artifacts",
     "generated_at": "2026-08-31T15:25:04.015250+00:00",
-    "status": "queued",
+    "status": "running",
     "summary": {
       "candidates_reviewed": 9,
       "valid_candidates": 8,
@@ -230,7 +230,9 @@
     "review": null,
     "completed_at": "2026-08-31T15:25:04.347421+00:00",
     "request_id": "87e30b9a-d0e7-4784-8fb2-807c67b57c29",
-    "requested_at": "2026-08-31T19:45:05.379Z"
+    "requested_at": "2026-08-31T19:45:05.379Z",
+    "started_at": "2026-08-31T19:45:15.084677+00:00",
+    "workflow_url": "https://github.com/danielserkin/trading/actions/runs/33432272047"
   },
   "monitors": {
     "df7e021461678e8051d3": {
@@ -2696,11 +2698,6 @@
   },
   "events": [
     {
-      "at": "2026-08-31T06:37:17.528094+00:00",
-      "level": "info",
-      "message": "📡 2 trade(s) evaluados · Telegram sent"
-    },
-    {
       "at": "2026-08-31T06:52:17.575452+00:00",
       "level": "info",
       "message": "📈 AUDNZD: MANTENER · proxy 1.21069"
@@ -3444,6 +3441,11 @@
       "at": "2026-08-31T19:45:05.379Z",
       "level": "info",
       "message": "⏳ Nueva sesión enviada a la cola"
+    },
+    {
+      "at": "2026-08-31T19:45:15.084708+00:00",
+      "level": "info",
+      "message": "🚀 Codex y el analizador iniciaron una nueva sesión"
     }
   ]
 }
