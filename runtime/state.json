@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-08-31T18:52:17.077153+00:00",
+  "updated_at": "2026-08-31T19:07:18.912372+00:00",
   "session": {
     "schema_version": 1,
     "run_id": "152417-433654",
@@ -2638,46 +2638,60 @@
             "Progreso 7% · resultado 0.11R"
           ],
           "urgency": "PRÓXIMO PASO"
+        },
+        {
+          "evaluated_at": "2026-08-31T19:07:17.987620+00:00",
+          "candle_close": "2026-08-31T19:00:00+00:00",
+          "provider": "yahoo_finance_proxy",
+          "proxy_symbol": "USDZAR=X",
+          "current_price": 16.113,
+          "current_r": 0.064,
+          "progress": 0.04,
+          "atr15": 0.014,
+          "rsi15": 43.1,
+          "trends": {
+            "m15": "SELL",
+            "h1": "SELL",
+            "h4": "BUY"
+          },
+          "confidence": "baja",
+          "action": "CERRAR_TODO",
+          "instruction": "Cerrar antes del fin de la vigencia tras confirmar la cotización FBS.",
+          "reasons": [
+            "Restan 17 min",
+            "Progreso menor al 75%: 4%"
+          ],
+          "urgency": "AHORA"
         }
       ],
       "last_decision": {
-        "evaluated_at": "2026-08-31T18:52:16.310739+00:00",
-        "candle_close": "2026-08-31T18:45:00+00:00",
+        "evaluated_at": "2026-08-31T19:07:17.987620+00:00",
+        "candle_close": "2026-08-31T19:00:00+00:00",
         "provider": "yahoo_finance_proxy",
         "proxy_symbol": "USDZAR=X",
-        "current_price": 16.111,
-        "current_r": 0.106,
-        "progress": 0.066,
+        "current_price": 16.113,
+        "current_r": 0.064,
+        "progress": 0.04,
         "atr15": 0.014,
-        "rsi15": 37.7,
+        "rsi15": 43.1,
         "trends": {
           "m15": "SELL",
           "h1": "SELL",
           "h4": "BUY"
         },
         "confidence": "baja",
-        "action": "MANTENER",
-        "instruction": "Mantener SL y TP actuales; confirmar que los niveles siguen iguales en FBS.",
+        "action": "CERRAR_TODO",
+        "instruction": "Cerrar antes del fin de la vigencia tras confirmar la cotización FBS.",
         "reasons": [
-          "Estructura M15/H1/H4: SELL/SELL/BUY",
-          "Progreso 7% · resultado 0.11R"
+          "Restan 17 min",
+          "Progreso menor al 75%: 4%"
         ],
-        "urgency": "PRÓXIMO PASO"
+        "urgency": "AHORA"
       },
-      "last_check_at": "2026-08-31T18:52:16.310739+00:00"
+      "last_check_at": "2026-08-31T19:07:17.987620+00:00"
     }
   },
   "events": [
-    {
-      "at": "2026-08-31T06:22:15.604687+00:00",
-      "level": "info",
-      "message": "📈 USDJPY: MANTENER · proxy 159.81"
-    },
-    {
-      "at": "2026-08-31T06:22:15.604693+00:00",
-      "level": "info",
-      "message": "📡 2 trade(s) evaluados · Telegram sent"
-    },
     {
       "at": "2026-08-31T06:37:17.528063+00:00",
       "level": "info",
@@ -3415,6 +3429,16 @@
     },
     {
       "at": "2026-08-31T18:52:17.077148+00:00",
+      "level": "info",
+      "message": "📡 1 trade(s) evaluados · Telegram sent"
+    },
+    {
+      "at": "2026-08-31T19:07:18.912346+00:00",
+      "level": "info",
+      "message": "📈 USDZAR: CERRAR TODO · proxy 16.113"
+    },
+    {
+      "at": "2026-08-31T19:07:18.912369+00:00",
       "level": "info",
       "message": "📡 1 trade(s) evaluados · Telegram sent"
     }
