@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-08-31T15:33:34.814Z",
+  "updated_at": "2026-08-31T15:33:37.344Z",
   "session": {
     "schema_version": 1,
     "run_id": "152417-433654",
@@ -2234,7 +2234,7 @@
     },
     "869d74311e1b069368ca": {
       "trade_id": "869d74311e1b069368ca",
-      "activation_id": "fddc8fbe-af3a-48d5-b617-b70e7343ca0f",
+      "activation_id": "e278e3e6-da1c-497e-a704-48bed3465b48",
       "enabled": true,
       "status": "active",
       "asset": "USDZAR",
@@ -2253,17 +2253,12 @@
       "provider": "yahoo_finance_chart",
       "source": "technical_market_scan",
       "session_run_id": "152417-433654",
-      "activated_at": "2026-08-31T15:33:34.814Z",
+      "activated_at": "2026-08-31T15:33:37.344Z",
       "history": [],
       "last_decision": null
     }
   },
   "events": [
-    {
-      "at": "2026-08-30T23:35:13.934720+00:00",
-      "level": "success",
-      "message": "✅ Mercado analizado · preparando revisión Codex y cards"
-    },
     {
       "at": "2026-08-30T23:36:04.397015+00:00",
       "level": "warning",
@@ -3006,6 +3001,11 @@
     },
     {
       "at": "2026-08-31T15:33:34.814Z",
+      "level": "success",
+      "message": "📡 Seguimiento activado: USDZAR SELL"
+    },
+    {
+      "at": "2026-08-31T15:33:37.344Z",
       "level": "success",
       "message": "📡 Seguimiento activado: USDZAR SELL"
     }
