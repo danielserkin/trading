@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-08-31T15:24:06.814434+00:00",
+  "updated_at": "2026-08-31T15:24:10.151825+00:00",
   "session": {
     "schema_version": 1,
     "run_id": "33408208674-1",
@@ -2239,11 +2239,6 @@
   },
   "events": [
     {
-      "at": "2026-08-30T21:47:20.357261+00:00",
-      "level": "warning",
-      "message": "🤖 Revisión Codex no disponible; se publicó el resultado determinista"
-    },
-    {
       "at": "2026-08-30T21:47:20.357268+00:00",
       "level": "success",
       "message": "✅ Sesión completada y cards publicadas"
@@ -2987,6 +2982,11 @@
       "at": "2026-08-31T15:24:06.814428+00:00",
       "level": "info",
       "message": "🚀 Codex y el analizador iniciaron una nueva sesión"
+    },
+    {
+      "at": "2026-08-31T15:24:10.151796+00:00",
+      "level": "info",
+      "message": "📡 Telegram conectado · iniciando validación y escaneo de mercado"
     }
   ]
 }
