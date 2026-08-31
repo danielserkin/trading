@@ -1,12 +1,12 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-08-31T15:23:55.449Z",
+  "updated_at": "2026-08-31T15:24:06.814434+00:00",
   "session": {
     "schema_version": 1,
-    "run_id": "121404-937427",
+    "run_id": "33408208674-1",
     "date": "session-artifacts",
     "generated_at": "2026-08-31T12:14:52.044557+00:00",
-    "status": "queued",
+    "status": "running",
     "summary": {
       "candidates_reviewed": 9,
       "valid_candidates": 9,
@@ -230,7 +230,9 @@
     "review": null,
     "completed_at": "2026-08-31T12:14:52.395365+00:00",
     "request_id": "cd0ba5b7-19de-4eb8-b9bd-fe8d9ac53a2e",
-    "requested_at": "2026-08-31T15:23:55.449Z"
+    "requested_at": "2026-08-31T15:23:55.449Z",
+    "started_at": "2026-08-31T15:24:06.814406+00:00",
+    "workflow_url": "https://github.com/danielserkin/trading/actions/runs/33408208674"
   },
   "monitors": {
     "df7e021461678e8051d3": {
@@ -2237,11 +2239,6 @@
   },
   "events": [
     {
-      "at": "2026-08-30T21:46:34.999690+00:00",
-      "level": "success",
-      "message": "✅ Mercado analizado · preparando revisión Codex y cards"
-    },
-    {
       "at": "2026-08-30T21:47:20.357261+00:00",
       "level": "warning",
       "message": "🤖 Revisión Codex no disponible; se publicó el resultado determinista"
@@ -2985,6 +2982,11 @@
       "at": "2026-08-31T15:23:55.449Z",
       "level": "info",
       "message": "⏳ Nueva sesión enviada a la cola"
+    },
+    {
+      "at": "2026-08-31T15:24:06.814428+00:00",
+      "level": "info",
+      "message": "🚀 Codex y el analizador iniciaron una nueva sesión"
     }
   ]
 }
