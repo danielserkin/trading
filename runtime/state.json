@@ -1,12 +1,12 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-08-31T15:23:51.848Z",
+  "updated_at": "2026-08-31T15:23:55.449Z",
   "session": {
     "schema_version": 1,
     "run_id": "121404-937427",
     "date": "session-artifacts",
     "generated_at": "2026-08-31T12:14:52.044557+00:00",
-    "status": "completed",
+    "status": "queued",
     "summary": {
       "candidates_reviewed": 9,
       "valid_candidates": 9,
@@ -228,7 +228,9 @@
       "status": "sent"
     },
     "review": null,
-    "completed_at": "2026-08-31T12:14:52.395365+00:00"
+    "completed_at": "2026-08-31T12:14:52.395365+00:00",
+    "request_id": "cd0ba5b7-19de-4eb8-b9bd-fe8d9ac53a2e",
+    "requested_at": "2026-08-31T15:23:55.449Z"
   },
   "monitors": {
     "df7e021461678e8051d3": {
@@ -2235,11 +2237,6 @@
   },
   "events": [
     {
-      "at": "2026-08-30T21:46:27.641472+00:00",
-      "level": "info",
-      "message": "📡 Telegram conectado · iniciando validación y escaneo de mercado"
-    },
-    {
       "at": "2026-08-30T21:46:34.999690+00:00",
       "level": "success",
       "message": "✅ Mercado analizado · preparando revisión Codex y cards"
@@ -2983,6 +2980,11 @@
       "at": "2026-08-31T15:23:51.848Z",
       "level": "warning",
       "message": "⏸️ Seguimiento desactivado: USDCHF"
+    },
+    {
+      "at": "2026-08-31T15:23:55.449Z",
+      "level": "info",
+      "message": "⏳ Nueva sesión enviada a la cola"
     }
   ]
 }
