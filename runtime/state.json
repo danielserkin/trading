@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-08-31T12:43:07.283Z",
+  "updated_at": "2026-08-31T12:43:15.228899+00:00",
   "session": {
     "schema_version": 1,
     "run_id": "121404-937427",
@@ -1891,21 +1891,60 @@
       "source": "technical_market_scan",
       "session_run_id": "121404-937427",
       "activated_at": "2026-08-31T12:43:07.283Z",
-      "history": [],
-      "last_decision": null
+      "history": [
+        {
+          "evaluated_at": "2026-08-31T12:43:14.490571+00:00",
+          "candle_close": "2026-08-31T12:30:00+00:00",
+          "provider": "yahoo_finance_proxy",
+          "proxy_symbol": "USDCHF=X",
+          "current_price": 0.80828,
+          "current_r": -0.371,
+          "progress": -0.217,
+          "atr15": 0.0004879,
+          "rsi15": 40.7,
+          "trends": {
+            "m15": "SELL",
+            "h1": "BUY",
+            "h4": "BUY"
+          },
+          "confidence": "baja",
+          "action": "MANTENER",
+          "instruction": "Mantener SL y TP actuales; confirmar que los niveles siguen iguales en FBS.",
+          "reasons": [
+            "Estructura M15/H1/H4: SELL/BUY/BUY",
+            "Progreso -22% · resultado -0.37R"
+          ],
+          "urgency": "PRÓXIMO PASO"
+        }
+      ],
+      "last_decision": {
+        "evaluated_at": "2026-08-31T12:43:14.490571+00:00",
+        "candle_close": "2026-08-31T12:30:00+00:00",
+        "provider": "yahoo_finance_proxy",
+        "proxy_symbol": "USDCHF=X",
+        "current_price": 0.80828,
+        "current_r": -0.371,
+        "progress": -0.217,
+        "atr15": 0.0004879,
+        "rsi15": 40.7,
+        "trends": {
+          "m15": "SELL",
+          "h1": "BUY",
+          "h4": "BUY"
+        },
+        "confidence": "baja",
+        "action": "MANTENER",
+        "instruction": "Mantener SL y TP actuales; confirmar que los niveles siguen iguales en FBS.",
+        "reasons": [
+          "Estructura M15/H1/H4: SELL/BUY/BUY",
+          "Progreso -22% · resultado -0.37R"
+        ],
+        "urgency": "PRÓXIMO PASO"
+      },
+      "last_check_at": "2026-08-31T12:43:14.490571+00:00"
     }
   },
   "events": [
-    {
-      "at": "2026-08-28T23:08:25.015500+00:00",
-      "level": "warning",
-      "message": "📈 USDMXN: EVIDENCIA INSUFICIENTE"
-    },
-    {
-      "at": "2026-08-28T23:08:25.015506+00:00",
-      "level": "info",
-      "message": "📡 2 trade(s) evaluados · Telegram sent"
-    },
     {
       "at": "2026-08-28T23:08:38.091991+00:00",
       "level": "warning",
@@ -2645,6 +2684,16 @@
       "at": "2026-08-31T12:43:07.283Z",
       "level": "success",
       "message": "📡 Seguimiento activado: USDCHF BUY"
+    },
+    {
+      "at": "2026-08-31T12:43:15.228857+00:00",
+      "level": "info",
+      "message": "📈 USDCHF: MANTENER · proxy 0.80828"
+    },
+    {
+      "at": "2026-08-31T12:43:15.228891+00:00",
+      "level": "info",
+      "message": "📡 1 trade(s) evaluados · Telegram sent"
     }
   ]
 }
