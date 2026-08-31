@@ -19,8 +19,7 @@ function formatNumber(value) {
   if (value === null || value === undefined || value === "") return "—";
   if (typeof value === "string" && !Number.isFinite(Number(value))) return value;
   const number = Number(value);
-  const digits = number >= 100 ? 2 : number >= 10 ? 3 : number >= 1 ? 5 : 7;
-  return number.toFixed(digits).replace(/0+$/, "").replace(/\.$/, "");
+  return number.toFixed(4).replace(/0+$/, "").replace(/\.$/, "");
 }
 
 function toast(message) {
@@ -44,7 +43,8 @@ async function api(path, options = {}) {
 function connection(online, label) {
   const pill = $("#connection-pill");
   pill.className = `pill ${online ? "pill-online" : "pill-offline"}`;
-  pill.innerHTML = `<i></i> ${escapeHtml(label)}`;
+  pill.setAttribute("aria-label", label);
+  pill.innerHTML = `<i></i><span class="pill-label">${escapeHtml(label)}</span>`;
   $("#new-session-button").disabled = !online;
 }
 
@@ -94,7 +94,10 @@ function cardHtml(card) {
     <div class="card-top"><span class="rank">OPORTUNIDAD ${card.rank}</span><span class="stars">${"★".repeat(card.stars || 0)}${"☆".repeat(5-(card.stars || 0))}</span></div>
     <div class="card-title"><h3>${escapeHtml(card.asset)}</h3><span class="direction">${card.direction === "BUY" ? "▲ BUY" : "▼ SELL"}</span></div>
     <p class="order-type">${escapeHtml(card.order_type)} · ${escapeHtml(card.source || "análisis técnico")}</p>
-    <div class="levels">${levels.map(([label,value]) => `<div class="level"><small>${label}</small><div class="copy-row"><code>${escapeHtml(formatNumber(value))}</code><button class="copy-button" data-copy="${escapeHtml(value)}" title="Copiar">📋</button></div></div>`).join("")}</div>
+    <div class="levels">${levels.map(([label,value]) => {
+      const formatted = formatNumber(value);
+      return `<div class="level"><small>${label}</small><div class="copy-row"><code>${escapeHtml(formatted)}</code><button class="copy-button" data-copy="${escapeHtml(formatted)}" title="Copiar">📋</button></div></div>`;
+    }).join("")}</div>
     <div class="card-facts"><span>⚖️ R/R <strong>${escapeHtml(card.risk_reward?.toFixed?.(2) || "—")}</strong></span><span>🛡️ Riesgo <strong>${card.risk_usd != null ? `$${Number(card.risk_usd).toFixed(2)}` : "—"}</strong></span></div>
     <div class="monitor-control"><div class="monitor-label"><strong>📡 Administrar trade</strong><small>${active ? "Seguimiento activo" : "Evaluar cada 15 minutos"}</small></div><label class="switch"><input class="monitor-toggle" data-trade-id="${escapeHtml(card.id)}" type="checkbox" ${active ? "checked" : ""} ${card.monitorable ? "" : "disabled"}><span class="slider"></span></label></div>
   </article>`;
@@ -112,7 +115,8 @@ function renderMonitors(monitors) {
     const decision = item.last_decision || {};
     const suggested = decision.new_sl != null ? ["Nuevo SL", decision.new_sl] : decision.new_tp != null ? ["Nuevo TP", decision.new_tp] : null;
     const history = (item.history || []).slice(-4).reverse();
-    return `<div class="monitor-item"><header><strong>${escapeHtml(item.asset)} ${escapeHtml(item.direction)}</strong><div class="monitor-actions"><span class="action">${escapeHtml((decision.action || "ESPERANDO").replaceAll("_"," "))}</span><button class="stop-monitor" data-stop-monitor="${escapeHtml(item.trade_id)}" title="Detener seguimiento">⏹</button></div></header><p>${escapeHtml(decision.instruction || "Primera evaluación pendiente")}<br>${decision.evaluated_at ? new Date(decision.evaluated_at).toLocaleString() : ""}</p>${suggested ? `<div class="suggested-level"><small>${suggested[0]}</small><code>${escapeHtml(formatNumber(suggested[1]))}</code><button class="copy-button" data-copy="${escapeHtml(suggested[1])}" title="Copiar">📋</button></div>` : ""}${history.length > 1 ? `<details class="decision-history"><summary>Historial (${item.history.length})</summary>${history.map((past) => `<div><time>${new Date(past.evaluated_at).toLocaleTimeString()}</time><span>${escapeHtml((past.action || "—").replaceAll("_"," "))}</span><code>${escapeHtml(formatNumber(past.current_price))}</code></div>`).join("")}</details>` : ""}</div>`;
+    const suggestedValue = suggested ? formatNumber(suggested[1]) : null;
+    return `<div class="monitor-item"><header><strong>${escapeHtml(item.asset)} ${escapeHtml(item.direction)}</strong><div class="monitor-actions"><span class="action">${escapeHtml((decision.action || "ESPERANDO").replaceAll("_"," "))}</span><button class="stop-monitor" data-stop-monitor="${escapeHtml(item.trade_id)}" title="Detener seguimiento">⏹</button></div></header><p>${escapeHtml(decision.instruction || "Primera evaluación pendiente")}<br>${decision.evaluated_at ? new Date(decision.evaluated_at).toLocaleString() : ""}</p>${suggested ? `<div class="suggested-level"><small>${suggested[0]}</small><code>${escapeHtml(suggestedValue)}</code><button class="copy-button" data-copy="${escapeHtml(suggestedValue)}" title="Copiar">📋</button></div>` : ""}${history.length > 1 ? `<details class="decision-history"><summary>Historial (${item.history.length})</summary>${history.map((past) => `<div><time>${new Date(past.evaluated_at).toLocaleTimeString()}</time><span>${escapeHtml((past.action || "—").replaceAll("_"," "))}</span><code>${escapeHtml(formatNumber(past.current_price))}</code></div>`).join("")}</details>` : ""}</div>`;
   }).join("") : `<div class="mini-empty">Activa “Administrar trade” en una card.</div>`;
 }
 
@@ -157,10 +161,10 @@ function findCard(tradeId) { return (app.state?.session?.cards || []).find((card
 function openMonitor(card) {
   $("#monitor-trade-id").value = card.id;
   $("#monitor-dialog-title").textContent = `${card.asset} ${card.direction}`;
-  $("#monitor-entry").value = card.entry;
-  $("#monitor-sl").value = card.stop_loss;
-  $("#monitor-tp").value = card.take_profit;
-  $("#monitor-volume").value = parseFloat(card.size) || "";
+  $("#monitor-entry").value = formatNumber(card.entry);
+  $("#monitor-sl").value = formatNumber(card.stop_loss);
+  $("#monitor-tp").value = formatNumber(card.take_profit);
+  $("#monitor-volume").value = card.size ? formatNumber(parseFloat(card.size)) : "";
   $("#monitor-confirm").checked = false;
   $("#monitor-error").hidden = true;
   $("#monitor-dialog").showModal();
