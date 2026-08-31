@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-08-31T12:13:58.831390+00:00",
+  "updated_at": "2026-08-31T12:14:05.942817+00:00",
   "session": {
     "schema_version": 1,
     "run_id": "33390716007-1",
@@ -1876,11 +1876,6 @@
   },
   "events": [
     {
-      "at": "2026-08-28T23:07:59.025Z",
-      "level": "success",
-      "message": "📡 Seguimiento activado: AUDCHF BUY"
-    },
-    {
       "at": "2026-08-28T23:08:00.106Z",
       "level": "success",
       "message": "📡 Seguimiento activado: AUDCHF BUY"
@@ -2624,6 +2619,11 @@
       "at": "2026-08-31T12:13:58.831366+00:00",
       "level": "info",
       "message": "📡 Telegram conectado · iniciando validación y escaneo de mercado"
+    },
+    {
+      "at": "2026-08-31T12:14:05.942788+00:00",
+      "level": "success",
+      "message": "✅ Mercado analizado · preparando revisión Codex y cards"
     }
   ]
 }
