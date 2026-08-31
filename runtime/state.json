@@ -1,12 +1,12 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-08-31T12:13:45.408Z",
+  "updated_at": "2026-08-31T12:13:55.555532+00:00",
   "session": {
     "schema_version": 1,
-    "run_id": "034145-110143",
+    "run_id": "33390716007-1",
     "date": "session-artifacts",
     "generated_at": "2026-08-31T03:42:29.310587+00:00",
-    "status": "queued",
+    "status": "running",
     "summary": {
       "candidates_reviewed": 9,
       "valid_candidates": 9,
@@ -230,7 +230,9 @@
     "review": null,
     "completed_at": "2026-08-31T03:42:29.548235+00:00",
     "request_id": "7a56cd05-a26a-4896-b269-8f5b39be6518",
-    "requested_at": "2026-08-31T12:13:45.408Z"
+    "requested_at": "2026-08-31T12:13:45.408Z",
+    "started_at": "2026-08-31T12:13:55.555483+00:00",
+    "workflow_url": "https://github.com/danielserkin/trading/actions/runs/33390716007"
   },
   "monitors": {
     "df7e021461678e8051d3": {
@@ -1874,11 +1876,6 @@
   },
   "events": [
     {
-      "at": "2026-08-28T23:07:27.157800+00:00",
-      "level": "success",
-      "message": "✅ Sesión completada y cards publicadas"
-    },
-    {
       "at": "2026-08-28T23:07:27.157805+00:00",
       "level": "success",
       "message": "📲 Telegram: sent"
@@ -2622,6 +2619,11 @@
       "at": "2026-08-31T12:13:45.408Z",
       "level": "info",
       "message": "⏳ Nueva sesión enviada a la cola"
+    },
+    {
+      "at": "2026-08-31T12:13:55.555508+00:00",
+      "level": "info",
+      "message": "🚀 Codex y el analizador iniciaron una nueva sesión"
     }
   ]
 }
