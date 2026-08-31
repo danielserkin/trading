@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-08-31T15:25:04.347477+00:00",
+  "updated_at": "2026-08-31T15:33:34.814Z",
   "session": {
     "schema_version": 1,
     "run_id": "152417-433654",
@@ -12,7 +12,7 @@
       "valid_candidates": 8,
       "messages_reviewed": 0,
       "symbols_scanned": 39,
-      "max_risk_usd": 20.0
+      "max_risk_usd": 20
     },
     "cards": [
       {
@@ -2231,14 +2231,34 @@
       },
       "last_check_at": "2026-08-31T15:22:14.802386+00:00",
       "disabled_at": "2026-08-31T15:23:51.848Z"
+    },
+    "869d74311e1b069368ca": {
+      "trade_id": "869d74311e1b069368ca",
+      "activation_id": "fddc8fbe-af3a-48d5-b617-b70e7343ca0f",
+      "enabled": true,
+      "status": "active",
+      "asset": "USDZAR",
+      "direction": "SELL",
+      "order_type": "SELL STOP",
+      "entry": 16.1158,
+      "stop_loss": 16.1583,
+      "original_sl": 16.1583,
+      "current_sl": 16.1583,
+      "take_profit": 16.0478,
+      "original_tp": 16.0478,
+      "current_tp": 16.0478,
+      "volume": 0.07,
+      "valid_until": "2026-08-31T19:24:12.270249+00:00",
+      "proxy_symbol": null,
+      "provider": "yahoo_finance_chart",
+      "source": "technical_market_scan",
+      "session_run_id": "152417-433654",
+      "activated_at": "2026-08-31T15:33:34.814Z",
+      "history": [],
+      "last_decision": null
     }
   },
   "events": [
-    {
-      "at": "2026-08-30T23:35:05.576205+00:00",
-      "level": "info",
-      "message": "📡 Telegram conectado · iniciando validación y escaneo de mercado"
-    },
     {
       "at": "2026-08-30T23:35:13.934720+00:00",
       "level": "success",
@@ -2983,6 +3003,11 @@
       "at": "2026-08-31T15:25:04.347471+00:00",
       "level": "success",
       "message": "📲 Telegram: sent"
+    },
+    {
+      "at": "2026-08-31T15:33:34.814Z",
+      "level": "success",
+      "message": "📡 Seguimiento activado: USDZAR SELL"
     }
   ]
 }
