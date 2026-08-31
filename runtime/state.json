@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-08-31T12:07:22.273067+00:00",
+  "updated_at": "2026-08-31T12:13:42.167Z",
   "session": {
     "schema_version": 1,
     "run_id": "034145-110143",
@@ -378,8 +378,8 @@
     "9267313c02d043de1d6b": {
       "trade_id": "9267313c02d043de1d6b",
       "activation_id": "82126a0d-d786-42ee-9a0d-888b26531832",
-      "enabled": true,
-      "status": "active",
+      "enabled": false,
+      "status": "paused",
       "asset": "AUDNZD",
       "direction": "BUY",
       "order_type": "BUY STOP",
@@ -1079,7 +1079,7 @@
           "current_r": -0.276,
           "progress": -0.171,
           "atr15": 0.00074,
-          "rsi15": 56.0,
+          "rsi15": 56,
           "trends": {
             "m15": "NEUTRAL",
             "h1": "SELL",
@@ -1215,7 +1215,8 @@
         ],
         "urgency": "AHORA"
       },
-      "last_check_at": "2026-08-31T12:07:20.562034+00:00"
+      "last_check_at": "2026-08-31T12:07:20.562034+00:00",
+      "disabled_at": "2026-08-31T12:13:42.167Z"
     },
     "c97b71bedf89e87dd67e": {
       "trade_id": "c97b71bedf89e87dd67e",
@@ -1297,7 +1298,7 @@
           "current_r": 0.15,
           "progress": 0.094,
           "atr15": 0.06,
-          "rsi15": 62.0,
+          "rsi15": 62,
           "trends": {
             "m15": "NEUTRAL",
             "h1": "NEUTRAL",
@@ -1393,7 +1394,7 @@
           "current_r": -1.871,
           "progress": -1.168,
           "atr15": 0.08,
-          "rsi15": 33.0,
+          "rsi15": 33,
           "trends": {
             "m15": "SELL",
             "h1": "SELL",
@@ -1417,7 +1418,7 @@
           "current_r": -1.676,
           "progress": -1.047,
           "atr15": 0.08,
-          "rsi15": 38.0,
+          "rsi15": 38,
           "trends": {
             "m15": "SELL",
             "h1": "SELL",
@@ -1869,11 +1870,6 @@
     }
   },
   "events": [
-    {
-      "at": "2026-08-28T23:06:27.404352+00:00",
-      "level": "info",
-      "message": "📡 Telegram conectado · iniciando validación y escaneo de mercado"
-    },
     {
       "at": "2026-08-28T23:06:38.943503+00:00",
       "level": "success",
@@ -2618,6 +2614,11 @@
       "at": "2026-08-31T12:07:22.273064+00:00",
       "level": "info",
       "message": "📡 2 trade(s) evaluados · Telegram sent"
+    },
+    {
+      "at": "2026-08-31T12:13:42.167Z",
+      "level": "warning",
+      "message": "⏸️ Seguimiento desactivado: AUDNZD"
     }
   ]
 }
