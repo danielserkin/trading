@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-08-31T04:32:40.958Z",
+  "updated_at": "2026-08-31T04:32:51.801266+00:00",
   "session": {
     "schema_version": 1,
     "run_id": "034145-110143",
@@ -397,8 +397,57 @@
       "source": "technical_market_scan",
       "session_run_id": "034145-110143",
       "activated_at": "2026-08-31T04:32:40.958Z",
-      "history": [],
-      "last_decision": null
+      "history": [
+        {
+          "evaluated_at": "2026-08-31T04:32:50.790628+00:00",
+          "candle_close": "2026-08-31T04:30:00+00:00",
+          "provider": "yahoo_finance_proxy",
+          "proxy_symbol": "AUDNZD=X",
+          "current_price": 1.21055,
+          "current_r": -0.167,
+          "progress": -0.103,
+          "atr15": 0.00088,
+          "rsi15": 44.9,
+          "trends": {
+            "m15": "SELL",
+            "h1": "BUY",
+            "h4": "BUY"
+          },
+          "confidence": "baja",
+          "action": "MANTENER",
+          "instruction": "Mantener SL y TP actuales; confirmar que los niveles siguen iguales en FBS.",
+          "reasons": [
+            "Estructura M15/H1/H4: SELL/BUY/BUY",
+            "Progreso -10% · resultado -0.17R"
+          ],
+          "urgency": "PRÓXIMO PASO"
+        }
+      ],
+      "last_decision": {
+        "evaluated_at": "2026-08-31T04:32:50.790628+00:00",
+        "candle_close": "2026-08-31T04:30:00+00:00",
+        "provider": "yahoo_finance_proxy",
+        "proxy_symbol": "AUDNZD=X",
+        "current_price": 1.21055,
+        "current_r": -0.167,
+        "progress": -0.103,
+        "atr15": 0.00088,
+        "rsi15": 44.9,
+        "trends": {
+          "m15": "SELL",
+          "h1": "BUY",
+          "h4": "BUY"
+        },
+        "confidence": "baja",
+        "action": "MANTENER",
+        "instruction": "Mantener SL y TP actuales; confirmar que los niveles siguen iguales en FBS.",
+        "reasons": [
+          "Estructura M15/H1/H4: SELL/BUY/BUY",
+          "Progreso -10% · resultado -0.17R"
+        ],
+        "urgency": "PRÓXIMO PASO"
+      },
+      "last_check_at": "2026-08-31T04:32:50.790628+00:00"
     }
   },
   "events": [
@@ -701,6 +750,16 @@
       "at": "2026-08-31T04:32:40.958Z",
       "level": "success",
       "message": "📡 Seguimiento activado: AUDNZD BUY"
+    },
+    {
+      "at": "2026-08-31T04:32:51.801242+00:00",
+      "level": "info",
+      "message": "📈 AUDNZD: MANTENER · proxy 1.21055"
+    },
+    {
+      "at": "2026-08-31T04:32:51.801262+00:00",
+      "level": "info",
+      "message": "📡 1 trade(s) evaluados · Telegram sent"
     }
   ]
 }
