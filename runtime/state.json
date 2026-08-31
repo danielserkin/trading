@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-08-31T15:33:53.295076+00:00",
+  "updated_at": "2026-08-31T15:37:20.402416+00:00",
   "session": {
     "schema_version": 1,
     "run_id": "152417-433654",
@@ -2302,10 +2302,34 @@
             "Progreso -8% · resultado -0.12R"
           ],
           "urgency": "PRÓXIMO PASO"
+        },
+        {
+          "evaluated_at": "2026-08-31T15:37:19.583414+00:00",
+          "candle_close": "2026-08-31T15:30:00+00:00",
+          "provider": "yahoo_finance_proxy",
+          "proxy_symbol": "USDZAR=X",
+          "current_price": 16.121,
+          "current_r": -0.123,
+          "progress": -0.077,
+          "atr15": 0.02,
+          "rsi15": 52.3,
+          "trends": {
+            "m15": "SELL",
+            "h1": "SELL",
+            "h4": "BUY"
+          },
+          "confidence": "baja",
+          "action": "MANTENER",
+          "instruction": "Mantener SL y TP actuales; confirmar que los niveles siguen iguales en FBS.",
+          "reasons": [
+            "Estructura M15/H1/H4: SELL/SELL/BUY",
+            "Progreso -8% · resultado -0.12R"
+          ],
+          "urgency": "PRÓXIMO PASO"
         }
       ],
       "last_decision": {
-        "evaluated_at": "2026-08-31T15:33:52.798740+00:00",
+        "evaluated_at": "2026-08-31T15:37:19.583414+00:00",
         "candle_close": "2026-08-31T15:30:00+00:00",
         "provider": "yahoo_finance_proxy",
         "proxy_symbol": "USDZAR=X",
@@ -2328,20 +2352,10 @@
         ],
         "urgency": "PRÓXIMO PASO"
       },
-      "last_check_at": "2026-08-31T15:33:52.798740+00:00"
+      "last_check_at": "2026-08-31T15:37:19.583414+00:00"
     }
   },
   "events": [
-    {
-      "at": "2026-08-31T03:41:35.544161+00:00",
-      "level": "info",
-      "message": "🚀 Codex y el analizador iniciaron una nueva sesión"
-    },
-    {
-      "at": "2026-08-31T03:41:39.067798+00:00",
-      "level": "info",
-      "message": "📡 Telegram conectado · iniciando validación y escaneo de mercado"
-    },
     {
       "at": "2026-08-31T03:41:46.182546+00:00",
       "level": "success",
@@ -3079,6 +3093,16 @@
     },
     {
       "at": "2026-08-31T15:33:53.295071+00:00",
+      "level": "info",
+      "message": "📡 1 trade(s) evaluados · Telegram not_needed"
+    },
+    {
+      "at": "2026-08-31T15:37:20.402390+00:00",
+      "level": "info",
+      "message": "📈 USDZAR: MANTENER · proxy 16.121"
+    },
+    {
+      "at": "2026-08-31T15:37:20.402412+00:00",
       "level": "info",
       "message": "📡 1 trade(s) evaluados · Telegram not_needed"
     }
