@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-08-31T12:13:42.167Z",
+  "updated_at": "2026-08-31T12:13:43.522Z",
   "session": {
     "schema_version": 1,
     "run_id": "034145-110143",
@@ -1221,8 +1221,8 @@
     "c97b71bedf89e87dd67e": {
       "trade_id": "c97b71bedf89e87dd67e",
       "activation_id": "0289dc31-caad-4714-8efc-b07ab004e228",
-      "enabled": true,
-      "status": "active",
+      "enabled": false,
+      "status": "paused",
       "asset": "USDJPY",
       "direction": "BUY",
       "order_type": "BUY STOP",
@@ -1866,15 +1866,11 @@
         ],
         "urgency": "AHORA"
       },
-      "last_check_at": "2026-08-31T12:07:21.059371+00:00"
+      "last_check_at": "2026-08-31T12:07:21.059371+00:00",
+      "disabled_at": "2026-08-31T12:13:43.522Z"
     }
   },
   "events": [
-    {
-      "at": "2026-08-28T23:06:38.943503+00:00",
-      "level": "success",
-      "message": "✅ Mercado analizado · preparando revisión Codex y cards"
-    },
     {
       "at": "2026-08-28T23:07:27.157795+00:00",
       "level": "warning",
@@ -2619,6 +2615,11 @@
       "at": "2026-08-31T12:13:42.167Z",
       "level": "warning",
       "message": "⏸️ Seguimiento desactivado: AUDNZD"
+    },
+    {
+      "at": "2026-08-31T12:13:43.522Z",
+      "level": "warning",
+      "message": "⏸️ Seguimiento desactivado: USDJPY"
     }
   ]
 }
