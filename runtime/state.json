@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-08-31T10:52:18.376582+00:00",
+  "updated_at": "2026-08-31T11:07:17.875922+00:00",
   "session": {
     "schema_version": 1,
     "run_id": "034145-110143",
@@ -1069,21 +1069,45 @@
             "Progreso alcanzado: -17%"
           ],
           "urgency": "AHORA"
+        },
+        {
+          "evaluated_at": "2026-08-31T11:07:16.553685+00:00",
+          "candle_close": "2026-08-31T11:00:00+00:00",
+          "provider": "yahoo_finance_proxy",
+          "proxy_symbol": "AUDNZD=X",
+          "current_price": 1.21032,
+          "current_r": -0.276,
+          "progress": -0.171,
+          "atr15": 0.00074,
+          "rsi15": 56.0,
+          "trends": {
+            "m15": "NEUTRAL",
+            "h1": "SELL",
+            "h4": "BUY"
+          },
+          "confidence": "baja",
+          "action": "CERRAR_TODO",
+          "instruction": "Cerrar por vencimiento de la idea tras confirmar la cotización FBS.",
+          "reasons": [
+            "La vigencia intradía original terminó",
+            "Progreso alcanzado: -17%"
+          ],
+          "urgency": "AHORA"
         }
       ],
       "last_decision": {
-        "evaluated_at": "2026-08-31T10:52:17.242531+00:00",
-        "candle_close": "2026-08-31T10:45:00+00:00",
+        "evaluated_at": "2026-08-31T11:07:16.553685+00:00",
+        "candle_close": "2026-08-31T11:00:00+00:00",
         "provider": "yahoo_finance_proxy",
         "proxy_symbol": "AUDNZD=X",
-        "current_price": 1.21031,
-        "current_r": -0.281,
-        "progress": -0.174,
-        "atr15": 0.00076,
-        "rsi15": 43.3,
+        "current_price": 1.21032,
+        "current_r": -0.276,
+        "progress": -0.171,
+        "atr15": 0.00074,
+        "rsi15": 56.0,
         "trends": {
           "m15": "NEUTRAL",
-          "h1": "NEUTRAL",
+          "h1": "SELL",
           "h4": "BUY"
         },
         "confidence": "baja",
@@ -1095,7 +1119,7 @@
         ],
         "urgency": "AHORA"
       },
-      "last_check_at": "2026-08-31T10:52:17.242531+00:00"
+      "last_check_at": "2026-08-31T11:07:16.553685+00:00"
     },
     "c97b71bedf89e87dd67e": {
       "trade_id": "c97b71bedf89e87dd67e",
@@ -1599,18 +1623,42 @@
             "Progreso alcanzado: -50%"
           ],
           "urgency": "AHORA"
+        },
+        {
+          "evaluated_at": "2026-08-31T11:07:16.782674+00:00",
+          "candle_close": "2026-08-31T11:00:00+00:00",
+          "provider": "yahoo_finance_proxy",
+          "proxy_symbol": "USDJPY=X",
+          "current_price": 159.72,
+          "current_r": -0.92,
+          "progress": -0.575,
+          "atr15": 0.07,
+          "rsi15": 68.1,
+          "trends": {
+            "m15": "NEUTRAL",
+            "h1": "SELL",
+            "h4": "BUY"
+          },
+          "confidence": "baja",
+          "action": "CERRAR_TODO",
+          "instruction": "Cerrar por vencimiento de la idea tras confirmar la cotización FBS.",
+          "reasons": [
+            "La vigencia intradía original terminó",
+            "Progreso alcanzado: -57%"
+          ],
+          "urgency": "AHORA"
         }
       ],
       "last_decision": {
-        "evaluated_at": "2026-08-31T10:52:17.503907+00:00",
-        "candle_close": "2026-08-31T10:45:00+00:00",
+        "evaluated_at": "2026-08-31T11:07:16.782674+00:00",
+        "candle_close": "2026-08-31T11:00:00+00:00",
         "provider": "yahoo_finance_proxy",
         "proxy_symbol": "USDJPY=X",
-        "current_price": 159.74,
-        "current_r": -0.808,
-        "progress": -0.504,
-        "atr15": 0.08,
-        "rsi15": 56.9,
+        "current_price": 159.72,
+        "current_r": -0.92,
+        "progress": -0.575,
+        "atr15": 0.07,
+        "rsi15": 68.1,
         "trends": {
           "m15": "NEUTRAL",
           "h1": "SELL",
@@ -1621,11 +1669,11 @@
         "instruction": "Cerrar por vencimiento de la idea tras confirmar la cotización FBS.",
         "reasons": [
           "La vigencia intradía original terminó",
-          "Progreso alcanzado: -50%"
+          "Progreso alcanzado: -57%"
         ],
         "urgency": "AHORA"
       },
-      "last_check_at": "2026-08-31T10:52:17.503907+00:00"
+      "last_check_at": "2026-08-31T11:07:16.782674+00:00"
     }
   },
   "events": [
@@ -2311,6 +2359,21 @@
     },
     {
       "at": "2026-08-31T10:52:18.376579+00:00",
+      "level": "info",
+      "message": "📡 2 trade(s) evaluados · Telegram sent"
+    },
+    {
+      "at": "2026-08-31T11:07:17.875872+00:00",
+      "level": "info",
+      "message": "📈 AUDNZD: CERRAR TODO · proxy 1.21032"
+    },
+    {
+      "at": "2026-08-31T11:07:17.875907+00:00",
+      "level": "info",
+      "message": "📈 USDJPY: CERRAR TODO · proxy 159.72"
+    },
+    {
+      "at": "2026-08-31T11:07:17.875917+00:00",
       "level": "info",
       "message": "📡 2 trade(s) evaluados · Telegram sent"
     }
