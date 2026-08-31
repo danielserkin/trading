@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-08-31T19:07:18.912372+00:00",
+  "updated_at": "2026-08-31T19:16:40.198Z",
   "session": {
     "schema_version": 1,
     "run_id": "152417-433654",
@@ -2235,8 +2235,8 @@
     "869d74311e1b069368ca": {
       "trade_id": "869d74311e1b069368ca",
       "activation_id": "e278e3e6-da1c-497e-a704-48bed3465b48",
-      "enabled": true,
-      "status": "active",
+      "enabled": false,
+      "status": "paused",
       "asset": "USDZAR",
       "direction": "SELL",
       "order_type": "SELL STOP",
@@ -2688,15 +2688,11 @@
         ],
         "urgency": "AHORA"
       },
-      "last_check_at": "2026-08-31T19:07:17.987620+00:00"
+      "last_check_at": "2026-08-31T19:07:17.987620+00:00",
+      "disabled_at": "2026-08-31T19:16:40.198Z"
     }
   },
   "events": [
-    {
-      "at": "2026-08-31T06:37:17.528063+00:00",
-      "level": "info",
-      "message": "📈 AUDNZD: MANTENER · proxy 1.21094"
-    },
     {
       "at": "2026-08-31T06:37:17.528089+00:00",
       "level": "info",
@@ -3441,6 +3437,11 @@
       "at": "2026-08-31T19:07:18.912369+00:00",
       "level": "info",
       "message": "📡 1 trade(s) evaluados · Telegram sent"
+    },
+    {
+      "at": "2026-08-31T19:16:40.198Z",
+      "level": "warning",
+      "message": "⏸️ Seguimiento desactivado: USDZAR"
     }
   ]
 }
