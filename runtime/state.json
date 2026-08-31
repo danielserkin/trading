@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-08-31T15:22:15.515120+00:00",
+  "updated_at": "2026-08-31T15:23:51.848Z",
   "session": {
     "schema_version": 1,
     "run_id": "121404-937427",
@@ -1872,8 +1872,8 @@
     "04d2da5b2932067daf0b": {
       "trade_id": "04d2da5b2932067daf0b",
       "activation_id": "083ef9c0-c533-48cb-86b7-968170eef0c6",
-      "enabled": true,
-      "status": "active",
+      "enabled": false,
+      "status": "paused",
       "asset": "USDCHF",
       "direction": "BUY",
       "order_type": "BUY STOP",
@@ -2229,15 +2229,11 @@
         ],
         "urgency": "PRÓXIMO PASO"
       },
-      "last_check_at": "2026-08-31T15:22:14.802386+00:00"
+      "last_check_at": "2026-08-31T15:22:14.802386+00:00",
+      "disabled_at": "2026-08-31T15:23:51.848Z"
     }
   },
   "events": [
-    {
-      "at": "2026-08-30T21:46:24.337972+00:00",
-      "level": "info",
-      "message": "🚀 Codex y el analizador iniciaron una nueva sesión"
-    },
     {
       "at": "2026-08-30T21:46:27.641472+00:00",
       "level": "info",
@@ -2982,6 +2978,11 @@
       "at": "2026-08-31T15:22:15.515115+00:00",
       "level": "info",
       "message": "📡 1 trade(s) evaluados · Telegram sent"
+    },
+    {
+      "at": "2026-08-31T15:23:51.848Z",
+      "level": "warning",
+      "message": "⏸️ Seguimiento desactivado: USDCHF"
     }
   ]
 }
