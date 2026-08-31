@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-08-31T15:52:20.197286+00:00",
+  "updated_at": "2026-08-31T16:07:18.929242+00:00",
   "session": {
     "schema_version": 1,
     "run_id": "152417-433654",
@@ -2350,18 +2350,42 @@
             "Progreso -8% · resultado -0.13R"
           ],
           "urgency": "PRÓXIMO PASO"
+        },
+        {
+          "evaluated_at": "2026-08-31T16:07:17.688901+00:00",
+          "candle_close": "2026-08-31T16:00:00+00:00",
+          "provider": "yahoo_finance_proxy",
+          "proxy_symbol": "USDZAR=X",
+          "current_price": 16.115,
+          "current_r": 0.017,
+          "progress": 0.01,
+          "atr15": 0.019,
+          "rsi15": 43.1,
+          "trends": {
+            "m15": "SELL",
+            "h1": "SELL",
+            "h4": "BUY"
+          },
+          "confidence": "baja",
+          "action": "MANTENER",
+          "instruction": "Mantener SL y TP actuales; confirmar que los niveles siguen iguales en FBS.",
+          "reasons": [
+            "Estructura M15/H1/H4: SELL/SELL/BUY",
+            "Progreso 1% · resultado 0.02R"
+          ],
+          "urgency": "PRÓXIMO PASO"
         }
       ],
       "last_decision": {
-        "evaluated_at": "2026-08-31T15:52:18.843029+00:00",
-        "candle_close": "2026-08-31T15:45:00+00:00",
+        "evaluated_at": "2026-08-31T16:07:17.688901+00:00",
+        "candle_close": "2026-08-31T16:00:00+00:00",
         "provider": "yahoo_finance_proxy",
         "proxy_symbol": "USDZAR=X",
-        "current_price": 16.121,
-        "current_r": -0.126,
-        "progress": -0.079,
+        "current_price": 16.115,
+        "current_r": 0.017,
+        "progress": 0.01,
         "atr15": 0.019,
-        "rsi15": 56.5,
+        "rsi15": 43.1,
         "trends": {
           "m15": "SELL",
           "h1": "SELL",
@@ -2372,24 +2396,14 @@
         "instruction": "Mantener SL y TP actuales; confirmar que los niveles siguen iguales en FBS.",
         "reasons": [
           "Estructura M15/H1/H4: SELL/SELL/BUY",
-          "Progreso -8% · resultado -0.13R"
+          "Progreso 1% · resultado 0.02R"
         ],
         "urgency": "PRÓXIMO PASO"
       },
-      "last_check_at": "2026-08-31T15:52:18.843029+00:00"
+      "last_check_at": "2026-08-31T16:07:17.688901+00:00"
     }
   },
   "events": [
-    {
-      "at": "2026-08-31T03:42:29.548258+00:00",
-      "level": "success",
-      "message": "✅ Sesión completada y cards publicadas"
-    },
-    {
-      "at": "2026-08-31T03:42:29.548263+00:00",
-      "level": "success",
-      "message": "📲 Telegram: sent"
-    },
     {
       "at": "2026-08-31T04:32:40.958Z",
       "level": "success",
@@ -3127,6 +3141,16 @@
     },
     {
       "at": "2026-08-31T15:52:20.197282+00:00",
+      "level": "info",
+      "message": "📡 1 trade(s) evaluados · Telegram sent"
+    },
+    {
+      "at": "2026-08-31T16:07:18.929214+00:00",
+      "level": "info",
+      "message": "📈 USDZAR: MANTENER · proxy 16.115"
+    },
+    {
+      "at": "2026-08-31T16:07:18.929237+00:00",
       "level": "info",
       "message": "📡 1 trade(s) evaluados · Telegram sent"
     }
