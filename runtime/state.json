@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-01T04:52:15.581514+00:00",
+  "updated_at": "2026-09-01T05:07:17.592066+00:00",
   "session": {
     "schema_version": 1,
     "run_id": "010010-113984",
@@ -3049,18 +3049,42 @@
             "Progreso menor al 75%: 7%"
           ],
           "urgency": "AHORA"
+        },
+        {
+          "evaluated_at": "2026-09-01T05:07:16.469460+00:00",
+          "candle_close": "2026-09-01T05:00:00+00:00",
+          "provider": "yahoo_finance_proxy",
+          "proxy_symbol": "EURCHF=X",
+          "current_price": 0.9396,
+          "current_r": 0.043,
+          "progress": 0.026,
+          "atr15": 0.0006,
+          "rsi15": 50.5,
+          "trends": {
+            "m15": "BUY",
+            "h1": "BUY",
+            "h4": "BUY"
+          },
+          "confidence": "baja",
+          "action": "CERRAR_TODO",
+          "instruction": "Cerrar por vencimiento de la idea tras confirmar la cotización FBS.",
+          "reasons": [
+            "La vigencia intradía original terminó",
+            "Progreso alcanzado: 3%"
+          ],
+          "urgency": "AHORA"
         }
       ],
       "last_decision": {
-        "evaluated_at": "2026-09-01T04:52:14.813385+00:00",
-        "candle_close": "2026-09-01T04:45:00+00:00",
+        "evaluated_at": "2026-09-01T05:07:16.469460+00:00",
+        "candle_close": "2026-09-01T05:00:00+00:00",
         "provider": "yahoo_finance_proxy",
         "proxy_symbol": "EURCHF=X",
-        "current_price": 0.93975,
-        "current_r": 0.109,
-        "progress": 0.066,
-        "atr15": 0.0005993,
-        "rsi15": 60.6,
+        "current_price": 0.9396,
+        "current_r": 0.043,
+        "progress": 0.026,
+        "atr15": 0.0006,
+        "rsi15": 50.5,
         "trends": {
           "m15": "BUY",
           "h1": "BUY",
@@ -3068,27 +3092,17 @@
         },
         "confidence": "baja",
         "action": "CERRAR_TODO",
-        "instruction": "Cerrar antes del fin de la vigencia tras confirmar la cotización FBS.",
+        "instruction": "Cerrar por vencimiento de la idea tras confirmar la cotización FBS.",
         "reasons": [
-          "Restan 8 min",
-          "Progreso menor al 75%: 7%"
+          "La vigencia intradía original terminó",
+          "Progreso alcanzado: 3%"
         ],
         "urgency": "AHORA"
       },
-      "last_check_at": "2026-09-01T04:52:14.813385+00:00"
+      "last_check_at": "2026-09-01T05:07:16.469460+00:00"
     }
   },
   "events": [
-    {
-      "at": "2026-08-31T10:52:18.376573+00:00",
-      "level": "info",
-      "message": "📈 USDJPY: CERRAR TODO · proxy 159.74"
-    },
-    {
-      "at": "2026-08-31T10:52:18.376579+00:00",
-      "level": "info",
-      "message": "📡 2 trade(s) evaluados · Telegram sent"
-    },
     {
       "at": "2026-08-31T11:07:17.875872+00:00",
       "level": "info",
@@ -3826,6 +3840,16 @@
     },
     {
       "at": "2026-09-01T04:52:15.581509+00:00",
+      "level": "info",
+      "message": "📡 1 trade(s) evaluados · Telegram sent"
+    },
+    {
+      "at": "2026-09-01T05:07:17.592040+00:00",
+      "level": "info",
+      "message": "📈 EURCHF: CERRAR TODO · proxy 0.9396"
+    },
+    {
+      "at": "2026-09-01T05:07:17.592061+00:00",
       "level": "info",
       "message": "📡 1 trade(s) evaluados · Telegram sent"
     }
