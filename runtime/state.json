@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-01T01:00:55.075798+00:00",
+  "updated_at": "2026-09-01T02:04:20.778Z",
   "session": {
     "schema_version": 1,
     "run_id": "010010-113984",
@@ -12,7 +12,7 @@
       "valid_candidates": 9,
       "messages_reviewed": 0,
       "symbols_scanned": 39,
-      "max_risk_usd": 20.0
+      "max_risk_usd": 20
     },
     "cards": [
       {
@@ -2690,14 +2690,34 @@
       },
       "last_check_at": "2026-08-31T19:07:17.987620+00:00",
       "disabled_at": "2026-08-31T19:16:40.198Z"
+    },
+    "94894fab2a017e5b135d": {
+      "trade_id": "94894fab2a017e5b135d",
+      "activation_id": "aa161ec5-e653-4d80-8d5c-dbb008085c86",
+      "enabled": true,
+      "status": "active",
+      "asset": "EURCHF",
+      "direction": "BUY",
+      "order_type": "BUY STOP",
+      "entry": 0.9395,
+      "stop_loss": 0.9372,
+      "original_sl": 0.9372,
+      "current_sl": 0.9372,
+      "take_profit": 0.9433,
+      "original_tp": 0.9433,
+      "current_tp": 0.9433,
+      "volume": 0.06,
+      "valid_until": "2026-09-01T05:00:06.754086+00:00",
+      "proxy_symbol": null,
+      "provider": "yahoo_finance_chart",
+      "source": "technical_market_scan",
+      "session_run_id": "010010-113984",
+      "activated_at": "2026-09-01T02:04:20.778Z",
+      "history": [],
+      "last_decision": null
     }
   },
   "events": [
-    {
-      "at": "2026-08-31T08:22:18.296586+00:00",
-      "level": "info",
-      "message": "📈 USDJPY: CERRAR TODO · proxy 159.57"
-    },
     {
       "at": "2026-08-31T08:22:18.296592+00:00",
       "level": "info",
@@ -3442,6 +3462,11 @@
       "at": "2026-09-01T01:00:55.075795+00:00",
       "level": "success",
       "message": "📲 Telegram: sent"
+    },
+    {
+      "at": "2026-09-01T02:04:20.778Z",
+      "level": "success",
+      "message": "📡 Seguimiento activado: EURCHF BUY"
     }
   ]
 }
