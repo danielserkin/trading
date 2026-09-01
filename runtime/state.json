@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-01T02:04:20.778Z",
+  "updated_at": "2026-09-01T02:04:22.314Z",
   "session": {
     "schema_version": 1,
     "run_id": "010010-113984",
@@ -2693,7 +2693,7 @@
     },
     "94894fab2a017e5b135d": {
       "trade_id": "94894fab2a017e5b135d",
-      "activation_id": "aa161ec5-e653-4d80-8d5c-dbb008085c86",
+      "activation_id": "7fe90da8-fddf-42f0-9ba1-ba7f8838ae36",
       "enabled": true,
       "status": "active",
       "asset": "EURCHF",
@@ -2712,17 +2712,12 @@
       "provider": "yahoo_finance_chart",
       "source": "technical_market_scan",
       "session_run_id": "010010-113984",
-      "activated_at": "2026-09-01T02:04:20.778Z",
+      "activated_at": "2026-09-01T02:04:22.314Z",
       "history": [],
       "last_decision": null
     }
   },
   "events": [
-    {
-      "at": "2026-08-31T08:22:18.296592+00:00",
-      "level": "info",
-      "message": "📡 2 trade(s) evaluados · Telegram sent"
-    },
     {
       "at": "2026-08-31T08:37:16.567620+00:00",
       "level": "info",
@@ -3465,6 +3460,11 @@
     },
     {
       "at": "2026-09-01T02:04:20.778Z",
+      "level": "success",
+      "message": "📡 Seguimiento activado: EURCHF BUY"
+    },
+    {
+      "at": "2026-09-01T02:04:22.314Z",
       "level": "success",
       "message": "📡 Seguimiento activado: EURCHF BUY"
     }
