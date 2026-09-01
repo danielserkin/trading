@@ -1,51 +1,92 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-01T01:00:10.864021+00:00",
+  "updated_at": "2026-09-01T01:00:55.075798+00:00",
   "session": {
     "schema_version": 1,
-    "run_id": "33456989516-1",
+    "run_id": "010010-113984",
     "date": "session-artifacts",
-    "generated_at": "2026-08-31T23:47:49.842608+00:00",
-    "status": "running",
+    "generated_at": "2026-09-01T01:00:54.305391+00:00",
+    "status": "completed",
     "summary": {
       "candidates_reviewed": 9,
       "valid_candidates": 9,
       "messages_reviewed": 0,
       "symbols_scanned": 39,
-      "max_risk_usd": 20
+      "max_risk_usd": 20.0
     },
     "cards": [
       {
-        "id": "33b5579b8042e031a54d",
+        "id": "94894fab2a017e5b135d",
         "rank": 1,
+        "stars": 3,
+        "score": 8.0433,
+        "score_max": 11.6,
+        "asset": "EURCHF",
+        "direction": "BUY",
+        "order_type": "BUY STOP",
+        "entry": 0.93953333,
+        "current_price": 0.93940002,
+        "bid": null,
+        "ask": null,
+        "spread": null,
+        "stop_loss": 0.93717655,
+        "take_profit": 0.94330418,
+        "take_profits": [
+          0.94330418
+        ],
+        "risk_reward": 1.600000848615441,
+        "risk_usd": 17.49,
+        "size": "0.06 lot",
+        "valid_until": "2026-09-01T05:00:06.754086+00:00",
+        "source": "technical_market_scan",
+        "provider": "yahoo_finance_chart",
+        "origin": "market_scan",
+        "setup_family": null,
+        "proxy_symbol": null,
+        "market_proxy": "yahoo_finance_chart",
+        "instruction": "Intentar BUY STOP en 0.93953333; si FBS exige BUY LIMIT para esa misma entrada, usarlo sin cambiar entrada, SL, TP ni lote.",
+        "evidence": "Scanner técnico conditional_confirmation (conditional); tendencias 15m/1h/4h=BUY/BUY/BUY; RSI=60.4/68.4/50.1; ATR15=0.00066714202; posición_rango=1.03; volumen no disponible en el proxy; condición=dos marcos apoyan la dirección y la entrada exige ruptura confirmatoria de 15m",
+        "why": null,
+        "reasons": [
+          "score 8.04/11.60",
+          "alineación completa",
+          "origen market_scan",
+          "R/R 1.60",
+          "sin volumen/spread confirmado"
+        ],
+        "monitorable": true
+      },
+      {
+        "id": "4bd1f4861b252fb5369e",
+        "rank": 2,
         "stars": 3,
         "score": 7.5033,
         "score_max": 11.6,
         "asset": "USDTRY",
         "direction": "BUY",
         "order_type": "BUY STOP",
-        "entry": 48.28049677,
-        "current_price": 48.18500137,
+        "entry": 48.28403462,
+        "current_price": 48.27410126,
         "bid": null,
         "ask": null,
         "spread": null,
-        "stop_loss": 48.03621221,
-        "take_profit": 48.67135207,
+        "stop_loss": 48.03565641,
+        "take_profit": 48.68143976,
         "take_profits": [
-          48.67135207
+          48.68143976
         ],
-        "risk_reward": 1.6000000163743593,
-        "risk_usd": 15.19,
+        "risk_reward": 1.6000000161044965,
+        "risk_usd": 15.44,
         "size": "0.03 lot",
-        "valid_until": "2026-09-01T03:46:57.451684+00:00",
+        "valid_until": "2026-09-01T05:00:06.754086+00:00",
         "source": "technical_market_scan",
         "provider": "yahoo_finance_chart",
         "origin": "market_scan",
         "setup_family": null,
         "proxy_symbol": null,
         "market_proxy": "yahoo_finance_chart",
-        "instruction": "Intentar BUY STOP en 48.280497; si FBS exige BUY LIMIT para esa misma entrada, usarlo sin cambiar entrada, SL, TP ni lote.",
-        "evidence": "Scanner técnico conditional_confirmation (conditional); tendencias 15m/1h/4h=NEUTRAL/BUY/BUY; RSI=42.2/38.2/57.0; ATR15=0.10593769; posición_rango=0.59; volumen no disponible en el proxy; condición=dos marcos apoyan la dirección y la entrada exige ruptura confirmatoria de 15m",
+        "instruction": "Intentar BUY STOP en 48.284035; si FBS exige BUY LIMIT para esa misma entrada, usarlo sin cambiar entrada, SL, TP ni lote.",
+        "evidence": "Scanner técnico conditional_confirmation (conditional); tendencias 15m/1h/4h=NEUTRAL/BUY/BUY; RSI=58.3/59.0/57.1; ATR15=0.10871669; posición_rango=0.97; volumen no disponible en el proxy; condición=dos marcos apoyan la dirección y la entrada exige ruptura confirmatoria de 15m",
         "why": null,
         "reasons": [
           "score 7.50/11.60",
@@ -57,77 +98,36 @@
         "monitorable": true
       },
       {
-        "id": "3aad450e770d7cc6433a",
-        "rank": 2,
-        "stars": 3,
-        "score": 7.5033,
-        "score_max": 11.6,
-        "asset": "USDNOK",
-        "direction": "BUY",
-        "order_type": "BUY STOP",
-        "entry": 9.34364547,
-        "current_price": 9.33985996,
-        "bid": null,
-        "ask": null,
-        "spread": null,
-        "stop_loss": 9.30119746,
-        "take_profit": 9.41156229,
-        "take_profits": [
-          9.41156229
-        ],
-        "risk_reward": 1.600000094232896,
-        "risk_usd": 18.18,
-        "size": "0.04 lot",
-        "valid_until": "2026-09-01T03:46:57.451684+00:00",
-        "source": "technical_market_scan",
-        "provider": "yahoo_finance_chart",
-        "origin": "market_scan",
-        "setup_family": null,
-        "proxy_symbol": null,
-        "market_proxy": "yahoo_finance_chart",
-        "instruction": "Intentar BUY STOP en 9.3436455; si FBS exige BUY LIMIT para esa misma entrada, usarlo sin cambiar entrada, SL, TP ni lote.",
-        "evidence": "Scanner técnico conditional_confirmation (conditional); tendencias 15m/1h/4h=NEUTRAL/BUY/BUY; RSI=49.1/42.9/46.5; ATR15=0.0085142681; posición_rango=0.84; volumen no disponible en el proxy; condición=dos marcos apoyan la dirección y la entrada exige ruptura confirmatoria de 15m",
-        "why": null,
-        "reasons": [
-          "score 7.50/11.60",
-          "15m neutral/limitado",
-          "origen market_scan",
-          "R/R 1.60",
-          "sin volumen/spread confirmado"
-        ],
-        "monitorable": true
-      },
-      {
-        "id": "40127865907cbc1d971f",
+        "id": "3040d5103f286306d8df",
         "rank": 3,
         "stars": 3,
         "score": 7.5033,
         "score_max": 11.6,
-        "asset": "USDCHF",
+        "asset": "USDSEK",
         "direction": "BUY",
         "order_type": "BUY STOP",
-        "entry": 0.80854305,
-        "current_price": 0.80835998,
+        "entry": 9.58042377,
+        "current_price": 9.57882023,
         "bid": null,
         "ask": null,
         "spread": null,
-        "stop_loss": 0.80650783,
-        "take_profit": 0.81179941,
+        "stop_loss": 9.56519533,
+        "take_profit": 9.60478928,
         "take_profits": [
-          0.81179941
+          9.60478928
         ],
-        "risk_reward": 1.6000039307789582,
-        "risk_usd": 17.63,
-        "size": "0.07 lot",
-        "valid_until": "2026-09-01T03:46:57.451684+00:00",
+        "risk_reward": 1.6000003939997507,
+        "risk_usd": 19.08,
+        "size": "0.12 lot",
+        "valid_until": "2026-09-01T05:00:06.754086+00:00",
         "source": "technical_market_scan",
         "provider": "yahoo_finance_chart",
         "origin": "market_scan",
         "setup_family": null,
         "proxy_symbol": null,
         "market_proxy": "yahoo_finance_chart",
-        "instruction": "Intentar BUY STOP en 0.80854305; si FBS exige BUY LIMIT para esa misma entrada, usarlo sin cambiar entrada, SL, TP ni lote.",
-        "evidence": "Scanner técnico conditional_confirmation (conditional); tendencias 15m/1h/4h=NEUTRAL/BUY/BUY; RSI=50.6/43.8/58.5; ATR15=0.00046071836; posición_rango=0.83; volumen no disponible en el proxy; condición=dos marcos apoyan la dirección y la entrada exige ruptura confirmatoria de 15m",
+        "instruction": "Intentar BUY STOP en 9.5804238; si FBS exige BUY LIMIT para esa misma entrada, usarlo sin cambiar entrada, SL, TP ni lote.",
+        "evidence": "Scanner técnico conditional_confirmation (conditional); tendencias 15m/1h/4h=NEUTRAL/BUY/BUY; RSI=57.1/42.0/64.3; ATR15=0.0060736792; posición_rango=0.73; volumen no disponible en el proxy; condición=dos marcos apoyan la dirección y la entrada exige ruptura confirmatoria de 15m",
         "why": null,
         "reasons": [
           "score 7.50/11.60",
@@ -141,36 +141,36 @@
     ],
     "backups": [
       {
-        "id": "335f8b885af09e4122fc",
+        "id": "498465c1bc906ff135c2",
         "rank": 4,
         "stars": 3,
         "score": 7.5033,
         "score_max": 11.6,
-        "asset": "NZDUSD",
-        "direction": "SELL",
-        "order_type": "SELL STOP",
-        "entry": 0.59184618,
-        "current_price": 0.59192616,
+        "asset": "USDCHF",
+        "direction": "BUY",
+        "order_type": "BUY STOP",
+        "entry": 0.8086743,
+        "current_price": 0.80857998,
         "bid": null,
         "ask": null,
         "spread": null,
-        "stop_loss": 0.59214092,
-        "take_profit": 0.59137459,
+        "stop_loss": 0.80650283,
+        "take_profit": 0.81214866,
         "take_profits": [
-          0.59137459
+          0.81214866
         ],
-        "risk_reward": 1.6000203569248495,
-        "risk_usd": 19.75,
-        "size": "0.67 lot",
-        "valid_until": "2026-09-01T03:46:57.451684+00:00",
+        "risk_reward": 1.6000036841402758,
+        "risk_usd": 18.8,
+        "size": "0.07 lot",
+        "valid_until": "2026-09-01T05:00:06.754086+00:00",
         "source": "technical_market_scan",
         "provider": "yahoo_finance_chart",
         "origin": "market_scan",
         "setup_family": null,
         "proxy_symbol": null,
         "market_proxy": "yahoo_finance_chart",
-        "instruction": "Intentar SELL STOP en 0.59184618; si FBS exige SELL LIMIT para esa misma entrada, usarlo sin cambiar entrada, SL, TP ni lote.",
-        "evidence": "Scanner técnico conditional_confirmation (conditional); tendencias 15m/1h/4h=NEUTRAL/SELL/SELL; RSI=50.9/56.3/37.9; ATR15=0.00019761068; posición_rango=0.74; volumen no disponible en el proxy; condición=dos marcos apoyan la dirección y la entrada exige ruptura confirmatoria de 15m",
+        "instruction": "Intentar BUY STOP en 0.8086743; si FBS exige BUY LIMIT para esa misma entrada, usarlo sin cambiar entrada, SL, TP ni lote.",
+        "evidence": "Scanner técnico conditional_confirmation (conditional); tendencias 15m/1h/4h=NEUTRAL/BUY/BUY; RSI=53.7/51.5/58.2; ATR15=0.00048571825; posición_rango=0.93; volumen no disponible en el proxy; condición=dos marcos apoyan la dirección y la entrada exige ruptura confirmatoria de 15m",
         "why": null,
         "reasons": [
           "score 7.50/11.60",
@@ -182,36 +182,36 @@
         "monitorable": true
       },
       {
-        "id": "54320d76846e9f4180aa",
+        "id": "6fba6b571966e34c94e0",
         "rank": 5,
         "stars": 3,
         "score": 7.5033,
         "score_max": 11.6,
-        "asset": "GBPUSD",
+        "asset": "NZDUSD",
         "direction": "SELL",
         "order_type": "SELL STOP",
-        "entry": 1.35459524,
-        "current_price": 1.3546648,
+        "entry": 0.59215759,
+        "current_price": 0.59217149,
         "bid": null,
         "ask": null,
         "spread": null,
-        "stop_loss": 1.35542037,
-        "take_profit": 1.35327503,
+        "stop_loss": 0.5930699,
+        "take_profit": 0.59069789,
         "take_profits": [
-          1.35327503
+          0.59069789
         ],
-        "risk_reward": 1.6000024238606294,
-        "risk_usd": 19.8,
-        "size": "0.24 lot",
-        "valid_until": "2026-09-01T03:46:57.451684+00:00",
+        "risk_reward": 1.6000043844745975,
+        "risk_usd": 19.16,
+        "size": "0.21 lot",
+        "valid_until": "2026-09-01T05:00:06.754086+00:00",
         "source": "technical_market_scan",
         "provider": "yahoo_finance_chart",
         "origin": "market_scan",
         "setup_family": null,
         "proxy_symbol": null,
         "market_proxy": "yahoo_finance_chart",
-        "instruction": "Intentar SELL STOP en 1.3545952; si FBS exige SELL LIMIT para esa misma entrada, usarlo sin cambiar entrada, SL, TP ni lote.",
-        "evidence": "Scanner técnico conditional_confirmation (conditional); tendencias 15m/1h/4h=NEUTRAL/SELL/SELL; RSI=42.4/58.1/36.6; ATR15=0.00028979778; posición_rango=0.24; volumen no disponible en el proxy; condición=dos marcos apoyan la dirección y la entrada exige ruptura confirmatoria de 15m",
+        "instruction": "Intentar SELL STOP en 0.59215759; si FBS exige SELL LIMIT para esa misma entrada, usarlo sin cambiar entrada, SL, TP ni lote.",
+        "evidence": "Scanner técnico conditional_confirmation (conditional); tendencias 15m/1h/4h=NEUTRAL/SELL/SELL; RSI=57.6/58.6/30.6; ATR15=0.00027799606; posición_rango=0.47; volumen no disponible en el proxy; condición=dos marcos apoyan la dirección y la entrada exige ruptura confirmatoria de 15m",
         "why": null,
         "reasons": [
           "score 7.50/11.60",
@@ -224,15 +224,11 @@
       }
     ],
     "telegram": {
-      "message_id": 148,
+      "message_id": 149,
       "status": "sent"
     },
     "review": null,
-    "completed_at": "2026-08-31T23:47:50.167606+00:00",
-    "request_id": "3e3256b7-0e1b-4189-ac6e-179c0336921f",
-    "requested_at": "2026-09-01T00:59:49.875Z",
-    "started_at": "2026-09-01T01:00:00.149118+00:00",
-    "workflow_url": "https://github.com/danielserkin/trading/actions/runs/33456989516"
+    "completed_at": "2026-09-01T01:00:55.075753+00:00"
   },
   "monitors": {
     "df7e021461678e8051d3": {
@@ -2698,21 +2694,6 @@
   },
   "events": [
     {
-      "at": "2026-08-31T08:07:15.726701+00:00",
-      "level": "info",
-      "message": "📈 USDJPY: CERRAR TODO · proxy 159.58"
-    },
-    {
-      "at": "2026-08-31T08:07:15.726708+00:00",
-      "level": "info",
-      "message": "📡 2 trade(s) evaluados · Telegram sent"
-    },
-    {
-      "at": "2026-08-31T08:22:18.296558+00:00",
-      "level": "info",
-      "message": "📈 AUDNZD: CERRAR TODO · proxy 1.20988"
-    },
-    {
       "at": "2026-08-31T08:22:18.296586+00:00",
       "level": "info",
       "message": "📈 USDJPY: CERRAR TODO · proxy 159.57"
@@ -3446,6 +3427,21 @@
       "at": "2026-09-01T01:00:10.863991+00:00",
       "level": "success",
       "message": "✅ Mercado analizado · preparando revisión Codex y cards"
+    },
+    {
+      "at": "2026-09-01T01:00:55.075783+00:00",
+      "level": "warning",
+      "message": "🤖 Revisión Codex no disponible; se publicó el resultado determinista"
+    },
+    {
+      "at": "2026-09-01T01:00:55.075789+00:00",
+      "level": "success",
+      "message": "✅ Sesión completada y cards publicadas"
+    },
+    {
+      "at": "2026-09-01T01:00:55.075795+00:00",
+      "level": "success",
+      "message": "📲 Telegram: sent"
     }
   ]
 }
