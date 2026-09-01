@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-01T15:06:22.507Z",
+  "updated_at": "2026-09-01T15:06:27.294Z",
   "session": {
     "schema_version": 1,
     "run_id": "125347-171028",
@@ -3369,14 +3369,34 @@
       "history": [],
       "last_decision": null,
       "disabled_at": "2026-09-01T15:06:22.507Z"
+    },
+    "4e50cda6ac77a066e677": {
+      "trade_id": "4e50cda6ac77a066e677",
+      "activation_id": "607d6077-fc31-4ac4-858b-60ee681de719",
+      "enabled": true,
+      "status": "active",
+      "asset": "GBPNZD",
+      "direction": "BUY",
+      "order_type": "BUY STOP",
+      "entry": 2.2946,
+      "stop_loss": 2.2908,
+      "original_sl": 2.2908,
+      "current_sl": 2.2908,
+      "take_profit": 2.3006,
+      "original_tp": 2.3006,
+      "current_tp": 2.3006,
+      "volume": 0.08,
+      "valid_until": "2026-09-01T16:53:39.162753+00:00",
+      "proxy_symbol": null,
+      "provider": "yahoo_finance_chart",
+      "source": "technical_market_scan",
+      "session_run_id": "125347-171028",
+      "activated_at": "2026-09-01T15:06:27.294Z",
+      "history": [],
+      "last_decision": null
     }
   },
   "events": [
-    {
-      "at": "2026-08-31T13:22:19.472723+00:00",
-      "level": "info",
-      "message": "📈 USDCHF: MANTENER · proxy 0.80839"
-    },
     {
       "at": "2026-08-31T13:22:19.472744+00:00",
       "level": "info",
@@ -4121,6 +4141,11 @@
       "at": "2026-09-01T15:06:22.507Z",
       "level": "warning",
       "message": "⏸️ Seguimiento desactivado: NZDJPY"
+    },
+    {
+      "at": "2026-09-01T15:06:27.294Z",
+      "level": "success",
+      "message": "📡 Seguimiento activado: GBPNZD BUY"
     }
   ]
 }
