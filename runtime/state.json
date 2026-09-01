@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-01T21:05:30.724467+00:00",
+  "updated_at": "2026-09-01T21:05:42.566822+00:00",
   "session": {
     "schema_version": 1,
     "run_id": "33559082717-1",
@@ -4150,11 +4150,6 @@
   },
   "events": [
     {
-      "at": "2026-08-31T18:07:19.233440+00:00",
-      "level": "info",
-      "message": "📈 USDZAR: MANTENER · proxy 16.108"
-    },
-    {
       "at": "2026-08-31T18:07:19.233461+00:00",
       "level": "info",
       "message": "📡 1 trade(s) evaluados · Telegram sent"
@@ -4898,6 +4893,11 @@
       "at": "2026-09-01T21:05:30.724442+00:00",
       "level": "info",
       "message": "📡 Telegram conectado · iniciando validación y escaneo de mercado"
+    },
+    {
+      "at": "2026-09-01T21:05:42.566800+00:00",
+      "level": "success",
+      "message": "✅ Mercado analizado · preparando revisión Codex y cards"
     }
   ]
 }
