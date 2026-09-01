@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-01T16:37:17.497614+00:00",
+  "updated_at": "2026-09-01T16:38:21.118Z",
   "session": {
     "schema_version": 1,
     "run_id": "125347-171028",
@@ -3562,9 +3562,9 @@
     },
     "7f2c7c232010a49d471e": {
       "trade_id": "7f2c7c232010a49d471e",
-      "activation_id": "88c253d3-842d-4ee8-86f5-ae6241d0de2c",
-      "enabled": false,
-      "status": "paused",
+      "activation_id": "c7455265-8ffd-45b7-a589-a02e78014a28",
+      "enabled": true,
+      "status": "active",
       "asset": "NZDJPY",
       "direction": "SELL",
       "order_type": "SELL STOP",
@@ -3581,7 +3581,7 @@
       "provider": "yahoo_finance_chart",
       "source": "technical_market_scan",
       "session_run_id": "125347-171028",
-      "activated_at": "2026-09-01T15:06:17.339Z",
+      "activated_at": "2026-09-01T16:38:21.118Z",
       "history": [],
       "last_decision": null,
       "disabled_at": "2026-09-01T15:06:22.507Z"
@@ -3830,11 +3830,6 @@
     }
   },
   "events": [
-    {
-      "at": "2026-08-31T15:33:37.344Z",
-      "level": "success",
-      "message": "📡 Seguimiento activado: USDZAR SELL"
-    },
     {
       "at": "2026-08-31T15:33:44.136335+00:00",
       "level": "info",
@@ -4579,6 +4574,11 @@
       "at": "2026-09-01T16:37:17.497611+00:00",
       "level": "info",
       "message": "📡 2 trade(s) evaluados · Telegram sent"
+    },
+    {
+      "at": "2026-09-01T16:38:21.118Z",
+      "level": "success",
+      "message": "📡 Seguimiento activado: NZDJPY SELL"
     }
   ]
 }
