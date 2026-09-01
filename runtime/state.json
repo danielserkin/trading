@@ -1,18 +1,18 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-08-31T23:47:50.167647+00:00",
+  "updated_at": "2026-09-01T00:59:49.875Z",
   "session": {
     "schema_version": 1,
     "run_id": "234702-097434",
     "date": "session-artifacts",
     "generated_at": "2026-08-31T23:47:49.842608+00:00",
-    "status": "completed",
+    "status": "queued",
     "summary": {
       "candidates_reviewed": 9,
       "valid_candidates": 9,
       "messages_reviewed": 0,
       "symbols_scanned": 39,
-      "max_risk_usd": 20.0
+      "max_risk_usd": 20
     },
     "cards": [
       {
@@ -228,7 +228,9 @@
       "status": "sent"
     },
     "review": null,
-    "completed_at": "2026-08-31T23:47:50.167606+00:00"
+    "completed_at": "2026-08-31T23:47:50.167606+00:00",
+    "request_id": "3e3256b7-0e1b-4189-ac6e-179c0336921f",
+    "requested_at": "2026-09-01T00:59:49.875Z"
   },
   "monitors": {
     "df7e021461678e8051d3": {
@@ -2694,11 +2696,6 @@
   },
   "events": [
     {
-      "at": "2026-08-31T07:52:21.282995+00:00",
-      "level": "info",
-      "message": "📈 AUDNZD: CERRAR TODO · proxy 1.21022"
-    },
-    {
       "at": "2026-08-31T07:52:21.283023+00:00",
       "level": "info",
       "message": "📈 USDJPY: CERRAR TODO · proxy 159.62"
@@ -3442,6 +3439,11 @@
       "at": "2026-08-31T23:47:50.167644+00:00",
       "level": "success",
       "message": "📲 Telegram: sent"
+    },
+    {
+      "at": "2026-09-01T00:59:49.875Z",
+      "level": "info",
+      "message": "⏳ Nueva sesión enviada a la cola"
     }
   ]
 }
