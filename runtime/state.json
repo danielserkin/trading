@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-01T17:16:12.681Z",
+  "updated_at": "2026-09-01T17:16:15.453Z",
   "session": {
     "schema_version": 1,
     "run_id": "125347-171028",
@@ -3655,7 +3655,7 @@
         "urgency": "AHORA"
       },
       "last_check_at": "2026-09-01T17:07:17.163834+00:00",
-      "disabled_at": "2026-09-01T17:16:12.681Z"
+      "disabled_at": "2026-09-01T17:16:15.453Z"
     },
     "7f2c7c232010a49d471e": {
       "trade_id": "7f2c7c232010a49d471e",
@@ -4145,11 +4145,6 @@
     }
   },
   "events": [
-    {
-      "at": "2026-08-31T17:37:16.264064+00:00",
-      "level": "info",
-      "message": "📈 USDZAR: MANTENER · proxy 16.111"
-    },
     {
       "at": "2026-08-31T17:37:16.264088+00:00",
       "level": "info",
@@ -4892,6 +4887,11 @@
     },
     {
       "at": "2026-09-01T17:16:12.681Z",
+      "level": "warning",
+      "message": "⏸️ Seguimiento desactivado: EURNZD"
+    },
+    {
+      "at": "2026-09-01T17:16:15.453Z",
       "level": "warning",
       "message": "⏸️ Seguimiento desactivado: EURNZD"
     }
