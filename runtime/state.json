@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-01T15:06:17.339Z",
+  "updated_at": "2026-09-01T15:06:22.507Z",
   "session": {
     "schema_version": 1,
     "run_id": "125347-171028",
@@ -3347,8 +3347,8 @@
     "7f2c7c232010a49d471e": {
       "trade_id": "7f2c7c232010a49d471e",
       "activation_id": "88c253d3-842d-4ee8-86f5-ae6241d0de2c",
-      "enabled": true,
-      "status": "active",
+      "enabled": false,
+      "status": "paused",
       "asset": "NZDJPY",
       "direction": "SELL",
       "order_type": "SELL STOP",
@@ -3367,15 +3367,11 @@
       "session_run_id": "125347-171028",
       "activated_at": "2026-09-01T15:06:17.339Z",
       "history": [],
-      "last_decision": null
+      "last_decision": null,
+      "disabled_at": "2026-09-01T15:06:22.507Z"
     }
   },
   "events": [
-    {
-      "at": "2026-08-31T13:07:18.948258+00:00",
-      "level": "info",
-      "message": "📡 1 trade(s) evaluados · Telegram sent"
-    },
     {
       "at": "2026-08-31T13:22:19.472723+00:00",
       "level": "info",
@@ -4120,6 +4116,11 @@
       "at": "2026-09-01T15:06:17.339Z",
       "level": "success",
       "message": "📡 Seguimiento activado: NZDJPY SELL"
+    },
+    {
+      "at": "2026-09-01T15:06:22.507Z",
+      "level": "warning",
+      "message": "⏸️ Seguimiento desactivado: NZDJPY"
     }
   ]
 }
