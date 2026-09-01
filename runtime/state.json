@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-01T03:07:16.464669+00:00",
+  "updated_at": "2026-09-01T03:22:17.150131+00:00",
   "session": {
     "schema_version": 1,
     "run_id": "010010-113984",
@@ -2881,18 +2881,42 @@
             "Progreso 4% · resultado 0.07R"
           ],
           "urgency": "PRÓXIMO PASO"
+        },
+        {
+          "evaluated_at": "2026-09-01T03:22:16.002073+00:00",
+          "candle_close": "2026-09-01T03:15:00+00:00",
+          "provider": "yahoo_finance_proxy",
+          "proxy_symbol": "EURCHF=X",
+          "current_price": 0.93967,
+          "current_r": 0.074,
+          "progress": 0.045,
+          "atr15": 0.00061,
+          "rsi15": 76.4,
+          "trends": {
+            "m15": "BUY",
+            "h1": "BUY",
+            "h4": "BUY"
+          },
+          "confidence": "baja",
+          "action": "MANTENER",
+          "instruction": "Mantener SL y TP actuales; confirmar que los niveles siguen iguales en FBS.",
+          "reasons": [
+            "Estructura M15/H1/H4: BUY/BUY/BUY",
+            "Progreso 4% · resultado 0.07R"
+          ],
+          "urgency": "PRÓXIMO PASO"
         }
       ],
       "last_decision": {
-        "evaluated_at": "2026-09-01T03:07:15.582511+00:00",
-        "candle_close": "2026-09-01T03:00:00+00:00",
+        "evaluated_at": "2026-09-01T03:22:16.002073+00:00",
+        "candle_close": "2026-09-01T03:15:00+00:00",
         "provider": "yahoo_finance_proxy",
         "proxy_symbol": "EURCHF=X",
-        "current_price": 0.93966,
-        "current_r": 0.07,
-        "progress": 0.042,
-        "atr15": 0.0006114,
-        "rsi15": 73.8,
+        "current_price": 0.93967,
+        "current_r": 0.074,
+        "progress": 0.045,
+        "atr15": 0.00061,
+        "rsi15": 76.4,
         "trends": {
           "m15": "BUY",
           "h1": "BUY",
@@ -2907,20 +2931,10 @@
         ],
         "urgency": "PRÓXIMO PASO"
       },
-      "last_check_at": "2026-09-01T03:07:15.582511+00:00"
+      "last_check_at": "2026-09-01T03:22:16.002073+00:00"
     }
   },
   "events": [
-    {
-      "at": "2026-08-31T09:37:17.409581+00:00",
-      "level": "info",
-      "message": "📡 2 trade(s) evaluados · Telegram sent"
-    },
-    {
-      "at": "2026-08-31T09:52:22.939615+00:00",
-      "level": "info",
-      "message": "📈 AUDNZD: CERRAR TODO · proxy 1.21039"
-    },
     {
       "at": "2026-08-31T09:52:22.939643+00:00",
       "level": "info",
@@ -3658,6 +3672,16 @@
     },
     {
       "at": "2026-09-01T03:07:16.464664+00:00",
+      "level": "info",
+      "message": "📡 1 trade(s) evaluados · Telegram sent"
+    },
+    {
+      "at": "2026-09-01T03:22:17.150086+00:00",
+      "level": "info",
+      "message": "📈 EURCHF: MANTENER · proxy 0.93967"
+    },
+    {
+      "at": "2026-09-01T03:22:17.150126+00:00",
       "level": "info",
       "message": "📡 1 trade(s) evaluados · Telegram sent"
     }
