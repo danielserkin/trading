@@ -1,12 +1,12 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-01T12:53:15.648Z",
+  "updated_at": "2026-09-01T12:53:30.407465+00:00",
   "session": {
     "schema_version": 1,
-    "run_id": "33510016868-1",
+    "run_id": "33510166255-1",
     "date": "session-artifacts",
     "generated_at": "2026-09-01T01:00:54.305391+00:00",
-    "status": "queued",
+    "status": "running",
     "summary": {
       "candidates_reviewed": 9,
       "valid_candidates": 9,
@@ -231,8 +231,8 @@
     "completed_at": "2026-09-01T01:00:55.075753+00:00",
     "request_id": "7a691bbc-91e8-48ef-9e77-ddcb0bbe88c6",
     "requested_at": "2026-09-01T12:53:15.648Z",
-    "started_at": "2026-09-01T12:51:49.700774+00:00",
-    "workflow_url": "https://github.com/danielserkin/trading/actions/runs/33510016868",
+    "started_at": "2026-09-01T12:53:30.407430+00:00",
+    "workflow_url": "https://github.com/danielserkin/trading/actions/runs/33510166255",
     "failed_at": "2026-09-01T12:52:42.180718+00:00",
     "error": "La sesión terminó, pero no se pudieron publicar las cards. Revisar el log privado de GitHub Actions."
   },
@@ -3111,11 +3111,6 @@
   },
   "events": [
     {
-      "at": "2026-08-31T11:37:17.296727+00:00",
-      "level": "info",
-      "message": "📈 USDJPY: CERRAR TODO · proxy 159.62"
-    },
-    {
       "at": "2026-08-31T11:37:17.296733+00:00",
       "level": "info",
       "message": "📡 2 trade(s) evaluados · Telegram sent"
@@ -3859,6 +3854,11 @@
       "at": "2026-09-01T12:53:15.648Z",
       "level": "info",
       "message": "⏳ Nueva sesión enviada a la cola"
+    },
+    {
+      "at": "2026-09-01T12:53:30.407459+00:00",
+      "level": "info",
+      "message": "🚀 Codex y el analizador iniciaron una nueva sesión"
     }
   ]
 }
