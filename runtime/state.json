@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-01T04:22:15.663049+00:00",
+  "updated_at": "2026-09-01T04:37:18.745831+00:00",
   "session": {
     "schema_version": 1,
     "run_id": "010010-113984",
@@ -3001,46 +3001,60 @@
             "Progreso 8% · resultado 0.13R"
           ],
           "urgency": "PRÓXIMO PASO"
+        },
+        {
+          "evaluated_at": "2026-09-01T04:37:17.697584+00:00",
+          "candle_close": "2026-09-01T04:30:00+00:00",
+          "provider": "yahoo_finance_proxy",
+          "proxy_symbol": "EURCHF=X",
+          "current_price": 0.93979,
+          "current_r": 0.126,
+          "progress": 0.076,
+          "atr15": 0.0006064,
+          "rsi15": 67.9,
+          "trends": {
+            "m15": "BUY",
+            "h1": "BUY",
+            "h4": "BUY"
+          },
+          "confidence": "baja",
+          "action": "CERRAR_TODO",
+          "instruction": "Cerrar antes del fin de la vigencia tras confirmar la cotización FBS.",
+          "reasons": [
+            "Restan 23 min",
+            "Progreso menor al 75%: 8%"
+          ],
+          "urgency": "AHORA"
         }
       ],
       "last_decision": {
-        "evaluated_at": "2026-09-01T04:22:14.901830+00:00",
-        "candle_close": "2026-09-01T04:15:00+00:00",
+        "evaluated_at": "2026-09-01T04:37:17.697584+00:00",
+        "candle_close": "2026-09-01T04:30:00+00:00",
         "provider": "yahoo_finance_proxy",
         "proxy_symbol": "EURCHF=X",
-        "current_price": 0.9398,
-        "current_r": 0.13,
-        "progress": 0.079,
-        "atr15": 0.0006143,
-        "rsi15": 71.7,
+        "current_price": 0.93979,
+        "current_r": 0.126,
+        "progress": 0.076,
+        "atr15": 0.0006064,
+        "rsi15": 67.9,
         "trends": {
           "m15": "BUY",
           "h1": "BUY",
           "h4": "BUY"
         },
         "confidence": "baja",
-        "action": "MANTENER",
-        "instruction": "Mantener SL y TP actuales; confirmar que los niveles siguen iguales en FBS.",
+        "action": "CERRAR_TODO",
+        "instruction": "Cerrar antes del fin de la vigencia tras confirmar la cotización FBS.",
         "reasons": [
-          "Estructura M15/H1/H4: BUY/BUY/BUY",
-          "Progreso 8% · resultado 0.13R"
+          "Restan 23 min",
+          "Progreso menor al 75%: 8%"
         ],
-        "urgency": "PRÓXIMO PASO"
+        "urgency": "AHORA"
       },
-      "last_check_at": "2026-09-01T04:22:14.901830+00:00"
+      "last_check_at": "2026-09-01T04:37:17.697584+00:00"
     }
   },
   "events": [
-    {
-      "at": "2026-08-31T10:37:16.018283+00:00",
-      "level": "info",
-      "message": "📈 AUDNZD: CERRAR TODO · proxy 1.21036"
-    },
-    {
-      "at": "2026-08-31T10:37:16.018312+00:00",
-      "level": "info",
-      "message": "📈 USDJPY: CERRAR TODO · proxy 159.73"
-    },
     {
       "at": "2026-08-31T10:37:16.018318+00:00",
       "level": "info",
@@ -3778,6 +3792,16 @@
     },
     {
       "at": "2026-09-01T04:22:15.663045+00:00",
+      "level": "info",
+      "message": "📡 1 trade(s) evaluados · Telegram sent"
+    },
+    {
+      "at": "2026-09-01T04:37:18.745804+00:00",
+      "level": "info",
+      "message": "📈 EURCHF: CERRAR TODO · proxy 0.93979"
+    },
+    {
+      "at": "2026-09-01T04:37:18.745826+00:00",
       "level": "info",
       "message": "📡 1 trade(s) evaluados · Telegram sent"
     }
