@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-01T12:51:49.700803+00:00",
+  "updated_at": "2026-09-01T12:51:54.250240+00:00",
   "session": {
     "schema_version": 1,
     "run_id": "33510016868-1",
@@ -3109,11 +3109,6 @@
   },
   "events": [
     {
-      "at": "2026-08-31T11:22:15.780078+00:00",
-      "level": "info",
-      "message": "📈 AUDNZD: CERRAR TODO · proxy 1.21042"
-    },
-    {
       "at": "2026-08-31T11:22:15.780113+00:00",
       "level": "info",
       "message": "📈 USDJPY: CERRAR TODO · proxy 159.67"
@@ -3857,6 +3852,11 @@
       "at": "2026-09-01T12:51:49.700797+00:00",
       "level": "info",
       "message": "🚀 Codex y el analizador iniciaron una nueva sesión"
+    },
+    {
+      "at": "2026-09-01T12:51:54.250216+00:00",
+      "level": "info",
+      "message": "📡 Telegram conectado · iniciando validación y escaneo de mercado"
     }
   ]
 }
