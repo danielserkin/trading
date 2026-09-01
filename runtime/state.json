@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-01T22:54:51.020504+00:00",
+  "updated_at": "2026-09-01T23:17:23.123Z",
   "session": {
     "schema_version": 1,
     "run_id": "225359-733968",
@@ -12,7 +12,7 @@
       "valid_candidates": 9,
       "messages_reviewed": 0,
       "symbols_scanned": 39,
-      "max_risk_usd": 20.0
+      "max_risk_usd": 20
     },
     "cards": [
       {
@@ -4142,14 +4142,34 @@
       },
       "last_check_at": "2026-09-01T17:07:17.555854+00:00",
       "disabled_at": "2026-09-01T17:16:09.801Z"
+    },
+    "51bc0e86b0127adf3372": {
+      "trade_id": "51bc0e86b0127adf3372",
+      "activation_id": "0a80a402-9e63-474b-9ea1-216be52760d7",
+      "enabled": true,
+      "status": "active",
+      "asset": "EURNZD",
+      "direction": "BUY",
+      "order_type": "BUY STOP",
+      "entry": 1.9671,
+      "stop_loss": 1.9647,
+      "original_sl": 1.9647,
+      "current_sl": 1.9647,
+      "take_profit": 1.9711,
+      "original_tp": 1.9711,
+      "current_tp": 1.9711,
+      "volume": 0.13,
+      "valid_until": "2026-09-02T02:53:53.118555+00:00",
+      "proxy_symbol": null,
+      "provider": "yahoo_finance_chart",
+      "source": "technical_market_scan",
+      "session_run_id": "225359-733968",
+      "activated_at": "2026-09-01T23:17:23.123Z",
+      "history": [],
+      "last_decision": null
     }
   },
   "events": [
-    {
-      "at": "2026-08-31T19:45:05.379Z",
-      "level": "info",
-      "message": "⏳ Nueva sesión enviada a la cola"
-    },
     {
       "at": "2026-08-31T19:45:15.084708+00:00",
       "level": "info",
@@ -4894,6 +4914,11 @@
       "at": "2026-09-01T22:54:51.020501+00:00",
       "level": "success",
       "message": "📲 Telegram: sent"
+    },
+    {
+      "at": "2026-09-01T23:17:23.123Z",
+      "level": "success",
+      "message": "📡 Seguimiento activado: EURNZD BUY"
     }
   ]
 }
