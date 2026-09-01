@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-01T16:22:20.475893+00:00",
+  "updated_at": "2026-09-01T16:37:17.497614+00:00",
   "session": {
     "schema_version": 1,
     "run_id": "125347-171028",
@@ -3508,33 +3508,57 @@
             "Progreso -28% · resultado -0.44R"
           ],
           "urgency": "PRÓXIMO PASO"
+        },
+        {
+          "evaluated_at": "2026-09-01T16:37:15.970713+00:00",
+          "candle_close": "2026-09-01T16:30:00+00:00",
+          "provider": "yahoo_finance_proxy",
+          "proxy_symbol": "EURNZD=X",
+          "current_price": 1.96552,
+          "current_r": -0.031,
+          "progress": -0.02,
+          "atr15": 0.00142,
+          "rsi15": 62.6,
+          "trends": {
+            "m15": "NEUTRAL",
+            "h1": "NEUTRAL",
+            "h4": "BUY"
+          },
+          "confidence": "baja",
+          "action": "CERRAR_TODO",
+          "instruction": "Cerrar antes del fin de la vigencia tras confirmar la cotización FBS.",
+          "reasons": [
+            "Restan 16 min",
+            "Progreso menor al 75%: -2%"
+          ],
+          "urgency": "AHORA"
         }
       ],
       "last_decision": {
-        "evaluated_at": "2026-09-01T16:22:19.177886+00:00",
-        "candle_close": "2026-09-01T16:15:00+00:00",
+        "evaluated_at": "2026-09-01T16:37:15.970713+00:00",
+        "candle_close": "2026-09-01T16:30:00+00:00",
         "provider": "yahoo_finance_proxy",
         "proxy_symbol": "EURNZD=X",
-        "current_price": 1.96446,
-        "current_r": -0.438,
-        "progress": -0.285,
-        "atr15": 0.0014,
-        "rsi15": 43.3,
+        "current_price": 1.96552,
+        "current_r": -0.031,
+        "progress": -0.02,
+        "atr15": 0.00142,
+        "rsi15": 62.6,
         "trends": {
           "m15": "NEUTRAL",
           "h1": "NEUTRAL",
           "h4": "BUY"
         },
         "confidence": "baja",
-        "action": "MANTENER",
-        "instruction": "Mantener SL y TP actuales; confirmar que los niveles siguen iguales en FBS.",
+        "action": "CERRAR_TODO",
+        "instruction": "Cerrar antes del fin de la vigencia tras confirmar la cotización FBS.",
         "reasons": [
-          "Estructura M15/H1/H4: NEUTRAL/NEUTRAL/BUY",
-          "Progreso -28% · resultado -0.44R"
+          "Restan 16 min",
+          "Progreso menor al 75%: -2%"
         ],
-        "urgency": "PRÓXIMO PASO"
+        "urgency": "AHORA"
       },
-      "last_check_at": "2026-09-01T16:22:19.177886+00:00"
+      "last_check_at": "2026-09-01T16:37:15.970713+00:00"
     },
     "7f2c7c232010a49d471e": {
       "trade_id": "7f2c7c232010a49d471e",
@@ -3752,51 +3776,60 @@
             "Progreso -33% · resultado -0.52R"
           ],
           "urgency": "PRÓXIMO PASO"
+        },
+        {
+          "evaluated_at": "2026-09-01T16:37:16.173965+00:00",
+          "candle_close": "2026-09-01T16:30:00+00:00",
+          "provider": "yahoo_finance_proxy",
+          "proxy_symbol": "GBPNZD=X",
+          "current_price": 2.29391,
+          "current_r": -0.182,
+          "progress": -0.115,
+          "atr15": 0.00251,
+          "rsi15": 59.3,
+          "trends": {
+            "m15": "NEUTRAL",
+            "h1": "NEUTRAL",
+            "h4": "BUY"
+          },
+          "confidence": "baja",
+          "action": "CERRAR_TODO",
+          "instruction": "Cerrar antes del fin de la vigencia tras confirmar la cotización FBS.",
+          "reasons": [
+            "Restan 16 min",
+            "Progreso menor al 75%: -11%"
+          ],
+          "urgency": "AHORA"
         }
       ],
       "last_decision": {
-        "evaluated_at": "2026-09-01T16:22:19.353493+00:00",
-        "candle_close": "2026-09-01T16:15:00+00:00",
+        "evaluated_at": "2026-09-01T16:37:16.173965+00:00",
+        "candle_close": "2026-09-01T16:30:00+00:00",
         "provider": "yahoo_finance_proxy",
         "proxy_symbol": "GBPNZD=X",
-        "current_price": 2.29261,
-        "current_r": -0.524,
-        "progress": -0.332,
-        "atr15": 0.00242,
-        "rsi15": 42.3,
+        "current_price": 2.29391,
+        "current_r": -0.182,
+        "progress": -0.115,
+        "atr15": 0.00251,
+        "rsi15": 59.3,
         "trends": {
-          "m15": "SELL",
+          "m15": "NEUTRAL",
           "h1": "NEUTRAL",
           "h4": "BUY"
         },
         "confidence": "baja",
-        "action": "MANTENER",
-        "instruction": "Mantener SL y TP actuales; confirmar que los niveles siguen iguales en FBS.",
+        "action": "CERRAR_TODO",
+        "instruction": "Cerrar antes del fin de la vigencia tras confirmar la cotización FBS.",
         "reasons": [
-          "Estructura M15/H1/H4: SELL/NEUTRAL/BUY",
-          "Progreso -33% · resultado -0.52R"
+          "Restan 16 min",
+          "Progreso menor al 75%: -11%"
         ],
-        "urgency": "PRÓXIMO PASO"
+        "urgency": "AHORA"
       },
-      "last_check_at": "2026-09-01T16:22:19.353493+00:00"
+      "last_check_at": "2026-09-01T16:37:16.173965+00:00"
     }
   },
   "events": [
-    {
-      "at": "2026-08-31T15:25:04.347462+00:00",
-      "level": "success",
-      "message": "✅ Sesión completada y cards publicadas"
-    },
-    {
-      "at": "2026-08-31T15:25:04.347471+00:00",
-      "level": "success",
-      "message": "📲 Telegram: sent"
-    },
-    {
-      "at": "2026-08-31T15:33:34.814Z",
-      "level": "success",
-      "message": "📡 Seguimiento activado: USDZAR SELL"
-    },
     {
       "at": "2026-08-31T15:33:37.344Z",
       "level": "success",
@@ -4529,6 +4562,21 @@
     },
     {
       "at": "2026-09-01T16:22:20.475890+00:00",
+      "level": "info",
+      "message": "📡 2 trade(s) evaluados · Telegram sent"
+    },
+    {
+      "at": "2026-09-01T16:37:17.497582+00:00",
+      "level": "info",
+      "message": "📈 EURNZD: CERRAR TODO · proxy 1.96552"
+    },
+    {
+      "at": "2026-09-01T16:37:17.497606+00:00",
+      "level": "info",
+      "message": "📈 GBPNZD: CERRAR TODO · proxy 2.29391"
+    },
+    {
+      "at": "2026-09-01T16:37:17.497611+00:00",
       "level": "info",
       "message": "📡 2 trade(s) evaluados · Telegram sent"
     }
