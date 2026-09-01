@@ -1,12 +1,12 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-01T22:53:25.070Z",
+  "updated_at": "2026-09-01T22:53:42.972331+00:00",
   "session": {
     "schema_version": 1,
-    "run_id": "210540-258502",
+    "run_id": "33568453801-1",
     "date": "session-artifacts",
     "generated_at": "2026-09-01T21:06:44.124868+00:00",
-    "status": "queued",
+    "status": "running",
     "summary": {
       "candidates_reviewed": 9,
       "valid_candidates": 9,
@@ -230,7 +230,9 @@
     "review": null,
     "completed_at": "2026-09-01T21:06:44.387470+00:00",
     "request_id": "9d2c9c36-6a16-499e-89d8-bf0f25c51036",
-    "requested_at": "2026-09-01T22:53:25.070Z"
+    "requested_at": "2026-09-01T22:53:25.070Z",
+    "started_at": "2026-09-01T22:53:42.972296+00:00",
+    "workflow_url": "https://github.com/danielserkin/trading/actions/runs/33568453801"
   },
   "monitors": {
     "df7e021461678e8051d3": {
@@ -4148,11 +4150,6 @@
   },
   "events": [
     {
-      "at": "2026-08-31T18:37:19.365592+00:00",
-      "level": "info",
-      "message": "📡 1 trade(s) evaluados · Telegram sent"
-    },
-    {
       "at": "2026-08-31T18:52:17.077116+00:00",
       "level": "info",
       "message": "📈 USDZAR: MANTENER · proxy 16.111"
@@ -4896,6 +4893,11 @@
       "at": "2026-09-01T22:53:25.070Z",
       "level": "info",
       "message": "⏳ Nueva sesión enviada a la cola"
+    },
+    {
+      "at": "2026-09-01T22:53:42.972326+00:00",
+      "level": "info",
+      "message": "🚀 Codex y el analizador iniciaron una nueva sesión"
     }
   ]
 }
