@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-01T21:05:25.924996+00:00",
+  "updated_at": "2026-09-01T21:05:30.724467+00:00",
   "session": {
     "schema_version": 1,
     "run_id": "33559082717-1",
@@ -4150,11 +4150,6 @@
   },
   "events": [
     {
-      "at": "2026-08-31T17:52:15.933213+00:00",
-      "level": "info",
-      "message": "📡 1 trade(s) evaluados · Telegram sent"
-    },
-    {
       "at": "2026-08-31T18:07:19.233440+00:00",
       "level": "info",
       "message": "📈 USDZAR: MANTENER · proxy 16.108"
@@ -4898,6 +4893,11 @@
       "at": "2026-09-01T21:05:25.924992+00:00",
       "level": "info",
       "message": "🚀 Codex y el analizador iniciaron una nueva sesión"
+    },
+    {
+      "at": "2026-09-01T21:05:30.724442+00:00",
+      "level": "info",
+      "message": "📡 Telegram conectado · iniciando validación y escaneo de mercado"
     }
   ]
 }
