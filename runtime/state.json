@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-01T13:21:37.111934+00:00",
+  "updated_at": "2026-09-01T13:22:19.053141+00:00",
   "session": {
     "schema_version": 1,
     "run_id": "125347-171028",
@@ -3148,10 +3148,34 @@
             "Progreso -21% · resultado -0.32R"
           ],
           "urgency": "PRÓXIMO PASO"
+        },
+        {
+          "evaluated_at": "2026-09-01T13:22:18.666040+00:00",
+          "candle_close": "2026-09-01T13:15:00+00:00",
+          "provider": "yahoo_finance_proxy",
+          "proxy_symbol": "EURNZD=X",
+          "current_price": 1.96478,
+          "current_r": -0.315,
+          "progress": -0.205,
+          "atr15": 0.00112,
+          "rsi15": 38.2,
+          "trends": {
+            "m15": "SELL",
+            "h1": "NEUTRAL",
+            "h4": "BUY"
+          },
+          "confidence": "baja",
+          "action": "MANTENER",
+          "instruction": "Mantener SL y TP actuales; confirmar que los niveles siguen iguales en FBS.",
+          "reasons": [
+            "Estructura M15/H1/H4: SELL/NEUTRAL/BUY",
+            "Progreso -21% · resultado -0.32R"
+          ],
+          "urgency": "PRÓXIMO PASO"
         }
       ],
       "last_decision": {
-        "evaluated_at": "2026-09-01T13:21:36.365400+00:00",
+        "evaluated_at": "2026-09-01T13:22:18.666040+00:00",
         "candle_close": "2026-09-01T13:15:00+00:00",
         "provider": "yahoo_finance_proxy",
         "proxy_symbol": "EURNZD=X",
@@ -3174,20 +3198,10 @@
         ],
         "urgency": "PRÓXIMO PASO"
       },
-      "last_check_at": "2026-09-01T13:21:36.365400+00:00"
+      "last_check_at": "2026-09-01T13:22:18.666040+00:00"
     }
   },
   "events": [
-    {
-      "at": "2026-08-31T12:13:45.408Z",
-      "level": "info",
-      "message": "⏳ Nueva sesión enviada a la cola"
-    },
-    {
-      "at": "2026-08-31T12:13:55.555508+00:00",
-      "level": "info",
-      "message": "🚀 Codex y el analizador iniciaron una nueva sesión"
-    },
     {
       "at": "2026-08-31T12:13:58.831366+00:00",
       "level": "info",
@@ -3927,6 +3941,16 @@
       "at": "2026-09-01T13:21:37.111929+00:00",
       "level": "info",
       "message": "📡 1 trade(s) evaluados · Telegram sent"
+    },
+    {
+      "at": "2026-09-01T13:22:19.053116+00:00",
+      "level": "info",
+      "message": "📈 EURNZD: MANTENER · proxy 1.96478"
+    },
+    {
+      "at": "2026-09-01T13:22:19.053137+00:00",
+      "level": "info",
+      "message": "📡 1 trade(s) evaluados · Telegram not_needed"
     }
   ]
 }
