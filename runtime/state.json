@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-01T05:07:17.592066+00:00",
+  "updated_at": "2026-09-01T05:07:35.325Z",
   "session": {
     "schema_version": 1,
     "run_id": "010010-113984",
@@ -2694,8 +2694,8 @@
     "94894fab2a017e5b135d": {
       "trade_id": "94894fab2a017e5b135d",
       "activation_id": "7fe90da8-fddf-42f0-9ba1-ba7f8838ae36",
-      "enabled": true,
-      "status": "active",
+      "enabled": false,
+      "status": "paused",
       "asset": "EURCHF",
       "direction": "BUY",
       "order_type": "BUY STOP",
@@ -2747,7 +2747,7 @@
           "current_r": 0.035,
           "progress": 0.021,
           "atr15": 0.0006571,
-          "rsi15": 63.0,
+          "rsi15": 63,
           "trends": {
             "m15": "BUY",
             "h1": "BUY",
@@ -2771,7 +2771,7 @@
           "current_r": 0.035,
           "progress": 0.021,
           "atr15": 0.0006571,
-          "rsi15": 63.0,
+          "rsi15": 63,
           "trends": {
             "m15": "BUY",
             "h1": "BUY",
@@ -2795,7 +2795,7 @@
           "current_r": 0.096,
           "progress": 0.058,
           "atr15": 0.00059,
-          "rsi15": 80.0,
+          "rsi15": 80,
           "trends": {
             "m15": "BUY",
             "h1": "BUY",
@@ -2819,7 +2819,7 @@
           "current_r": 0.035,
           "progress": 0.021,
           "atr15": 0.0006086,
-          "rsi15": 80.0,
+          "rsi15": 80,
           "trends": {
             "m15": "BUY",
             "h1": "BUY",
@@ -3099,15 +3099,11 @@
         ],
         "urgency": "AHORA"
       },
-      "last_check_at": "2026-09-01T05:07:16.469460+00:00"
+      "last_check_at": "2026-09-01T05:07:16.469460+00:00",
+      "disabled_at": "2026-09-01T05:07:35.325Z"
     }
   },
   "events": [
-    {
-      "at": "2026-08-31T11:07:17.875872+00:00",
-      "level": "info",
-      "message": "📈 AUDNZD: CERRAR TODO · proxy 1.21032"
-    },
     {
       "at": "2026-08-31T11:07:17.875907+00:00",
       "level": "info",
@@ -3852,6 +3848,11 @@
       "at": "2026-09-01T05:07:17.592061+00:00",
       "level": "info",
       "message": "📡 1 trade(s) evaluados · Telegram sent"
+    },
+    {
+      "at": "2026-09-01T05:07:35.325Z",
+      "level": "warning",
+      "message": "⏸️ Seguimiento desactivado: EURCHF"
     }
   ]
 }
