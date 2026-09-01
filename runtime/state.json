@@ -1,12 +1,12 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-01T05:07:35.325Z",
+  "updated_at": "2026-09-01T12:51:38.775Z",
   "session": {
     "schema_version": 1,
     "run_id": "010010-113984",
     "date": "session-artifacts",
     "generated_at": "2026-09-01T01:00:54.305391+00:00",
-    "status": "completed",
+    "status": "queued",
     "summary": {
       "candidates_reviewed": 9,
       "valid_candidates": 9,
@@ -228,7 +228,9 @@
       "status": "sent"
     },
     "review": null,
-    "completed_at": "2026-09-01T01:00:55.075753+00:00"
+    "completed_at": "2026-09-01T01:00:55.075753+00:00",
+    "request_id": "bafec1da-0f1a-438d-bac0-76989bfe3d5e",
+    "requested_at": "2026-09-01T12:51:38.775Z"
   },
   "monitors": {
     "df7e021461678e8051d3": {
@@ -3105,11 +3107,6 @@
   },
   "events": [
     {
-      "at": "2026-08-31T11:07:17.875907+00:00",
-      "level": "info",
-      "message": "📈 USDJPY: CERRAR TODO · proxy 159.72"
-    },
-    {
       "at": "2026-08-31T11:07:17.875917+00:00",
       "level": "info",
       "message": "📡 2 trade(s) evaluados · Telegram sent"
@@ -3853,6 +3850,11 @@
       "at": "2026-09-01T05:07:35.325Z",
       "level": "warning",
       "message": "⏸️ Seguimiento desactivado: EURCHF"
+    },
+    {
+      "at": "2026-09-01T12:51:38.775Z",
+      "level": "info",
+      "message": "⏳ Nueva sesión enviada a la cola"
     }
   ]
 }
