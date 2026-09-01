@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-01T16:38:23.906Z",
+  "updated_at": "2026-09-01T16:38:31.799985+00:00",
   "session": {
     "schema_version": 1,
     "run_id": "125347-171028",
@@ -3532,10 +3532,34 @@
             "Progreso menor al 75%: -2%"
           ],
           "urgency": "AHORA"
+        },
+        {
+          "evaluated_at": "2026-09-01T16:38:30.379096+00:00",
+          "candle_close": "2026-09-01T16:30:00+00:00",
+          "provider": "yahoo_finance_proxy",
+          "proxy_symbol": "EURNZD=X",
+          "current_price": 1.96552,
+          "current_r": -0.031,
+          "progress": -0.02,
+          "atr15": 0.00142,
+          "rsi15": 62.6,
+          "trends": {
+            "m15": "NEUTRAL",
+            "h1": "NEUTRAL",
+            "h4": "BUY"
+          },
+          "confidence": "baja",
+          "action": "CERRAR_TODO",
+          "instruction": "Cerrar antes del fin de la vigencia tras confirmar la cotización FBS.",
+          "reasons": [
+            "Restan 15 min",
+            "Progreso menor al 75%: -2%"
+          ],
+          "urgency": "AHORA"
         }
       ],
       "last_decision": {
-        "evaluated_at": "2026-09-01T16:37:15.970713+00:00",
+        "evaluated_at": "2026-09-01T16:38:30.379096+00:00",
         "candle_close": "2026-09-01T16:30:00+00:00",
         "provider": "yahoo_finance_proxy",
         "proxy_symbol": "EURNZD=X",
@@ -3553,12 +3577,12 @@
         "action": "CERRAR_TODO",
         "instruction": "Cerrar antes del fin de la vigencia tras confirmar la cotización FBS.",
         "reasons": [
-          "Restan 16 min",
+          "Restan 15 min",
           "Progreso menor al 75%: -2%"
         ],
         "urgency": "AHORA"
       },
-      "last_check_at": "2026-09-01T16:37:15.970713+00:00"
+      "last_check_at": "2026-09-01T16:38:30.379096+00:00"
     },
     "7f2c7c232010a49d471e": {
       "trade_id": "7f2c7c232010a49d471e",
@@ -3582,9 +3606,58 @@
       "source": "technical_market_scan",
       "session_run_id": "125347-171028",
       "activated_at": "2026-09-01T16:38:23.906Z",
-      "history": [],
-      "last_decision": null,
-      "disabled_at": "2026-09-01T15:06:22.507Z"
+      "history": [
+        {
+          "evaluated_at": "2026-09-01T16:38:30.676977+00:00",
+          "candle_close": "2026-09-01T16:30:00+00:00",
+          "provider": "yahoo_finance_proxy",
+          "proxy_symbol": "NZDJPY=X",
+          "current_price": 94.403,
+          "current_r": -0.105,
+          "progress": -0.065,
+          "atr15": 0.069,
+          "rsi15": 39.7,
+          "trends": {
+            "m15": "SELL",
+            "h1": "BUY",
+            "h4": "SELL"
+          },
+          "confidence": "baja",
+          "action": "CERRAR_TODO",
+          "instruction": "Cerrar antes del fin de la vigencia tras confirmar la cotización FBS.",
+          "reasons": [
+            "Restan 15 min",
+            "Progreso menor al 75%: -7%"
+          ],
+          "urgency": "AHORA"
+        }
+      ],
+      "last_decision": {
+        "evaluated_at": "2026-09-01T16:38:30.676977+00:00",
+        "candle_close": "2026-09-01T16:30:00+00:00",
+        "provider": "yahoo_finance_proxy",
+        "proxy_symbol": "NZDJPY=X",
+        "current_price": 94.403,
+        "current_r": -0.105,
+        "progress": -0.065,
+        "atr15": 0.069,
+        "rsi15": 39.7,
+        "trends": {
+          "m15": "SELL",
+          "h1": "BUY",
+          "h4": "SELL"
+        },
+        "confidence": "baja",
+        "action": "CERRAR_TODO",
+        "instruction": "Cerrar antes del fin de la vigencia tras confirmar la cotización FBS.",
+        "reasons": [
+          "Restan 15 min",
+          "Progreso menor al 75%: -7%"
+        ],
+        "urgency": "AHORA"
+      },
+      "disabled_at": "2026-09-01T15:06:22.507Z",
+      "last_check_at": "2026-09-01T16:38:30.676977+00:00"
     },
     "4e50cda6ac77a066e677": {
       "trade_id": "4e50cda6ac77a066e677",
@@ -3800,10 +3873,34 @@
             "Progreso menor al 75%: -11%"
           ],
           "urgency": "AHORA"
+        },
+        {
+          "evaluated_at": "2026-09-01T16:38:30.888450+00:00",
+          "candle_close": "2026-09-01T16:30:00+00:00",
+          "provider": "yahoo_finance_proxy",
+          "proxy_symbol": "GBPNZD=X",
+          "current_price": 2.29391,
+          "current_r": -0.182,
+          "progress": -0.115,
+          "atr15": 0.00251,
+          "rsi15": 59.3,
+          "trends": {
+            "m15": "NEUTRAL",
+            "h1": "NEUTRAL",
+            "h4": "BUY"
+          },
+          "confidence": "baja",
+          "action": "CERRAR_TODO",
+          "instruction": "Cerrar antes del fin de la vigencia tras confirmar la cotización FBS.",
+          "reasons": [
+            "Restan 15 min",
+            "Progreso menor al 75%: -11%"
+          ],
+          "urgency": "AHORA"
         }
       ],
       "last_decision": {
-        "evaluated_at": "2026-09-01T16:37:16.173965+00:00",
+        "evaluated_at": "2026-09-01T16:38:30.888450+00:00",
         "candle_close": "2026-09-01T16:30:00+00:00",
         "provider": "yahoo_finance_proxy",
         "proxy_symbol": "GBPNZD=X",
@@ -3821,35 +3918,15 @@
         "action": "CERRAR_TODO",
         "instruction": "Cerrar antes del fin de la vigencia tras confirmar la cotización FBS.",
         "reasons": [
-          "Restan 16 min",
+          "Restan 15 min",
           "Progreso menor al 75%: -11%"
         ],
         "urgency": "AHORA"
       },
-      "last_check_at": "2026-09-01T16:37:16.173965+00:00"
+      "last_check_at": "2026-09-01T16:38:30.888450+00:00"
     }
   },
   "events": [
-    {
-      "at": "2026-08-31T15:33:44.136366+00:00",
-      "level": "info",
-      "message": "📡 1 trade(s) evaluados · Telegram sent"
-    },
-    {
-      "at": "2026-08-31T15:33:53.295046+00:00",
-      "level": "info",
-      "message": "📈 USDZAR: MANTENER · proxy 16.121"
-    },
-    {
-      "at": "2026-08-31T15:33:53.295071+00:00",
-      "level": "info",
-      "message": "📡 1 trade(s) evaluados · Telegram not_needed"
-    },
-    {
-      "at": "2026-08-31T15:37:20.402390+00:00",
-      "level": "info",
-      "message": "📈 USDZAR: MANTENER · proxy 16.121"
-    },
     {
       "at": "2026-08-31T15:37:20.402412+00:00",
       "level": "info",
@@ -4579,6 +4656,26 @@
       "at": "2026-09-01T16:38:23.906Z",
       "level": "success",
       "message": "📡 Seguimiento activado: NZDJPY SELL"
+    },
+    {
+      "at": "2026-09-01T16:38:31.799938+00:00",
+      "level": "info",
+      "message": "📈 EURNZD: CERRAR TODO · proxy 1.96552"
+    },
+    {
+      "at": "2026-09-01T16:38:31.799968+00:00",
+      "level": "info",
+      "message": "📈 NZDJPY: CERRAR TODO · proxy 94.403"
+    },
+    {
+      "at": "2026-09-01T16:38:31.799976+00:00",
+      "level": "info",
+      "message": "📈 GBPNZD: CERRAR TODO · proxy 2.29391"
+    },
+    {
+      "at": "2026-09-01T16:38:31.799982+00:00",
+      "level": "info",
+      "message": "📡 3 trade(s) evaluados · Telegram sent"
     }
   ]
 }
