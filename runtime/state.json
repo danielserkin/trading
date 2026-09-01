@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-01T23:17:23.123Z",
+  "updated_at": "2026-09-01T23:17:35.404706+00:00",
   "session": {
     "schema_version": 1,
     "run_id": "225359-733968",
@@ -4165,21 +4165,60 @@
       "source": "technical_market_scan",
       "session_run_id": "225359-733968",
       "activated_at": "2026-09-01T23:17:23.123Z",
-      "history": [],
-      "last_decision": null
+      "history": [
+        {
+          "evaluated_at": "2026-09-01T23:17:34.223012+00:00",
+          "candle_close": "2026-09-01T23:15:00+00:00",
+          "provider": "yahoo_finance_proxy",
+          "proxy_symbol": "EURNZD=X",
+          "current_price": 1.9668,
+          "current_r": -0.125,
+          "progress": -0.075,
+          "atr15": 0.00113,
+          "rsi15": 47.3,
+          "trends": {
+            "m15": "NEUTRAL",
+            "h1": "BUY",
+            "h4": "BUY"
+          },
+          "confidence": "baja",
+          "action": "MANTENER",
+          "instruction": "Mantener SL y TP actuales; confirmar que los niveles siguen iguales en FBS.",
+          "reasons": [
+            "Estructura M15/H1/H4: NEUTRAL/BUY/BUY",
+            "Progreso -8% · resultado -0.13R"
+          ],
+          "urgency": "PRÓXIMO PASO"
+        }
+      ],
+      "last_decision": {
+        "evaluated_at": "2026-09-01T23:17:34.223012+00:00",
+        "candle_close": "2026-09-01T23:15:00+00:00",
+        "provider": "yahoo_finance_proxy",
+        "proxy_symbol": "EURNZD=X",
+        "current_price": 1.9668,
+        "current_r": -0.125,
+        "progress": -0.075,
+        "atr15": 0.00113,
+        "rsi15": 47.3,
+        "trends": {
+          "m15": "NEUTRAL",
+          "h1": "BUY",
+          "h4": "BUY"
+        },
+        "confidence": "baja",
+        "action": "MANTENER",
+        "instruction": "Mantener SL y TP actuales; confirmar que los niveles siguen iguales en FBS.",
+        "reasons": [
+          "Estructura M15/H1/H4: NEUTRAL/BUY/BUY",
+          "Progreso -8% · resultado -0.13R"
+        ],
+        "urgency": "PRÓXIMO PASO"
+      },
+      "last_check_at": "2026-09-01T23:17:34.223012+00:00"
     }
   },
   "events": [
-    {
-      "at": "2026-08-31T19:45:15.084708+00:00",
-      "level": "info",
-      "message": "🚀 Codex y el analizador iniciaron una nueva sesión"
-    },
-    {
-      "at": "2026-08-31T19:45:18.525648+00:00",
-      "level": "info",
-      "message": "📡 Telegram conectado · iniciando validación y escaneo de mercado"
-    },
     {
       "at": "2026-08-31T19:45:26.239348+00:00",
       "level": "success",
@@ -4919,6 +4958,16 @@
       "at": "2026-09-01T23:17:23.123Z",
       "level": "success",
       "message": "📡 Seguimiento activado: EURNZD BUY"
+    },
+    {
+      "at": "2026-09-01T23:17:35.404680+00:00",
+      "level": "info",
+      "message": "📈 EURNZD: MANTENER · proxy 1.9668"
+    },
+    {
+      "at": "2026-09-01T23:17:35.404702+00:00",
+      "level": "info",
+      "message": "📡 1 trade(s) evaluados · Telegram sent"
     }
   ]
 }
