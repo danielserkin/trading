@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-01T02:07:16.864634+00:00",
+  "updated_at": "2026-09-01T02:22:19.105116+00:00",
   "session": {
     "schema_version": 1,
     "run_id": "010010-113984",
@@ -2785,18 +2785,42 @@
             "Progreso 2% · resultado 0.03R"
           ],
           "urgency": "PRÓXIMO PASO"
+        },
+        {
+          "evaluated_at": "2026-09-01T02:22:18.199718+00:00",
+          "candle_close": "2026-09-01T02:15:00+00:00",
+          "provider": "yahoo_finance_proxy",
+          "proxy_symbol": "EURCHF=X",
+          "current_price": 0.93972,
+          "current_r": 0.096,
+          "progress": 0.058,
+          "atr15": 0.00059,
+          "rsi15": 80.0,
+          "trends": {
+            "m15": "BUY",
+            "h1": "BUY",
+            "h4": "BUY"
+          },
+          "confidence": "baja",
+          "action": "MANTENER",
+          "instruction": "Mantener SL y TP actuales; confirmar que los niveles siguen iguales en FBS.",
+          "reasons": [
+            "Estructura M15/H1/H4: BUY/BUY/BUY",
+            "Progreso 6% · resultado 0.10R"
+          ],
+          "urgency": "PRÓXIMO PASO"
         }
       ],
       "last_decision": {
-        "evaluated_at": "2026-09-01T02:07:16.507286+00:00",
-        "candle_close": "2026-09-01T02:00:00+00:00",
+        "evaluated_at": "2026-09-01T02:22:18.199718+00:00",
+        "candle_close": "2026-09-01T02:15:00+00:00",
         "provider": "yahoo_finance_proxy",
         "proxy_symbol": "EURCHF=X",
-        "current_price": 0.93958,
-        "current_r": 0.035,
-        "progress": 0.021,
-        "atr15": 0.0006571,
-        "rsi15": 63.0,
+        "current_price": 0.93972,
+        "current_r": 0.096,
+        "progress": 0.058,
+        "atr15": 0.00059,
+        "rsi15": 80.0,
         "trends": {
           "m15": "BUY",
           "h1": "BUY",
@@ -2807,24 +2831,14 @@
         "instruction": "Mantener SL y TP actuales; confirmar que los niveles siguen iguales en FBS.",
         "reasons": [
           "Estructura M15/H1/H4: BUY/BUY/BUY",
-          "Progreso 2% · resultado 0.03R"
+          "Progreso 6% · resultado 0.10R"
         ],
         "urgency": "PRÓXIMO PASO"
       },
-      "last_check_at": "2026-09-01T02:07:16.507286+00:00"
+      "last_check_at": "2026-09-01T02:22:18.199718+00:00"
     }
   },
   "events": [
-    {
-      "at": "2026-08-31T09:07:16.393333+00:00",
-      "level": "info",
-      "message": "📈 AUDNZD: CERRAR TODO · proxy 1.2102"
-    },
-    {
-      "at": "2026-08-31T09:07:16.393360+00:00",
-      "level": "info",
-      "message": "📈 USDJPY: CERRAR TODO · proxy 159.74"
-    },
     {
       "at": "2026-08-31T09:07:16.393370+00:00",
       "level": "info",
@@ -3564,6 +3578,16 @@
       "at": "2026-09-01T02:07:16.864631+00:00",
       "level": "info",
       "message": "📡 1 trade(s) evaluados · Telegram not_needed"
+    },
+    {
+      "at": "2026-09-01T02:22:19.105092+00:00",
+      "level": "info",
+      "message": "📈 EURCHF: MANTENER · proxy 0.93972"
+    },
+    {
+      "at": "2026-09-01T02:22:19.105110+00:00",
+      "level": "info",
+      "message": "📡 1 trade(s) evaluados · Telegram sent"
     }
   ]
 }
