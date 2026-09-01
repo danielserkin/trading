@@ -1,12 +1,12 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-01T12:51:38.775Z",
+  "updated_at": "2026-09-01T12:51:49.700803+00:00",
   "session": {
     "schema_version": 1,
-    "run_id": "010010-113984",
+    "run_id": "33510016868-1",
     "date": "session-artifacts",
     "generated_at": "2026-09-01T01:00:54.305391+00:00",
-    "status": "queued",
+    "status": "running",
     "summary": {
       "candidates_reviewed": 9,
       "valid_candidates": 9,
@@ -230,7 +230,9 @@
     "review": null,
     "completed_at": "2026-09-01T01:00:55.075753+00:00",
     "request_id": "bafec1da-0f1a-438d-bac0-76989bfe3d5e",
-    "requested_at": "2026-09-01T12:51:38.775Z"
+    "requested_at": "2026-09-01T12:51:38.775Z",
+    "started_at": "2026-09-01T12:51:49.700774+00:00",
+    "workflow_url": "https://github.com/danielserkin/trading/actions/runs/33510016868"
   },
   "monitors": {
     "df7e021461678e8051d3": {
@@ -3107,11 +3109,6 @@
   },
   "events": [
     {
-      "at": "2026-08-31T11:07:17.875917+00:00",
-      "level": "info",
-      "message": "📡 2 trade(s) evaluados · Telegram sent"
-    },
-    {
       "at": "2026-08-31T11:22:15.780078+00:00",
       "level": "info",
       "message": "📈 AUDNZD: CERRAR TODO · proxy 1.21042"
@@ -3855,6 +3852,11 @@
       "at": "2026-09-01T12:51:38.775Z",
       "level": "info",
       "message": "⏳ Nueva sesión enviada a la cola"
+    },
+    {
+      "at": "2026-09-01T12:51:49.700797+00:00",
+      "level": "info",
+      "message": "🚀 Codex y el analizador iniciaron una nueva sesión"
     }
   ]
 }
