@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-01T15:06:14.786Z",
+  "updated_at": "2026-09-01T15:06:17.339Z",
   "session": {
     "schema_version": 1,
     "run_id": "125347-171028",
@@ -3346,7 +3346,7 @@
     },
     "7f2c7c232010a49d471e": {
       "trade_id": "7f2c7c232010a49d471e",
-      "activation_id": "415ea524-a05c-4305-95d8-a3bd9268b6bf",
+      "activation_id": "88c253d3-842d-4ee8-86f5-ae6241d0de2c",
       "enabled": true,
       "status": "active",
       "asset": "NZDJPY",
@@ -3365,17 +3365,12 @@
       "provider": "yahoo_finance_chart",
       "source": "technical_market_scan",
       "session_run_id": "125347-171028",
-      "activated_at": "2026-09-01T15:06:14.786Z",
+      "activated_at": "2026-09-01T15:06:17.339Z",
       "history": [],
       "last_decision": null
     }
   },
   "events": [
-    {
-      "at": "2026-08-31T13:07:18.948229+00:00",
-      "level": "info",
-      "message": "📈 USDCHF: MANTENER · proxy 0.80849"
-    },
     {
       "at": "2026-08-31T13:07:18.948258+00:00",
       "level": "info",
@@ -4118,6 +4113,11 @@
     },
     {
       "at": "2026-09-01T15:06:14.786Z",
+      "level": "success",
+      "message": "📡 Seguimiento activado: NZDJPY SELL"
+    },
+    {
+      "at": "2026-09-01T15:06:17.339Z",
       "level": "success",
       "message": "📡 Seguimiento activado: NZDJPY SELL"
     }
