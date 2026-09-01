@@ -1,18 +1,18 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-01T21:06:44.387514+00:00",
+  "updated_at": "2026-09-01T22:53:25.070Z",
   "session": {
     "schema_version": 1,
     "run_id": "210540-258502",
     "date": "session-artifacts",
     "generated_at": "2026-09-01T21:06:44.124868+00:00",
-    "status": "completed",
+    "status": "queued",
     "summary": {
       "candidates_reviewed": 9,
       "valid_candidates": 9,
       "messages_reviewed": 0,
       "symbols_scanned": 39,
-      "max_risk_usd": 20.0
+      "max_risk_usd": 20
     },
     "cards": [
       {
@@ -228,7 +228,9 @@
       "status": "sent"
     },
     "review": null,
-    "completed_at": "2026-09-01T21:06:44.387470+00:00"
+    "completed_at": "2026-09-01T21:06:44.387470+00:00",
+    "request_id": "9d2c9c36-6a16-499e-89d8-bf0f25c51036",
+    "requested_at": "2026-09-01T22:53:25.070Z"
   },
   "monitors": {
     "df7e021461678e8051d3": {
@@ -4146,11 +4148,6 @@
   },
   "events": [
     {
-      "at": "2026-08-31T18:37:19.365570+00:00",
-      "level": "info",
-      "message": "📈 USDZAR: MANTENER · proxy 16.111"
-    },
-    {
       "at": "2026-08-31T18:37:19.365592+00:00",
       "level": "info",
       "message": "📡 1 trade(s) evaluados · Telegram sent"
@@ -4894,6 +4891,11 @@
       "at": "2026-09-01T21:06:44.387511+00:00",
       "level": "success",
       "message": "📲 Telegram: sent"
+    },
+    {
+      "at": "2026-09-01T22:53:25.070Z",
+      "level": "info",
+      "message": "⏳ Nueva sesión enviada a la cola"
     }
   ]
 }
