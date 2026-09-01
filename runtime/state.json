@@ -1,12 +1,12 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-01T17:16:15.453Z",
+  "updated_at": "2026-09-01T21:05:13.651Z",
   "session": {
     "schema_version": 1,
     "run_id": "125347-171028",
     "date": "session-artifacts",
     "generated_at": "2026-09-01T12:54:30.812563+00:00",
-    "status": "completed",
+    "status": "queued",
     "summary": {
       "candidates_reviewed": 9,
       "valid_candidates": 8,
@@ -228,7 +228,9 @@
       "status": "sent"
     },
     "review": null,
-    "completed_at": "2026-09-01T12:54:31.233588+00:00"
+    "completed_at": "2026-09-01T12:54:31.233588+00:00",
+    "request_id": "2a12b2f8-0cba-491e-a135-d07fd0d62017",
+    "requested_at": "2026-09-01T21:05:13.651Z"
   },
   "monitors": {
     "df7e021461678e8051d3": {
@@ -4146,11 +4148,6 @@
   },
   "events": [
     {
-      "at": "2026-08-31T17:37:16.264088+00:00",
-      "level": "info",
-      "message": "📡 1 trade(s) evaluados · Telegram sent"
-    },
-    {
       "at": "2026-08-31T17:52:15.933193+00:00",
       "level": "info",
       "message": "📈 USDZAR: MANTENER · proxy 16.103"
@@ -4894,6 +4891,11 @@
       "at": "2026-09-01T17:16:15.453Z",
       "level": "warning",
       "message": "⏸️ Seguimiento desactivado: EURNZD"
+    },
+    {
+      "at": "2026-09-01T21:05:13.651Z",
+      "level": "info",
+      "message": "⏳ Nueva sesión enviada a la cola"
     }
   ]
 }
