@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-01T01:00:04.379696+00:00",
+  "updated_at": "2026-09-01T01:00:10.864021+00:00",
   "session": {
     "schema_version": 1,
     "run_id": "33456989516-1",
@@ -2698,11 +2698,6 @@
   },
   "events": [
     {
-      "at": "2026-08-31T08:07:15.726668+00:00",
-      "level": "info",
-      "message": "📈 AUDNZD: CERRAR TODO · proxy 1.20984"
-    },
-    {
       "at": "2026-08-31T08:07:15.726701+00:00",
       "level": "info",
       "message": "📈 USDJPY: CERRAR TODO · proxy 159.58"
@@ -3446,6 +3441,11 @@
       "at": "2026-09-01T01:00:04.379673+00:00",
       "level": "info",
       "message": "📡 Telegram conectado · iniciando validación y escaneo de mercado"
+    },
+    {
+      "at": "2026-09-01T01:00:10.863991+00:00",
+      "level": "success",
+      "message": "✅ Mercado analizado · preparando revisión Codex y cards"
     }
   ]
 }
