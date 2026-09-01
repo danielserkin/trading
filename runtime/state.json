@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-01T12:54:31.233631+00:00",
+  "updated_at": "2026-09-01T13:21:27.933Z",
   "session": {
     "schema_version": 1,
     "run_id": "125347-171028",
@@ -12,7 +12,7 @@
       "valid_candidates": 8,
       "messages_reviewed": 0,
       "symbols_scanned": 39,
-      "max_risk_usd": 20.0
+      "max_risk_usd": 20
     },
     "cards": [
       {
@@ -3101,14 +3101,34 @@
       },
       "last_check_at": "2026-09-01T05:07:16.469460+00:00",
       "disabled_at": "2026-09-01T05:07:35.325Z"
+    },
+    "8664a6fc77813be73f94": {
+      "trade_id": "8664a6fc77813be73f94",
+      "activation_id": "ffaa50bf-63ed-4c51-8100-fbfb8049ff49",
+      "enabled": true,
+      "status": "active",
+      "asset": "EURNZD",
+      "direction": "BUY",
+      "order_type": "BUY STOP",
+      "entry": 1.9656,
+      "stop_loss": 1.963,
+      "original_sl": 1.963,
+      "current_sl": 1.963,
+      "take_profit": 1.9696,
+      "original_tp": 1.9696,
+      "current_tp": 1.9696,
+      "volume": 0.13,
+      "valid_until": "2026-09-01T16:53:39.162753+00:00",
+      "proxy_symbol": null,
+      "provider": "yahoo_finance_chart",
+      "source": "technical_market_scan",
+      "session_run_id": "125347-171028",
+      "activated_at": "2026-09-01T13:21:27.933Z",
+      "history": [],
+      "last_decision": null
     }
   },
   "events": [
-    {
-      "at": "2026-08-31T12:07:22.273061+00:00",
-      "level": "info",
-      "message": "📈 USDJPY: CERRAR TODO · proxy 159.71"
-    },
     {
       "at": "2026-08-31T12:07:22.273064+00:00",
       "level": "info",
@@ -3853,6 +3873,11 @@
       "at": "2026-09-01T12:54:31.233628+00:00",
       "level": "success",
       "message": "📲 Telegram: sent"
+    },
+    {
+      "at": "2026-09-01T13:21:27.933Z",
+      "level": "success",
+      "message": "📡 Seguimiento activado: EURNZD BUY"
     }
   ]
 }
