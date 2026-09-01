@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-01T02:04:42.521926+00:00",
+  "updated_at": "2026-09-01T02:07:16.864634+00:00",
   "session": {
     "schema_version": 1,
     "run_id": "010010-113984",
@@ -2761,10 +2761,34 @@
             "Progreso 2% · resultado 0.03R"
           ],
           "urgency": "PRÓXIMO PASO"
+        },
+        {
+          "evaluated_at": "2026-09-01T02:07:16.507286+00:00",
+          "candle_close": "2026-09-01T02:00:00+00:00",
+          "provider": "yahoo_finance_proxy",
+          "proxy_symbol": "EURCHF=X",
+          "current_price": 0.93958,
+          "current_r": 0.035,
+          "progress": 0.021,
+          "atr15": 0.0006571,
+          "rsi15": 63.0,
+          "trends": {
+            "m15": "BUY",
+            "h1": "BUY",
+            "h4": "BUY"
+          },
+          "confidence": "baja",
+          "action": "MANTENER",
+          "instruction": "Mantener SL y TP actuales; confirmar que los niveles siguen iguales en FBS.",
+          "reasons": [
+            "Estructura M15/H1/H4: BUY/BUY/BUY",
+            "Progreso 2% · resultado 0.03R"
+          ],
+          "urgency": "PRÓXIMO PASO"
         }
       ],
       "last_decision": {
-        "evaluated_at": "2026-09-01T02:04:42.294435+00:00",
+        "evaluated_at": "2026-09-01T02:07:16.507286+00:00",
         "candle_close": "2026-09-01T02:00:00+00:00",
         "provider": "yahoo_finance_proxy",
         "proxy_symbol": "EURCHF=X",
@@ -2787,20 +2811,10 @@
         ],
         "urgency": "PRÓXIMO PASO"
       },
-      "last_check_at": "2026-09-01T02:04:42.294435+00:00"
+      "last_check_at": "2026-09-01T02:07:16.507286+00:00"
     }
   },
   "events": [
-    {
-      "at": "2026-08-31T08:52:17.856416+00:00",
-      "level": "info",
-      "message": "📈 USDJPY: CERRAR TODO · proxy 159.66"
-    },
-    {
-      "at": "2026-08-31T08:52:17.856420+00:00",
-      "level": "info",
-      "message": "📡 2 trade(s) evaluados · Telegram sent"
-    },
     {
       "at": "2026-08-31T09:07:16.393333+00:00",
       "level": "info",
@@ -3538,6 +3552,16 @@
     },
     {
       "at": "2026-09-01T02:04:42.521921+00:00",
+      "level": "info",
+      "message": "📡 1 trade(s) evaluados · Telegram not_needed"
+    },
+    {
+      "at": "2026-09-01T02:07:16.864612+00:00",
+      "level": "info",
+      "message": "📈 EURCHF: MANTENER · proxy 0.93958"
+    },
+    {
+      "at": "2026-09-01T02:07:16.864631+00:00",
       "level": "info",
       "message": "📡 1 trade(s) evaluados · Telegram not_needed"
     }
