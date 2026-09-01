@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-01T01:00:00.149157+00:00",
+  "updated_at": "2026-09-01T01:00:04.379696+00:00",
   "session": {
     "schema_version": 1,
     "run_id": "33456989516-1",
@@ -2698,11 +2698,6 @@
   },
   "events": [
     {
-      "at": "2026-08-31T07:52:21.283029+00:00",
-      "level": "info",
-      "message": "📡 2 trade(s) evaluados · Telegram sent"
-    },
-    {
       "at": "2026-08-31T08:07:15.726668+00:00",
       "level": "info",
       "message": "📈 AUDNZD: CERRAR TODO · proxy 1.20984"
@@ -3446,6 +3441,11 @@
       "at": "2026-09-01T01:00:00.149148+00:00",
       "level": "info",
       "message": "🚀 Codex y el analizador iniciaron una nueva sesión"
+    },
+    {
+      "at": "2026-09-01T01:00:04.379673+00:00",
+      "level": "info",
+      "message": "📡 Telegram conectado · iniciando validación y escaneo de mercado"
     }
   ]
 }
