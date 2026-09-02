@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-02T03:16:21.164Z",
+  "updated_at": "2026-09-02T03:16:27.382Z",
   "session": {
     "schema_version": 1,
     "run_id": "030857-776433",
@@ -4773,14 +4773,34 @@
       "activated_at": "2026-09-02T03:16:21.164Z",
       "history": [],
       "last_decision": null
+    },
+    "984707f45aff14730a46": {
+      "trade_id": "984707f45aff14730a46",
+      "activation_id": "ccb09b33-44a2-4154-9605-fe936e5c0614",
+      "enabled": true,
+      "status": "active",
+      "asset": "USDJPY",
+      "direction": "BUY",
+      "order_type": "BUY STOP",
+      "entry": 160.2684,
+      "stop_loss": 160.1154,
+      "original_sl": 160.1154,
+      "current_sl": 160.1154,
+      "take_profit": 160.5131,
+      "original_tp": 160.5131,
+      "current_tp": 160.5131,
+      "volume": 0.2,
+      "valid_until": "2026-09-02T07:08:52.574746+00:00",
+      "proxy_symbol": null,
+      "provider": "yahoo_finance_chart",
+      "source": "technical_market_scan",
+      "session_run_id": "030857-776433",
+      "activated_at": "2026-09-02T03:16:27.382Z",
+      "history": [],
+      "last_decision": null
     }
   },
   "events": [
-    {
-      "at": "2026-09-01T05:07:17.592040+00:00",
-      "level": "info",
-      "message": "📈 EURCHF: CERRAR TODO · proxy 0.9396"
-    },
     {
       "at": "2026-09-01T05:07:17.592061+00:00",
       "level": "info",
@@ -5525,6 +5545,11 @@
       "at": "2026-09-02T03:16:21.164Z",
       "level": "success",
       "message": "📡 Seguimiento activado: USDMXN BUY"
+    },
+    {
+      "at": "2026-09-02T03:16:27.382Z",
+      "level": "success",
+      "message": "📡 Seguimiento activado: USDJPY BUY"
     }
   ]
 }
