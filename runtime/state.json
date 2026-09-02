@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-02T12:23:11.802024+00:00",
+  "updated_at": "2026-09-02T12:23:22.757960+00:00",
   "session": {
     "schema_version": 1,
     "run_id": "115137-722171",
@@ -5544,10 +5544,34 @@
             "Progreso -23% · resultado -0.36R"
           ],
           "urgency": "PRÓXIMO PASO"
+        },
+        {
+          "evaluated_at": "2026-09-02T12:23:22.250836+00:00",
+          "candle_close": "2026-09-02T12:15:00+00:00",
+          "provider": "yahoo_finance_proxy",
+          "proxy_symbol": "USDCAD=X",
+          "current_price": 1.39233,
+          "current_r": -0.361,
+          "progress": -0.235,
+          "atr15": 0.00087,
+          "rsi15": 38.3,
+          "trends": {
+            "m15": "SELL",
+            "h1": "BUY",
+            "h4": "BUY"
+          },
+          "confidence": "baja",
+          "action": "MANTENER",
+          "instruction": "Mantener SL y TP actuales; confirmar que los niveles siguen iguales en FBS.",
+          "reasons": [
+            "Estructura M15/H1/H4: SELL/BUY/BUY",
+            "Progreso -23% · resultado -0.36R"
+          ],
+          "urgency": "PRÓXIMO PASO"
         }
       ],
       "last_decision": {
-        "evaluated_at": "2026-09-02T12:23:11.009998+00:00",
+        "evaluated_at": "2026-09-02T12:23:22.250836+00:00",
         "candle_close": "2026-09-02T12:15:00+00:00",
         "provider": "yahoo_finance_proxy",
         "proxy_symbol": "USDCAD=X",
@@ -5570,20 +5594,10 @@
         ],
         "urgency": "PRÓXIMO PASO"
       },
-      "last_check_at": "2026-09-02T12:23:11.009998+00:00"
+      "last_check_at": "2026-09-02T12:23:22.250836+00:00"
     }
   },
   "events": [
-    {
-      "at": "2026-09-01T16:07:20.127791+00:00",
-      "level": "info",
-      "message": "📈 GBPNZD: MANTENER · proxy 2.29148"
-    },
-    {
-      "at": "2026-09-01T16:07:20.127797+00:00",
-      "level": "info",
-      "message": "📡 2 trade(s) evaluados · Telegram sent"
-    },
     {
       "at": "2026-09-01T16:22:20.475860+00:00",
       "level": "info",
@@ -6323,6 +6337,16 @@
       "at": "2026-09-02T12:23:11.802014+00:00",
       "level": "info",
       "message": "📡 1 trade(s) evaluados · Telegram sent"
+    },
+    {
+      "at": "2026-09-02T12:23:22.757932+00:00",
+      "level": "info",
+      "message": "📈 USDCAD: MANTENER · proxy 1.39233"
+    },
+    {
+      "at": "2026-09-02T12:23:22.757955+00:00",
+      "level": "info",
+      "message": "📡 1 trade(s) evaluados · Telegram not_needed"
     }
   ]
 }
