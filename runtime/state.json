@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-02T02:37:16.653210+00:00",
+  "updated_at": "2026-09-02T02:52:14.832776+00:00",
   "session": {
     "schema_version": 1,
     "run_id": "225359-733968",
@@ -4696,20 +4696,44 @@
             "Progreso menor al 75%: -24%"
           ],
           "urgency": "AHORA"
+        },
+        {
+          "evaluated_at": "2026-09-02T02:52:14.101401+00:00",
+          "candle_close": "2026-09-02T02:45:00+00:00",
+          "provider": "yahoo_finance_proxy",
+          "proxy_symbol": "GBPCAD=X",
+          "current_price": 1.87839,
+          "current_r": -0.465,
+          "progress": -0.282,
+          "atr15": 0.00056,
+          "rsi15": 64.1,
+          "trends": {
+            "m15": "BUY",
+            "h1": "SELL",
+            "h4": "SELL"
+          },
+          "confidence": "baja",
+          "action": "CERRAR_TODO",
+          "instruction": "Cerrar antes del fin de la vigencia tras confirmar la cotización FBS.",
+          "reasons": [
+            "Restan 2 min",
+            "Progreso menor al 75%: -28%"
+          ],
+          "urgency": "AHORA"
         }
       ],
       "last_decision": {
-        "evaluated_at": "2026-09-02T02:37:15.752054+00:00",
-        "candle_close": "2026-09-02T02:30:00+00:00",
+        "evaluated_at": "2026-09-02T02:52:14.101401+00:00",
+        "candle_close": "2026-09-02T02:45:00+00:00",
         "provider": "yahoo_finance_proxy",
         "proxy_symbol": "GBPCAD=X",
-        "current_price": 1.87826,
-        "current_r": -0.388,
-        "progress": -0.236,
-        "atr15": 0.00057,
-        "rsi15": 61.5,
+        "current_price": 1.87839,
+        "current_r": -0.465,
+        "progress": -0.282,
+        "atr15": 0.00056,
+        "rsi15": 64.1,
         "trends": {
-          "m15": "NEUTRAL",
+          "m15": "BUY",
           "h1": "SELL",
           "h4": "SELL"
         },
@@ -4717,25 +4741,15 @@
         "action": "CERRAR_TODO",
         "instruction": "Cerrar antes del fin de la vigencia tras confirmar la cotización FBS.",
         "reasons": [
-          "Restan 17 min",
-          "Progreso menor al 75%: -24%"
+          "Restan 2 min",
+          "Progreso menor al 75%: -28%"
         ],
         "urgency": "AHORA"
       },
-      "last_check_at": "2026-09-02T02:37:15.752054+00:00"
+      "last_check_at": "2026-09-02T02:52:14.101401+00:00"
     }
   },
   "events": [
-    {
-      "at": "2026-09-01T03:37:15.683096+00:00",
-      "level": "info",
-      "message": "📈 EURCHF: MANTENER · proxy 0.93975"
-    },
-    {
-      "at": "2026-09-01T03:37:15.683122+00:00",
-      "level": "info",
-      "message": "📡 1 trade(s) evaluados · Telegram sent"
-    },
     {
       "at": "2026-09-01T03:52:17.731712+00:00",
       "level": "info",
@@ -5473,6 +5487,16 @@
     },
     {
       "at": "2026-09-02T02:37:16.653205+00:00",
+      "level": "info",
+      "message": "📡 1 trade(s) evaluados · Telegram sent"
+    },
+    {
+      "at": "2026-09-02T02:52:14.832749+00:00",
+      "level": "info",
+      "message": "📈 GBPCAD: CERRAR TODO · proxy 1.87839"
+    },
+    {
+      "at": "2026-09-02T02:52:14.832771+00:00",
       "level": "info",
       "message": "📡 1 trade(s) evaluados · Telegram sent"
     }
