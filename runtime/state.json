@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-02T11:51:30.743545+00:00",
+  "updated_at": "2026-09-02T11:51:38.684552+00:00",
   "session": {
     "schema_version": 1,
     "run_id": "33626767503-1",
@@ -5506,11 +5506,6 @@
   },
   "events": [
     {
-      "at": "2026-09-01T15:22:20.363496+00:00",
-      "level": "info",
-      "message": "📡 2 trade(s) evaluados · Telegram sent"
-    },
-    {
       "at": "2026-09-01T15:37:18.020758+00:00",
       "level": "info",
       "message": "📈 EURNZD: MANTENER · proxy 1.96372"
@@ -6254,6 +6249,11 @@
       "at": "2026-09-02T11:51:30.743525+00:00",
       "level": "info",
       "message": "📡 Telegram conectado · iniciando validación y escaneo de mercado"
+    },
+    {
+      "at": "2026-09-02T11:51:38.684538+00:00",
+      "level": "success",
+      "message": "✅ Mercado analizado · preparando revisión Codex y cards"
     }
   ]
 }
