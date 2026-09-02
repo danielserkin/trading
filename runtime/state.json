@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-02T12:52:11.872Z",
+  "updated_at": "2026-09-02T12:52:26.330968+00:00",
   "session": {
     "schema_version": 1,
     "run_id": "115137-722171",
@@ -5619,21 +5619,60 @@
       "source": "technical_market_scan",
       "session_run_id": "115137-722171",
       "activated_at": "2026-09-02T12:52:11.872Z",
-      "history": [],
-      "last_decision": null
+      "history": [
+        {
+          "evaluated_at": "2026-09-02T12:52:25.185182+00:00",
+          "candle_close": "2026-09-02T12:45:00+00:00",
+          "provider": "yahoo_finance_proxy",
+          "proxy_symbol": "USDSEK=X",
+          "current_price": 9.64514,
+          "current_r": -0.157,
+          "progress": -0.098,
+          "atr15": 0.00991,
+          "rsi15": 45.7,
+          "trends": {
+            "m15": "NEUTRAL",
+            "h1": "BUY",
+            "h4": "BUY"
+          },
+          "confidence": "baja",
+          "action": "MANTENER",
+          "instruction": "Mantener SL y TP actuales; confirmar que los niveles siguen iguales en FBS.",
+          "reasons": [
+            "Estructura M15/H1/H4: NEUTRAL/BUY/BUY",
+            "Progreso -10% · resultado -0.16R"
+          ],
+          "urgency": "PRÓXIMO PASO"
+        }
+      ],
+      "last_decision": {
+        "evaluated_at": "2026-09-02T12:52:25.185182+00:00",
+        "candle_close": "2026-09-02T12:45:00+00:00",
+        "provider": "yahoo_finance_proxy",
+        "proxy_symbol": "USDSEK=X",
+        "current_price": 9.64514,
+        "current_r": -0.157,
+        "progress": -0.098,
+        "atr15": 0.00991,
+        "rsi15": 45.7,
+        "trends": {
+          "m15": "NEUTRAL",
+          "h1": "BUY",
+          "h4": "BUY"
+        },
+        "confidence": "baja",
+        "action": "MANTENER",
+        "instruction": "Mantener SL y TP actuales; confirmar que los niveles siguen iguales en FBS.",
+        "reasons": [
+          "Estructura M15/H1/H4: NEUTRAL/BUY/BUY",
+          "Progreso -10% · resultado -0.16R"
+        ],
+        "urgency": "PRÓXIMO PASO"
+      },
+      "last_check_at": "2026-09-02T12:52:25.185182+00:00"
     }
   },
   "events": [
-    {
-      "at": "2026-09-01T16:22:20.475890+00:00",
-      "level": "info",
-      "message": "📡 2 trade(s) evaluados · Telegram sent"
-    },
-    {
-      "at": "2026-09-01T16:37:17.497582+00:00",
-      "level": "info",
-      "message": "📈 EURNZD: CERRAR TODO · proxy 1.96552"
-    },
     {
       "at": "2026-09-01T16:37:17.497606+00:00",
       "level": "info",
@@ -6373,6 +6412,16 @@
       "at": "2026-09-02T12:52:11.872Z",
       "level": "success",
       "message": "📡 Seguimiento activado: USDSEK BUY"
+    },
+    {
+      "at": "2026-09-02T12:52:26.330938+00:00",
+      "level": "info",
+      "message": "📈 USDSEK: MANTENER · proxy 9.64514"
+    },
+    {
+      "at": "2026-09-02T12:52:26.330962+00:00",
+      "level": "info",
+      "message": "📡 1 trade(s) evaluados · Telegram sent"
     }
   ]
 }
