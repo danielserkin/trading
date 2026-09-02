@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-02T00:22:17.416913+00:00",
+  "updated_at": "2026-09-02T00:37:16.476611+00:00",
   "session": {
     "schema_version": 1,
     "run_id": "225359-733968",
@@ -4309,18 +4309,42 @@
             "Progreso 8% · resultado 0.13R"
           ],
           "urgency": "PRÓXIMO PASO"
+        },
+        {
+          "evaluated_at": "2026-09-02T00:37:15.500864+00:00",
+          "candle_close": "2026-09-02T00:30:00+00:00",
+          "provider": "yahoo_finance_proxy",
+          "proxy_symbol": "EURNZD=X",
+          "current_price": 1.96716,
+          "current_r": 0.025,
+          "progress": 0.015,
+          "atr15": 0.00122,
+          "rsi15": 43.4,
+          "trends": {
+            "m15": "BUY",
+            "h1": "BUY",
+            "h4": "BUY"
+          },
+          "confidence": "baja",
+          "action": "MANTENER",
+          "instruction": "Mantener SL y TP actuales; confirmar que los niveles siguen iguales en FBS.",
+          "reasons": [
+            "Estructura M15/H1/H4: BUY/BUY/BUY",
+            "Progreso 1% · resultado 0.02R"
+          ],
+          "urgency": "PRÓXIMO PASO"
         }
       ],
       "last_decision": {
-        "evaluated_at": "2026-09-02T00:22:16.252784+00:00",
-        "candle_close": "2026-09-02T00:15:00+00:00",
+        "evaluated_at": "2026-09-02T00:37:15.500864+00:00",
+        "candle_close": "2026-09-02T00:30:00+00:00",
         "provider": "yahoo_finance_proxy",
         "proxy_symbol": "EURNZD=X",
-        "current_price": 1.96742,
-        "current_r": 0.133,
-        "progress": 0.08,
-        "atr15": 0.0012,
-        "rsi15": 48.1,
+        "current_price": 1.96716,
+        "current_r": 0.025,
+        "progress": 0.015,
+        "atr15": 0.00122,
+        "rsi15": 43.4,
         "trends": {
           "m15": "BUY",
           "h1": "BUY",
@@ -4331,24 +4355,14 @@
         "instruction": "Mantener SL y TP actuales; confirmar que los niveles siguen iguales en FBS.",
         "reasons": [
           "Estructura M15/H1/H4: BUY/BUY/BUY",
-          "Progreso 8% · resultado 0.13R"
+          "Progreso 1% · resultado 0.02R"
         ],
         "urgency": "PRÓXIMO PASO"
       },
-      "last_check_at": "2026-09-02T00:22:16.252784+00:00"
+      "last_check_at": "2026-09-02T00:37:15.500864+00:00"
     }
   },
   "events": [
-    {
-      "at": "2026-08-31T23:47:50.167644+00:00",
-      "level": "success",
-      "message": "📲 Telegram: sent"
-    },
-    {
-      "at": "2026-09-01T00:59:49.875Z",
-      "level": "info",
-      "message": "⏳ Nueva sesión enviada a la cola"
-    },
     {
       "at": "2026-09-01T01:00:00.149148+00:00",
       "level": "info",
@@ -5086,6 +5100,16 @@
     },
     {
       "at": "2026-09-02T00:22:17.416909+00:00",
+      "level": "info",
+      "message": "📡 1 trade(s) evaluados · Telegram sent"
+    },
+    {
+      "at": "2026-09-02T00:37:16.476582+00:00",
+      "level": "info",
+      "message": "📈 EURNZD: MANTENER · proxy 1.96716"
+    },
+    {
+      "at": "2026-09-02T00:37:16.476606+00:00",
       "level": "info",
       "message": "📡 1 trade(s) evaluados · Telegram sent"
     }
