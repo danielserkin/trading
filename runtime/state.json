@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-02T01:22:15.721124+00:00",
+  "updated_at": "2026-09-02T01:37:15.430337+00:00",
   "session": {
     "schema_version": 1,
     "run_id": "225359-733968",
@@ -4405,46 +4405,60 @@
             "Progreso -24% · resultado -0.40R"
           ],
           "urgency": "PRÓXIMO PASO"
+        },
+        {
+          "evaluated_at": "2026-09-02T01:37:14.683007+00:00",
+          "candle_close": "2026-09-02T01:30:00+00:00",
+          "provider": "yahoo_finance_proxy",
+          "proxy_symbol": "EURNZD=X",
+          "current_price": 1.96376,
+          "current_r": -1.392,
+          "progress": -0.835,
+          "atr15": 0.00113,
+          "rsi15": 31.7,
+          "trends": {
+            "m15": "SELL",
+            "h1": "BUY",
+            "h4": "BUY"
+          },
+          "confidence": "baja",
+          "action": "CERRAR_TODO",
+          "instruction": "Verificar en FBS; si la posición continúa abierta, cerrarla a mercado.",
+          "reasons": [
+            "El proxy cruzó el SL configurado",
+            "No ampliar ni retirar el stop"
+          ],
+          "urgency": "AHORA"
         }
       ],
       "last_decision": {
-        "evaluated_at": "2026-09-02T01:22:15.037808+00:00",
-        "candle_close": "2026-09-02T01:15:00+00:00",
+        "evaluated_at": "2026-09-02T01:37:14.683007+00:00",
+        "candle_close": "2026-09-02T01:30:00+00:00",
         "provider": "yahoo_finance_proxy",
         "proxy_symbol": "EURNZD=X",
-        "current_price": 1.96613,
-        "current_r": -0.404,
-        "progress": -0.242,
-        "atr15": 0.00105,
-        "rsi15": 40.2,
+        "current_price": 1.96376,
+        "current_r": -1.392,
+        "progress": -0.835,
+        "atr15": 0.00113,
+        "rsi15": 31.7,
         "trends": {
           "m15": "SELL",
           "h1": "BUY",
           "h4": "BUY"
         },
         "confidence": "baja",
-        "action": "MANTENER",
-        "instruction": "Mantener SL y TP actuales; confirmar que los niveles siguen iguales en FBS.",
+        "action": "CERRAR_TODO",
+        "instruction": "Verificar en FBS; si la posición continúa abierta, cerrarla a mercado.",
         "reasons": [
-          "Estructura M15/H1/H4: SELL/BUY/BUY",
-          "Progreso -24% · resultado -0.40R"
+          "El proxy cruzó el SL configurado",
+          "No ampliar ni retirar el stop"
         ],
-        "urgency": "PRÓXIMO PASO"
+        "urgency": "AHORA"
       },
-      "last_check_at": "2026-09-02T01:22:15.037808+00:00"
+      "last_check_at": "2026-09-02T01:37:14.683007+00:00"
     }
   },
   "events": [
-    {
-      "at": "2026-09-01T02:04:20.778Z",
-      "level": "success",
-      "message": "📡 Seguimiento activado: EURCHF BUY"
-    },
-    {
-      "at": "2026-09-01T02:04:22.314Z",
-      "level": "success",
-      "message": "📡 Seguimiento activado: EURCHF BUY"
-    },
     {
       "at": "2026-09-01T02:04:31.779459+00:00",
       "level": "info",
@@ -5182,6 +5196,16 @@
     },
     {
       "at": "2026-09-02T01:22:15.721120+00:00",
+      "level": "info",
+      "message": "📡 1 trade(s) evaluados · Telegram sent"
+    },
+    {
+      "at": "2026-09-02T01:37:15.430303+00:00",
+      "level": "info",
+      "message": "📈 EURNZD: CERRAR TODO · proxy 1.96376"
+    },
+    {
+      "at": "2026-09-02T01:37:15.430332+00:00",
       "level": "info",
       "message": "📡 1 trade(s) evaluados · Telegram sent"
     }
