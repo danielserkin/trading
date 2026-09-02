@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-02T06:10:52.848Z",
+  "updated_at": "2026-09-02T06:10:55.996Z",
   "session": {
     "schema_version": 1,
     "run_id": "030857-776433",
@@ -5139,8 +5139,8 @@
     "984707f45aff14730a46": {
       "trade_id": "984707f45aff14730a46",
       "activation_id": "ccb09b33-44a2-4154-9605-fe936e5c0614",
-      "enabled": true,
-      "status": "active",
+      "enabled": false,
+      "status": "paused",
       "asset": "USDJPY",
       "direction": "BUY",
       "order_type": "BUY STOP",
@@ -5496,15 +5496,11 @@
         ],
         "urgency": "AHORA"
       },
-      "last_check_at": "2026-09-02T06:07:21.555268+00:00"
+      "last_check_at": "2026-09-02T06:07:21.555268+00:00",
+      "disabled_at": "2026-09-02T06:10:55.996Z"
     }
   },
   "events": [
-    {
-      "at": "2026-09-01T15:07:20.285197+00:00",
-      "level": "info",
-      "message": "📈 GBPNZD: MANTENER · proxy 2.293"
-    },
     {
       "at": "2026-09-01T15:07:20.285202+00:00",
       "level": "info",
@@ -6249,6 +6245,11 @@
       "at": "2026-09-02T06:10:52.848Z",
       "level": "warning",
       "message": "⏸️ Seguimiento desactivado: USDMXN"
+    },
+    {
+      "at": "2026-09-02T06:10:55.996Z",
+      "level": "warning",
+      "message": "⏸️ Seguimiento desactivado: USDJPY"
     }
   ]
 }
