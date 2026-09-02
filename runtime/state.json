@@ -1,12 +1,12 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-02T17:07:32.367Z",
+  "updated_at": "2026-09-02T21:40:09.805Z",
   "session": {
     "schema_version": 1,
     "run_id": "115137-722171",
     "date": "session-artifacts",
     "generated_at": "2026-09-02T11:52:20.227158+00:00",
-    "status": "completed",
+    "status": "queued",
     "summary": {
       "candidates_reviewed": 9,
       "valid_candidates": 9,
@@ -227,7 +227,9 @@
       "status": "sent"
     },
     "review": null,
-    "completed_at": "2026-09-02T11:52:20.528421+00:00"
+    "completed_at": "2026-09-02T11:52:20.528421+00:00",
+    "request_id": "d1203ffb-189e-4a25-a58a-be33c5a4e1c5",
+    "requested_at": "2026-09-02T21:40:09.805Z"
   },
   "monitors": {
     "df7e021461678e8051d3": {
@@ -6083,11 +6085,6 @@
   },
   "events": [
     {
-      "at": "2026-09-01T22:54:51.020491+00:00",
-      "level": "warning",
-      "message": "🤖 Revisión Codex no disponible; se publicó el resultado determinista"
-    },
-    {
       "at": "2026-09-01T22:54:51.020496+00:00",
       "level": "success",
       "message": "✅ Sesión completada y cards publicadas"
@@ -6831,6 +6828,11 @@
       "at": "2026-09-02T17:07:32.367Z",
       "level": "warning",
       "message": "⏸️ Seguimiento desactivado: USDSEK"
+    },
+    {
+      "at": "2026-09-02T21:40:09.805Z",
+      "level": "info",
+      "message": "⏳ Nueva sesión enviada a la cola"
     }
   ]
 }
