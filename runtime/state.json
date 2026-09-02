@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-02T21:41:09.984542+00:00",
+  "updated_at": "2026-09-02T22:01:34.358Z",
   "session": {
     "schema_version": 1,
     "run_id": "214029-451847",
@@ -12,7 +12,7 @@
       "valid_candidates": 9,
       "messages_reviewed": 0,
       "symbols_scanned": 39,
-      "max_risk_usd": 20.0
+      "max_risk_usd": 20
     },
     "cards": [
       {
@@ -6080,14 +6080,34 @@
       },
       "last_check_at": "2026-09-02T17:07:16.658034+00:00",
       "disabled_at": "2026-09-02T17:07:32.367Z"
+    },
+    "ea89e926e40be174bbe5": {
+      "trade_id": "ea89e926e40be174bbe5",
+      "activation_id": "c61bb0a0-6f7d-4586-b9d1-aece8c1cea78",
+      "enabled": true,
+      "status": "active",
+      "asset": "EURAUD",
+      "direction": "SELL",
+      "order_type": "SELL STOP",
+      "entry": 1.6155,
+      "stop_loss": 1.6171,
+      "original_sl": 1.6171,
+      "current_sl": 1.6171,
+      "take_profit": 1.6131,
+      "original_tp": 1.6131,
+      "current_tp": 1.6131,
+      "volume": 0.17,
+      "valid_until": "2026-09-03T01:40:26.179989+00:00",
+      "proxy_symbol": null,
+      "provider": "yahoo_finance_chart",
+      "source": "technical_market_scan",
+      "session_run_id": "214029-451847",
+      "activated_at": "2026-09-02T22:01:34.358Z",
+      "history": [],
+      "last_decision": null
     }
   },
   "events": [
-    {
-      "at": "2026-09-01T23:22:14.986010+00:00",
-      "level": "info",
-      "message": "📡 1 trade(s) evaluados · Telegram not_needed"
-    },
     {
       "at": "2026-09-01T23:37:18.803790+00:00",
       "level": "info",
@@ -6832,6 +6852,11 @@
       "at": "2026-09-02T21:41:09.984539+00:00",
       "level": "success",
       "message": "📲 Telegram: sent"
+    },
+    {
+      "at": "2026-09-02T22:01:34.358Z",
+      "level": "success",
+      "message": "📡 Seguimiento activado: EURAUD SELL"
     }
   ]
 }
