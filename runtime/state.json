@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-02T22:01:34.358Z",
+  "updated_at": "2026-09-02T22:01:36.449Z",
   "session": {
     "schema_version": 1,
     "run_id": "214029-451847",
@@ -6083,7 +6083,7 @@
     },
     "ea89e926e40be174bbe5": {
       "trade_id": "ea89e926e40be174bbe5",
-      "activation_id": "c61bb0a0-6f7d-4586-b9d1-aece8c1cea78",
+      "activation_id": "6b2481e8-6c65-4059-a4e4-e22363afbff8",
       "enabled": true,
       "status": "active",
       "asset": "EURAUD",
@@ -6102,17 +6102,12 @@
       "provider": "yahoo_finance_chart",
       "source": "technical_market_scan",
       "session_run_id": "214029-451847",
-      "activated_at": "2026-09-02T22:01:34.358Z",
+      "activated_at": "2026-09-02T22:01:36.449Z",
       "history": [],
       "last_decision": null
     }
   },
   "events": [
-    {
-      "at": "2026-09-01T23:37:18.803790+00:00",
-      "level": "info",
-      "message": "📈 EURNZD: MANTENER · proxy 1.96684"
-    },
     {
       "at": "2026-09-01T23:37:18.803810+00:00",
       "level": "info",
@@ -6855,6 +6850,11 @@
     },
     {
       "at": "2026-09-02T22:01:34.358Z",
+      "level": "success",
+      "message": "📡 Seguimiento activado: EURAUD SELL"
+    },
+    {
+      "at": "2026-09-02T22:01:36.449Z",
       "level": "success",
       "message": "📡 Seguimiento activado: EURAUD SELL"
     }
