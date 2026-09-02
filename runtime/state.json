@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-02T02:52:14.832776+00:00",
+  "updated_at": "2026-09-02T02:52:50.707Z",
   "session": {
     "schema_version": 1,
     "run_id": "225359-733968",
@@ -4557,8 +4557,8 @@
     "9c8644641fe47e9747c4": {
       "trade_id": "9c8644641fe47e9747c4",
       "activation_id": "146778a8-13ce-449b-b8ff-347abff111ed",
-      "enabled": true,
-      "status": "active",
+      "enabled": false,
+      "status": "paused",
       "asset": "GBPCAD",
       "direction": "SELL",
       "order_type": "SELL STOP",
@@ -4746,15 +4746,11 @@
         ],
         "urgency": "AHORA"
       },
-      "last_check_at": "2026-09-02T02:52:14.101401+00:00"
+      "last_check_at": "2026-09-02T02:52:14.101401+00:00",
+      "disabled_at": "2026-09-02T02:52:50.707Z"
     }
   },
   "events": [
-    {
-      "at": "2026-09-01T03:52:17.731712+00:00",
-      "level": "info",
-      "message": "📈 EURCHF: MANTENER · proxy 0.93967"
-    },
     {
       "at": "2026-09-01T03:52:17.731726+00:00",
       "level": "info",
@@ -5499,6 +5495,11 @@
       "at": "2026-09-02T02:52:14.832771+00:00",
       "level": "info",
       "message": "📡 1 trade(s) evaluados · Telegram sent"
+    },
+    {
+      "at": "2026-09-02T02:52:50.707Z",
+      "level": "warning",
+      "message": "⏸️ Seguimiento desactivado: GBPCAD"
     }
   ]
 }
