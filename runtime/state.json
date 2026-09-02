@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-02T12:23:22.757960+00:00",
+  "updated_at": "2026-09-02T12:23:33.735Z",
   "session": {
     "schema_version": 1,
     "run_id": "115137-722171",
@@ -5501,8 +5501,8 @@
     "eda3cf0426c01c628b1a": {
       "trade_id": "eda3cf0426c01c628b1a",
       "activation_id": "9873cb95-9a7a-4e79-9ed5-1d1387a6470a",
-      "enabled": true,
-      "status": "active",
+      "enabled": false,
+      "status": "paused",
       "asset": "USDCAD",
       "direction": "BUY",
       "order_type": "BUY STOP",
@@ -5594,15 +5594,11 @@
         ],
         "urgency": "PRÓXIMO PASO"
       },
-      "last_check_at": "2026-09-02T12:23:22.250836+00:00"
+      "last_check_at": "2026-09-02T12:23:22.250836+00:00",
+      "disabled_at": "2026-09-02T12:23:33.735Z"
     }
   },
   "events": [
-    {
-      "at": "2026-09-01T16:22:20.475860+00:00",
-      "level": "info",
-      "message": "📈 EURNZD: MANTENER · proxy 1.96446"
-    },
     {
       "at": "2026-09-01T16:22:20.475884+00:00",
       "level": "info",
@@ -6347,6 +6343,11 @@
       "at": "2026-09-02T12:23:22.757955+00:00",
       "level": "info",
       "message": "📡 1 trade(s) evaluados · Telegram not_needed"
+    },
+    {
+      "at": "2026-09-02T12:23:33.735Z",
+      "level": "warning",
+      "message": "⏸️ Seguimiento desactivado: USDCAD"
     }
   ]
 }
