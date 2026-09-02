@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-02T23:37:15.473320+00:00",
+  "updated_at": "2026-09-02T23:37:24.161Z",
   "session": {
     "schema_version": 1,
     "run_id": "214029-451847",
@@ -6337,8 +6337,8 @@
     "6e9eba95c64bd701fe86": {
       "trade_id": "6e9eba95c64bd701fe86",
       "activation_id": "c5e68a66-6ec5-4a70-89b6-b6ba8305f520",
-      "enabled": true,
-      "status": "active",
+      "enabled": false,
+      "status": "paused",
       "asset": "GBPUSD",
       "direction": "SELL",
       "order_type": "SELL STOP",
@@ -6464,15 +6464,11 @@
         ],
         "urgency": "PRÓXIMO PASO"
       },
-      "last_check_at": "2026-09-02T23:37:14.718511+00:00"
+      "last_check_at": "2026-09-02T23:37:14.718511+00:00",
+      "disabled_at": "2026-09-02T23:37:24.161Z"
     }
   },
   "events": [
-    {
-      "at": "2026-09-02T02:07:15.968722+00:00",
-      "level": "info",
-      "message": "📈 GBPCAD: MANTENER · proxy 1.87726"
-    },
     {
       "at": "2026-09-02T02:07:15.968730+00:00",
       "level": "info",
@@ -7217,6 +7213,11 @@
       "at": "2026-09-02T23:37:15.473315+00:00",
       "level": "info",
       "message": "📡 1 trade(s) evaluados · Telegram sent"
+    },
+    {
+      "at": "2026-09-02T23:37:24.161Z",
+      "level": "warning",
+      "message": "⏸️ Seguimiento desactivado: GBPUSD"
     }
   ]
 }
