@@ -1,12 +1,12 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-02T02:52:50.707Z",
+  "updated_at": "2026-09-02T03:08:34.707Z",
   "session": {
     "schema_version": 1,
     "run_id": "225359-733968",
     "date": "session-artifacts",
     "generated_at": "2026-09-01T22:54:50.632197+00:00",
-    "status": "completed",
+    "status": "queued",
     "summary": {
       "candidates_reviewed": 9,
       "valid_candidates": 9,
@@ -228,7 +228,9 @@
       "status": "sent"
     },
     "review": null,
-    "completed_at": "2026-09-01T22:54:51.020465+00:00"
+    "completed_at": "2026-09-01T22:54:51.020465+00:00",
+    "request_id": "75ab02c2-ec65-4ea7-837d-a09a5667bbf3",
+    "requested_at": "2026-09-02T03:08:34.707Z"
   },
   "monitors": {
     "df7e021461678e8051d3": {
@@ -4752,11 +4754,6 @@
   },
   "events": [
     {
-      "at": "2026-09-01T03:52:17.731726+00:00",
-      "level": "info",
-      "message": "📡 1 trade(s) evaluados · Telegram sent"
-    },
-    {
       "at": "2026-09-01T04:07:15.088268+00:00",
       "level": "info",
       "message": "📈 EURCHF: MANTENER · proxy 0.93984"
@@ -5500,6 +5497,11 @@
       "at": "2026-09-02T02:52:50.707Z",
       "level": "warning",
       "message": "⏸️ Seguimiento desactivado: GBPCAD"
+    },
+    {
+      "at": "2026-09-02T03:08:34.707Z",
+      "level": "info",
+      "message": "⏳ Nueva sesión enviada a la cola"
     }
   ]
 }
