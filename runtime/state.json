@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-02T15:52:20.363667+00:00",
+  "updated_at": "2026-09-02T16:07:18.984571+00:00",
   "session": {
     "schema_version": 1,
     "run_id": "115137-722171",
@@ -5931,21 +5931,45 @@
             "Progreso alcanzado: -57%"
           ],
           "urgency": "AHORA"
+        },
+        {
+          "evaluated_at": "2026-09-02T16:07:16.795621+00:00",
+          "candle_close": "2026-09-02T16:00:00+00:00",
+          "provider": "yahoo_finance_proxy",
+          "proxy_symbol": "USDSEK=X",
+          "current_price": 9.62021,
+          "current_r": -0.961,
+          "progress": -0.602,
+          "atr15": 0.01255,
+          "rsi15": 40.8,
+          "trends": {
+            "m15": "SELL",
+            "h1": "SELL",
+            "h4": "BUY"
+          },
+          "confidence": "baja",
+          "action": "CERRAR_TODO",
+          "instruction": "Cerrar por vencimiento de la idea tras confirmar la cotización FBS.",
+          "reasons": [
+            "La vigencia intradía original terminó",
+            "Progreso alcanzado: -60%"
+          ],
+          "urgency": "AHORA"
         }
       ],
       "last_decision": {
-        "evaluated_at": "2026-09-02T15:52:19.094841+00:00",
-        "candle_close": "2026-09-02T15:45:00+00:00",
+        "evaluated_at": "2026-09-02T16:07:16.795621+00:00",
+        "candle_close": "2026-09-02T16:00:00+00:00",
         "provider": "yahoo_finance_proxy",
         "proxy_symbol": "USDSEK=X",
-        "current_price": 9.62157,
-        "current_r": -0.917,
-        "progress": -0.574,
-        "atr15": 0.01309,
-        "rsi15": 43.2,
+        "current_price": 9.62021,
+        "current_r": -0.961,
+        "progress": -0.602,
+        "atr15": 0.01255,
+        "rsi15": 40.8,
         "trends": {
           "m15": "SELL",
-          "h1": "NEUTRAL",
+          "h1": "SELL",
           "h4": "BUY"
         },
         "confidence": "baja",
@@ -5953,24 +5977,14 @@
         "instruction": "Cerrar por vencimiento de la idea tras confirmar la cotización FBS.",
         "reasons": [
           "La vigencia intradía original terminó",
-          "Progreso alcanzado: -57%"
+          "Progreso alcanzado: -60%"
         ],
         "urgency": "AHORA"
       },
-      "last_check_at": "2026-09-02T15:52:19.094841+00:00"
+      "last_check_at": "2026-09-02T16:07:16.795621+00:00"
     }
   },
   "events": [
-    {
-      "at": "2026-09-01T21:05:13.651Z",
-      "level": "info",
-      "message": "⏳ Nueva sesión enviada a la cola"
-    },
-    {
-      "at": "2026-09-01T21:05:25.924992+00:00",
-      "level": "info",
-      "message": "🚀 Codex y el analizador iniciaron una nueva sesión"
-    },
     {
       "at": "2026-09-01T21:05:30.724442+00:00",
       "level": "info",
@@ -6708,6 +6722,16 @@
     },
     {
       "at": "2026-09-02T15:52:20.363663+00:00",
+      "level": "info",
+      "message": "📡 1 trade(s) evaluados · Telegram sent"
+    },
+    {
+      "at": "2026-09-02T16:07:18.984540+00:00",
+      "level": "info",
+      "message": "📈 USDSEK: CERRAR TODO · proxy 9.62021"
+    },
+    {
+      "at": "2026-09-02T16:07:18.984566+00:00",
       "level": "info",
       "message": "📡 1 trade(s) evaluados · Telegram sent"
     }
