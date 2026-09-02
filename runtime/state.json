@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-02T14:22:17.087256+00:00",
+  "updated_at": "2026-09-02T14:37:19.758762+00:00",
   "session": {
     "schema_version": 1,
     "run_id": "115137-722171",
@@ -5787,18 +5787,42 @@
             "Progreso -59% · resultado -0.94R"
           ],
           "urgency": "PRÓXIMO PASO"
+        },
+        {
+          "evaluated_at": "2026-09-02T14:37:18.611660+00:00",
+          "candle_close": "2026-09-02T14:30:00+00:00",
+          "provider": "yahoo_finance_proxy",
+          "proxy_symbol": "USDSEK=X",
+          "current_price": 9.62464,
+          "current_r": -0.818,
+          "progress": -0.512,
+          "atr15": 0.01426,
+          "rsi15": 34.0,
+          "trends": {
+            "m15": "SELL",
+            "h1": "NEUTRAL",
+            "h4": "BUY"
+          },
+          "confidence": "baja",
+          "action": "MANTENER",
+          "instruction": "Mantener SL y TP actuales; confirmar que los niveles siguen iguales en FBS.",
+          "reasons": [
+            "Estructura M15/H1/H4: SELL/NEUTRAL/BUY",
+            "Progreso -51% · resultado -0.82R"
+          ],
+          "urgency": "PRÓXIMO PASO"
         }
       ],
       "last_decision": {
-        "evaluated_at": "2026-09-02T14:22:16.051348+00:00",
-        "candle_close": "2026-09-02T14:15:00+00:00",
+        "evaluated_at": "2026-09-02T14:37:18.611660+00:00",
+        "candle_close": "2026-09-02T14:30:00+00:00",
         "provider": "yahoo_finance_proxy",
         "proxy_symbol": "USDSEK=X",
-        "current_price": 9.62097,
-        "current_r": -0.936,
-        "progress": -0.586,
-        "atr15": 0.01436,
-        "rsi15": 30.0,
+        "current_price": 9.62464,
+        "current_r": -0.818,
+        "progress": -0.512,
+        "atr15": 0.01426,
+        "rsi15": 34.0,
         "trends": {
           "m15": "SELL",
           "h1": "NEUTRAL",
@@ -5809,24 +5833,14 @@
         "instruction": "Mantener SL y TP actuales; confirmar que los niveles siguen iguales en FBS.",
         "reasons": [
           "Estructura M15/H1/H4: SELL/NEUTRAL/BUY",
-          "Progreso -59% · resultado -0.94R"
+          "Progreso -51% · resultado -0.82R"
         ],
         "urgency": "PRÓXIMO PASO"
       },
-      "last_check_at": "2026-09-02T14:22:16.051348+00:00"
+      "last_check_at": "2026-09-02T14:37:18.611660+00:00"
     }
   },
   "events": [
-    {
-      "at": "2026-09-01T16:52:16.564158+00:00",
-      "level": "info",
-      "message": "📈 EURNZD: CERRAR TODO · proxy 1.96641"
-    },
-    {
-      "at": "2026-09-01T16:52:16.564183+00:00",
-      "level": "info",
-      "message": "📈 NZDJPY: CERRAR TODO · proxy 94.351"
-    },
     {
       "at": "2026-09-01T16:52:16.564195+00:00",
       "level": "info",
@@ -6564,6 +6578,16 @@
     },
     {
       "at": "2026-09-02T14:22:17.087251+00:00",
+      "level": "info",
+      "message": "📡 1 trade(s) evaluados · Telegram sent"
+    },
+    {
+      "at": "2026-09-02T14:37:19.758734+00:00",
+      "level": "info",
+      "message": "📈 USDSEK: MANTENER · proxy 9.62464"
+    },
+    {
+      "at": "2026-09-02T14:37:19.758757+00:00",
       "level": "info",
       "message": "📡 1 trade(s) evaluados · Telegram sent"
     }
