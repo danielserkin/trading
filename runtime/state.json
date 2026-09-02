@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-02T12:23:04.373Z",
+  "updated_at": "2026-09-02T12:23:11.802024+00:00",
   "session": {
     "schema_version": 1,
     "run_id": "115137-722171",
@@ -5520,21 +5520,60 @@
       "source": "technical_market_scan",
       "session_run_id": "115137-722171",
       "activated_at": "2026-09-02T12:23:04.373Z",
-      "history": [],
-      "last_decision": null
+      "history": [
+        {
+          "evaluated_at": "2026-09-02T12:23:11.009998+00:00",
+          "candle_close": "2026-09-02T12:15:00+00:00",
+          "provider": "yahoo_finance_proxy",
+          "proxy_symbol": "USDCAD=X",
+          "current_price": 1.39233,
+          "current_r": -0.361,
+          "progress": -0.235,
+          "atr15": 0.00087,
+          "rsi15": 38.3,
+          "trends": {
+            "m15": "SELL",
+            "h1": "BUY",
+            "h4": "BUY"
+          },
+          "confidence": "baja",
+          "action": "MANTENER",
+          "instruction": "Mantener SL y TP actuales; confirmar que los niveles siguen iguales en FBS.",
+          "reasons": [
+            "Estructura M15/H1/H4: SELL/BUY/BUY",
+            "Progreso -23% · resultado -0.36R"
+          ],
+          "urgency": "PRÓXIMO PASO"
+        }
+      ],
+      "last_decision": {
+        "evaluated_at": "2026-09-02T12:23:11.009998+00:00",
+        "candle_close": "2026-09-02T12:15:00+00:00",
+        "provider": "yahoo_finance_proxy",
+        "proxy_symbol": "USDCAD=X",
+        "current_price": 1.39233,
+        "current_r": -0.361,
+        "progress": -0.235,
+        "atr15": 0.00087,
+        "rsi15": 38.3,
+        "trends": {
+          "m15": "SELL",
+          "h1": "BUY",
+          "h4": "BUY"
+        },
+        "confidence": "baja",
+        "action": "MANTENER",
+        "instruction": "Mantener SL y TP actuales; confirmar que los niveles siguen iguales en FBS.",
+        "reasons": [
+          "Estructura M15/H1/H4: SELL/BUY/BUY",
+          "Progreso -23% · resultado -0.36R"
+        ],
+        "urgency": "PRÓXIMO PASO"
+      },
+      "last_check_at": "2026-09-02T12:23:11.009998+00:00"
     }
   },
   "events": [
-    {
-      "at": "2026-09-01T15:52:17.571469+00:00",
-      "level": "info",
-      "message": "📡 2 trade(s) evaluados · Telegram sent"
-    },
-    {
-      "at": "2026-09-01T16:07:20.127767+00:00",
-      "level": "info",
-      "message": "📈 EURNZD: MANTENER · proxy 1.96358"
-    },
     {
       "at": "2026-09-01T16:07:20.127791+00:00",
       "level": "info",
@@ -6274,6 +6313,16 @@
       "at": "2026-09-02T12:23:04.373Z",
       "level": "success",
       "message": "📡 Seguimiento activado: USDCAD BUY"
+    },
+    {
+      "at": "2026-09-02T12:23:11.801965+00:00",
+      "level": "info",
+      "message": "📈 USDCAD: MANTENER · proxy 1.39233"
+    },
+    {
+      "at": "2026-09-02T12:23:11.802014+00:00",
+      "level": "info",
+      "message": "📡 1 trade(s) evaluados · Telegram sent"
     }
   ]
 }
