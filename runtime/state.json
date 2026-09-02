@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-02T06:07:23.211666+00:00",
+  "updated_at": "2026-09-02T06:10:52.848Z",
   "session": {
     "schema_version": 1,
     "run_id": "030857-776433",
@@ -4752,8 +4752,8 @@
     "765fee7750c94615f4b9": {
       "trade_id": "765fee7750c94615f4b9",
       "activation_id": "0b95dab1-f21e-4bfa-b966-68f376e56707",
-      "enabled": true,
-      "status": "active",
+      "enabled": false,
+      "status": "paused",
       "asset": "USDMXN",
       "direction": "BUY",
       "order_type": "BUY STOP",
@@ -4777,7 +4777,7 @@
           "candle_close": "2026-09-02T03:15:00+00:00",
           "provider": "yahoo_finance_proxy",
           "proxy_symbol": "USDMXN=X",
-          "current_price": 17.0,
+          "current_price": 17,
           "current_r": -0.186,
           "progress": -0.116,
           "atr15": 0.011,
@@ -4801,7 +4801,7 @@
           "candle_close": "2026-09-02T03:15:00+00:00",
           "provider": "yahoo_finance_proxy",
           "proxy_symbol": "USDMXN=X",
-          "current_price": 17.0,
+          "current_price": 17,
           "current_r": -0.186,
           "progress": -0.116,
           "atr15": 0.011,
@@ -4825,7 +4825,7 @@
           "candle_close": "2026-09-02T03:15:00+00:00",
           "provider": "yahoo_finance_proxy",
           "proxy_symbol": "USDMXN=X",
-          "current_price": 17.0,
+          "current_price": 17,
           "current_r": -0.186,
           "progress": -0.116,
           "atr15": 0.011,
@@ -4849,7 +4849,7 @@
           "candle_close": "2026-09-02T03:30:00+00:00",
           "provider": "yahoo_finance_proxy",
           "proxy_symbol": "USDMXN=X",
-          "current_price": 17.0,
+          "current_price": 17,
           "current_r": -0.183,
           "progress": -0.114,
           "atr15": 0.011,
@@ -4897,7 +4897,7 @@
           "candle_close": "2026-09-02T04:00:00+00:00",
           "provider": "yahoo_finance_proxy",
           "proxy_symbol": "USDMXN=X",
-          "current_price": 17.0,
+          "current_price": 17,
           "current_r": -0.183,
           "progress": -0.114,
           "atr15": 0.011,
@@ -5133,7 +5133,8 @@
         ],
         "urgency": "PRÓXIMO PASO"
       },
-      "last_check_at": "2026-09-02T06:07:20.685383+00:00"
+      "last_check_at": "2026-09-02T06:07:20.685383+00:00",
+      "disabled_at": "2026-09-02T06:10:52.848Z"
     },
     "984707f45aff14730a46": {
       "trade_id": "984707f45aff14730a46",
@@ -5499,11 +5500,6 @@
     }
   },
   "events": [
-    {
-      "at": "2026-09-01T15:07:20.285169+00:00",
-      "level": "info",
-      "message": "📈 EURNZD: MANTENER · proxy 1.96404"
-    },
     {
       "at": "2026-09-01T15:07:20.285197+00:00",
       "level": "info",
@@ -6248,6 +6244,11 @@
       "at": "2026-09-02T06:07:23.211663+00:00",
       "level": "info",
       "message": "📡 2 trade(s) evaluados · Telegram sent"
+    },
+    {
+      "at": "2026-09-02T06:10:52.848Z",
+      "level": "warning",
+      "message": "⏸️ Seguimiento desactivado: USDMXN"
     }
   ]
 }
