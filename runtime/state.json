@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-02T16:22:17.474839+00:00",
+  "updated_at": "2026-09-02T16:37:17.385986+00:00",
   "session": {
     "schema_version": 1,
     "run_id": "115137-722171",
@@ -5979,18 +5979,42 @@
             "No ampliar ni retirar el stop"
           ],
           "urgency": "AHORA"
+        },
+        {
+          "evaluated_at": "2026-09-02T16:37:16.707402+00:00",
+          "candle_close": "2026-09-02T16:30:00+00:00",
+          "provider": "yahoo_finance_proxy",
+          "proxy_symbol": "USDSEK=X",
+          "current_price": 9.62262,
+          "current_r": -0.883,
+          "progress": -0.553,
+          "atr15": 0.0123,
+          "rsi15": 34.5,
+          "trends": {
+            "m15": "SELL",
+            "h1": "SELL",
+            "h4": "BUY"
+          },
+          "confidence": "baja",
+          "action": "CERRAR_TODO",
+          "instruction": "Cerrar por vencimiento de la idea tras confirmar la cotización FBS.",
+          "reasons": [
+            "La vigencia intradía original terminó",
+            "Progreso alcanzado: -55%"
+          ],
+          "urgency": "AHORA"
         }
       ],
       "last_decision": {
-        "evaluated_at": "2026-09-02T16:22:16.752052+00:00",
-        "candle_close": "2026-09-02T16:15:00+00:00",
+        "evaluated_at": "2026-09-02T16:37:16.707402+00:00",
+        "candle_close": "2026-09-02T16:30:00+00:00",
         "provider": "yahoo_finance_proxy",
         "proxy_symbol": "USDSEK=X",
-        "current_price": 9.61281,
-        "current_r": -1.2,
-        "progress": -0.751,
-        "atr15": 0.01238,
-        "rsi15": 29.6,
+        "current_price": 9.62262,
+        "current_r": -0.883,
+        "progress": -0.553,
+        "atr15": 0.0123,
+        "rsi15": 34.5,
         "trends": {
           "m15": "SELL",
           "h1": "SELL",
@@ -5998,27 +6022,17 @@
         },
         "confidence": "baja",
         "action": "CERRAR_TODO",
-        "instruction": "Verificar en FBS; si la posición continúa abierta, cerrarla a mercado.",
+        "instruction": "Cerrar por vencimiento de la idea tras confirmar la cotización FBS.",
         "reasons": [
-          "El proxy cruzó el SL configurado",
-          "No ampliar ni retirar el stop"
+          "La vigencia intradía original terminó",
+          "Progreso alcanzado: -55%"
         ],
         "urgency": "AHORA"
       },
-      "last_check_at": "2026-09-02T16:22:16.752052+00:00"
+      "last_check_at": "2026-09-02T16:37:16.707402+00:00"
     }
   },
   "events": [
-    {
-      "at": "2026-09-01T21:06:44.387499+00:00",
-      "level": "warning",
-      "message": "🤖 Revisión Codex no disponible; se publicó el resultado determinista"
-    },
-    {
-      "at": "2026-09-01T21:06:44.387505+00:00",
-      "level": "success",
-      "message": "✅ Sesión completada y cards publicadas"
-    },
     {
       "at": "2026-09-01T21:06:44.387511+00:00",
       "level": "success",
@@ -6756,6 +6770,16 @@
     },
     {
       "at": "2026-09-02T16:22:17.474834+00:00",
+      "level": "info",
+      "message": "📡 1 trade(s) evaluados · Telegram sent"
+    },
+    {
+      "at": "2026-09-02T16:37:17.385961+00:00",
+      "level": "info",
+      "message": "📈 USDSEK: CERRAR TODO · proxy 9.62262"
+    },
+    {
+      "at": "2026-09-02T16:37:17.385981+00:00",
       "level": "info",
       "message": "📡 1 trade(s) evaluados · Telegram sent"
     }
