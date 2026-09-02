@@ -27,6 +27,22 @@ fallback_opportunities:
     max_workers: 8
     candidate_pool_size: 9
     validity_hours: 4
+risk_policy:
+  enabled: true
+  minimum_actionable_stars: 3
+  risk_by_stars_usd:
+    5: 10
+    4: 8
+    3: 4
+  max_primary_risk_usd: 25
+  max_same_usd_bias: 2
+  symbol_multipliers:
+    USDJPY: 0.75
+    USDSEK: 0.50
+    USDNOK: 0.50
+    USDMXN: 0.50
+repeat_control:
+  market_scan_asset_cooldown_hours: 24
 telegram_delivery:
   enabled: "auto"
   send_on_no_trade: true

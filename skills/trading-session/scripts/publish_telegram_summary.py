@@ -14,7 +14,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
-from score_candidates import rank_candidates, reason_label, risk_reward, select_distinct_candidates
+from score_candidates import rank_candidates, reason_label, risk_reward, select_distinct_candidates, selection_policy
 
 
 def bot_api(token: str, method: str, payload: dict[str, Any] | None = None) -> dict[str, Any]:
@@ -69,6 +69,10 @@ def _candidate_line(rank: int, candidate: dict[str, Any]) -> str:
             validity = str(valid_until)
     risk_text = f"${float(risk):.2f}" if isinstance(risk, (int, float)) else "TBD"
     score_text = f"{float(candidate.get('score_total')):.2f}/{float(candidate.get('score_max')):.2f}" if candidate.get("score_total") is not None else "TBD"
+    stars = int(candidate.get("stars") or 0)
+    star_text = "★" * stars + "☆" * max(0, 5 - stars)
+    tier_cap = candidate.get("portfolio_scaled_risk_cap_usd", candidate.get("risk_tier_usd"))
+    tier_text = f" · tope ${float(tier_cap):.2f}" if tier_cap is not None else ""
     return (
         f"{direction_icon} <b>{rank}. {html.escape(str(candidate.get('asset', '')))} {html.escape(direction)}</b>\n"
         f"└ 🧩 {html.escape(origin_label)}\n"
@@ -76,8 +80,8 @@ def _candidate_line(rank: int, candidate: dict[str, Any]) -> str:
         f"└ 🎯 Entrada: <code>{html.escape(str(candidate.get('entry', '-')))}</code>\n"
         f"└ 🛑 SL: <code>{html.escape(str(candidate.get('stop_loss', '-')))}</code>\n"
         f"└ ✅ TP1: <code>{html.escape(str(tp))}</code>  |  ⚖️ R/R: <b>{rr:.2f}</b>\n"
-        f"└ 💵 Riesgo: <b>{risk_text}</b>  |  📦 Tamaño: <b>{html.escape(str(size))}</b>\n"
-        f"└ 📐 Calidad: <b>{score_text}</b>  |  ID: <code>{html.escape(str(candidate.get('idea_id', 'TBD')))}</code>\n"
+        f"└ 💵 Riesgo: <b>{risk_text}</b>{tier_text}  |  📦 Tamaño: <b>{html.escape(str(size))}</b>\n"
+        f"└ 📐 Calidad: <b>{star_text} · {score_text}</b>  |  ID: <code>{html.escape(str(candidate.get('idea_id', 'TBD')))}</code>\n"
         f"└ ⏳ Válida hasta: <b>{html.escape(validity)}</b>\n"
         f"\n⚡ <b>Ejecución</b>\n{html.escape(str(instruction))}\nUna sola entrada por ID; no reingresar tras TP o SL."
     )
@@ -85,16 +89,28 @@ def _candidate_line(rank: int, candidate: dict[str, Any]) -> str:
 
 def build_summary(candidates: list[dict[str, Any]], metadata: dict[str, Any], max_risk_usd: float) -> str:
     ranked, _ = rank_candidates(candidates, max_risk_usd, metadata.get("scoring_weights"), metadata.get("source_trust"))
-    top = select_distinct_candidates(ranked, 3)
+    minimum_stars, max_same_usd_bias = selection_policy(metadata)
+    top = select_distinct_candidates(
+        ranked, 3, minimum_stars=minimum_stars, max_same_usd_bias=max_same_usd_bias
+    )
+    risk_policy = metadata.get("risk_policy") or {}
+    portfolio_cap = risk_policy.get("max_primary_risk_usd")
+    selected_risk = risk_policy.get("selected_primary_risk_usd")
+    portfolio_line = ""
+    if portfolio_cap is not None:
+        actual = f" · propuestas ${float(selected_risk):.2f}" if selected_risk is not None else ""
+        portfolio_line = f"🧺 Riesgo conjunto máximo: <b>${float(portfolio_cap):.2f}</b>{actual}"
     lines = [
         "📊 <b>SESIÓN DE TRADING · FBS</b>",
         "━━━━━━━━━━━━━━━━━━━━",
         f"🔎 <b>{metadata.get('telegram_messages_reviewed', 0)}</b> mensajes revisados",
-        f"🛡 Riesgo máximo por operación: <b>${max_risk_usd:.2f}</b>",
+        f"🛡 Límite absoluto por operación: <b>${max_risk_usd:.2f}</b>",
         "",
         "🏆 <b>OPORTUNIDADES EVALUADAS</b>",
         "",
     ]
+    if portfolio_line:
+        lines.insert(4, portfolio_line)
     for index, (_, _, candidate) in enumerate(top, 1):
         lines.extend([_candidate_line(index, candidate), ""])
     fallback = metadata.get("fallback_opportunities") or {}

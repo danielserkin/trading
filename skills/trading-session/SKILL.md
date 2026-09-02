@@ -52,7 +52,7 @@ When both bot variables exist, every successful runner invocation publishes a ne
 - Accept an original signal only with recognized FBS asset, direction, entry, SL, TP, acceptable R/R, fresh market data, and a live path between SL and TP.
 - Reject a signal already at SL/TP, too close to SL, mostly consumed toward TP, stale, structurally invalid, or dependent on an unconfirmed proxy.
 - Use Binance Ask for crypto BUY and Bid for crypto SELL. For Yahoo-backed markets, require confirmation of executable Bid/Ask and spread in FBS.
-- Use USD 1,000 reference capital, USD 20 maximum risk per unique idea, and minimum R/R 1.6 unless local config overrides them.
+- Use USD 1,000 reference capital, USD 20 absolute maximum risk per unique idea, and minimum R/R 1.6 unless local config overrides them. Apply the configured star-based risk tier and primary-basket cap before publication; three-star setups remain actionable at reduced size.
 - Show indicative lot size only for modeled contracts. Confirm point value, spread, margin, and contract specification in FBS. Use `TBD` otherwise and reject candidates whose risk cannot be calculated.
 - The user executes mechanically from Telegram and does not inspect candles. Resolve all technical confirmation before publishing and specify `BUY STOP`, `BUY LIMIT`, `SELL STOP`, or `SELL LIMIT` explicitly.
 - Include the exact entry, SL, TP, lot size, risk, and expiry. Because the proxy may differ from FBS Bid/Ask, allow switching STOP/LIMIT within the same direction only when FBS requires it for the exact same entry; never change the levels or lot.
@@ -68,6 +68,7 @@ When fewer than three original candidates survive, run `scripts/derive_opportuni
 - Label same-direction ideas `reentry` and opposite-direction ideas `technical_reversal`. Never attribute a reversal to the expert channel.
 - Label independent scanner ideas `market_scan` with their public provider and complete technical evidence.
 - Produce at most one primary setup per asset and select three different assets. Prefer three valid options on every execution, while preserving the configured R/R, risk, freshness, structure, overextension, and sizing requirements.
+- Limit repeated directional USD exposure with the configured correlation cap. Keep lower-risk technical opportunities available instead of disabling the scanner solely because they score three stars.
 - Fill a remaining primary slot with `NO TRADE` only after all configured sources, re-entry seeds, and modeled scan assets are exhausted. Record the scan count and missing confirmation; never invent levels or publish random filler.
 
 ## Output and safety

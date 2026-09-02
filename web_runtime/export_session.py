@@ -15,7 +15,7 @@ ROOT = Path(__file__).resolve().parents[1]
 SESSION_SCRIPTS = ROOT / "skills" / "trading-session" / "scripts"
 sys.path.insert(0, str(SESSION_SCRIPTS))
 
-from score_candidates import rank_candidates, risk_reward, select_distinct_candidates  # noqa: E402
+from score_candidates import rank_candidates, risk_reward, select_distinct_candidates, selection_policy  # noqa: E402
 
 
 def utc_now() -> str:
@@ -116,9 +116,18 @@ def export_session(session_dir: Path) -> dict[str, Any]:
         metadata.get("scoring_weights"),
         metadata.get("source_trust"),
     )
-    primary = select_distinct_candidates(ranked, 3)
+    minimum_stars, max_same_usd_bias = selection_policy(metadata)
+    primary = select_distinct_candidates(
+        ranked, 3, minimum_stars=minimum_stars, max_same_usd_bias=max_same_usd_bias
+    )
     primary_ids = {id(item[2]) for item in primary}
-    backups = select_distinct_candidates(ranked, 2, excluded_ids=primary_ids)
+    backups = select_distinct_candidates(
+        ranked,
+        2,
+        excluded_ids=primary_ids,
+        minimum_stars=minimum_stars,
+        max_same_usd_bias=max_same_usd_bias,
+    )
     run_id = str(metadata.get("run_id") or session_dir.name)
     cards = [
         card_from_candidate(candidate, stars, reasons, index, run_id)
@@ -140,6 +149,8 @@ def export_session(session_dir: Path) -> dict[str, Any]:
             "messages_reviewed": metadata.get("telegram_messages_reviewed", 0),
             "symbols_scanned": metadata.get("scanned_symbols", 0),
             "max_risk_usd": max_risk,
+            "max_primary_risk_usd": (metadata.get("risk_policy") or {}).get("max_primary_risk_usd"),
+            "selected_primary_risk_usd": (metadata.get("risk_policy") or {}).get("selected_primary_risk_usd"),
         },
         "cards": cards,
         "backups": [

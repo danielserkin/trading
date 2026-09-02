@@ -230,6 +230,111 @@ class TelegramFbsParserTest(unittest.TestCase):
         self.assertEqual(len(selected), 3)
         self.assertEqual(len({item[2]["asset"] for item in selected}), 3)
 
+    def test_selection_limits_same_direction_usd_exposure(self) -> None:
+        def item(asset: str, direction: str, score: float) -> tuple:
+            candidate = {"asset": asset, "direction": direction, "score_total": score}
+            return (4, [], candidate)
+
+        ranked = [
+            item("USDJPY", "BUY", 10),
+            item("USDCHF", "BUY", 9),
+            item("EURUSD", "SELL", 8),
+            item("GBPUSD", "BUY", 7),
+        ]
+        selected = scoring.select_distinct_candidates(ranked, 3, max_same_usd_bias=2)
+        self.assertEqual([row[2]["asset"] for row in selected], ["USDJPY", "USDCHF", "GBPUSD"])
+        self.assertEqual(scoring.usd_bias(selected[0][2]), "LONG_USD")
+        self.assertEqual(scoring.usd_bias(selected[2][2]), "SHORT_USD")
+
+    def test_tiered_risk_scales_three_high_quality_trades_to_portfolio_cap(self) -> None:
+        def candidate(asset: str) -> dict:
+            return {
+                "asset": asset, "direction": "BUY", "entry": 1.1000, "stop_loss": 1.0990,
+                "take_profits": [1.1020], "risk_usd": 20.0, "market_valid": True,
+                "signal_status": "vigente", "confidence": "high", "channel_priority": 1,
+                "source": "telegram_signal", "candidate_origin": "expert_signal", "expert_signal": True,
+                "entry_distance_percent": 0.0,
+                "analysis": {"trend_15m": "BUY", "trend_1h": "BUY", "trend_4h": "BUY", "spread": 0.0001},
+            }
+
+        candidates = [candidate(asset) for asset in ("EURUSD", "GBPUSD", "AUDUSD")]
+        params = {
+            "max_risk_usd": 20,
+            "primary_count": 3,
+            "risk_policy": {
+                "enabled": True, "minimum_actionable_stars": 3,
+                "risk_by_stars_usd": {5: 10, 4: 8, 3: 4},
+                "max_primary_risk_usd": 25, "max_same_usd_bias": 3,
+            },
+        }
+        metadata = {}
+        primary = session.apply_tiered_risk_policy(candidates, params, metadata)
+        self.assertEqual(len(primary), 3)
+        self.assertTrue(all(row[0] == 5 for row in primary))
+        self.assertLessEqual(sum(row[2]["risk_usd"] for row in primary), 25)
+        self.assertLess(metadata["risk_policy"]["portfolio_scale"], 1)
+        self.assertTrue(all("ajustado por cartera" in row[2]["risk_policy_note"] for row in primary))
+
+    def test_symbol_multiplier_reduces_usdjpy_without_excluding_it(self) -> None:
+        candidate = {
+            "asset": "USDJPY", "direction": "BUY", "entry": 160.0, "stop_loss": 159.9,
+            "take_profits": [160.2], "risk_usd": 20.0, "market_valid": True,
+            "signal_status": "vigente", "confidence": "high", "channel_priority": 1,
+            "source": "telegram_signal", "candidate_origin": "expert_signal", "expert_signal": True,
+            "entry_distance_percent": 0.0,
+            "analysis": {"trend_15m": "BUY", "trend_1h": "BUY", "trend_4h": "BUY", "spread": 0.01},
+        }
+        params = {
+            "max_risk_usd": 20, "primary_count": 3,
+            "risk_policy": {
+                "enabled": True, "minimum_actionable_stars": 3,
+                "risk_by_stars_usd": {5: 10, 4: 8, 3: 4},
+                "max_primary_risk_usd": 25, "max_same_usd_bias": 2,
+                "symbol_multipliers": {"USDJPY": 0.75},
+            },
+        }
+        original_fetch = session.fetch_yahoo_current
+        session.fetch_yahoo_current = lambda asset: 160.0 if asset == "USDJPY" else None
+        try:
+            primary = session.apply_tiered_risk_policy([candidate], params, {})
+        finally:
+            session.fetch_yahoo_current = original_fetch
+        self.assertEqual(len(primary), 1)
+        self.assertEqual(candidate["risk_multiplier"], 0.75)
+        self.assertLessEqual(candidate["risk_usd"], 7.50)
+        self.assertGreater(candidate["risk_usd"], 0)
+
+    def test_three_star_market_scan_remains_actionable_at_four_dollars(self) -> None:
+        candidate = {
+            "asset": "EURUSD", "direction": "BUY", "entry": 1.1000, "stop_loss": 1.0990,
+            "take_profits": [1.1016], "risk_usd": 20.0, "market_valid": True,
+            "signal_status": "vigente", "confidence": "medium", "channel_priority": 3,
+            "source": "technical_market_scan", "candidate_origin": "market_scan", "expert_signal": False,
+            "analysis": {"trend_15m": "NEUTRAL", "trend_1h": "BUY", "trend_4h": "BUY"},
+        }
+        params = {
+            "max_risk_usd": 20, "primary_count": 3,
+            "risk_policy": {
+                "enabled": True, "minimum_actionable_stars": 3,
+                "risk_by_stars_usd": {5: 10, 4: 8, 3: 4},
+                "max_primary_risk_usd": 25, "max_same_usd_bias": 2,
+            },
+        }
+        primary = session.apply_tiered_risk_policy([candidate], params, {})
+        self.assertEqual(candidate["stars"], 3)
+        self.assertEqual(len(primary), 1)
+        self.assertLessEqual(candidate["risk_usd"], 4)
+        self.assertGreater(candidate["risk_usd"], 0)
+
+    def test_market_scan_asset_cooldown_keeps_expert_signal_available(self) -> None:
+        now = datetime.now(timezone.utc)
+        ledger = {"published_ideas": {"old": {"asset": "EURUSD", "published_at": now.isoformat()}}}
+        scan = {"asset": "EURUSD", "candidate_origin": "market_scan", "signal_status": "vigente", "market_valid": True}
+        expert = {"asset": "EURUSD", "candidate_origin": "expert_signal", "signal_status": "vigente", "market_valid": True}
+        session.apply_market_scan_asset_cooldown([scan, expert], ledger, 24, now)
+        self.assertEqual(scan["discard_reason"], "market_scan_asset_cooldown")
+        self.assertTrue(expert["market_valid"])
+
     def test_forex_lot_size_uses_quote_currency_conversion(self) -> None:
         original_fetch = session.fetch_yahoo_current
         session.fetch_yahoo_current = lambda asset: 1.0 if asset == "USDCHF" else None

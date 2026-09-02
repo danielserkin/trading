@@ -69,7 +69,7 @@ function response(request, env, payload, status = 200) {
     "Content-Type":"application/json; charset=utf-8",
     "Access-Control-Allow-Origin":allowedOrigin(request, env),
     "Access-Control-Allow-Headers":"Authorization, Content-Type",
-    "Access-Control-Allow-Methods":"GET, POST, PUT, OPTIONS",
+    "Access-Control-Allow-Methods":"GET, POST, PUT, DELETE, OPTIONS",
     "Cache-Control":"no-store",
   }});
 }
@@ -129,6 +129,79 @@ function event(state, level, message) {
   state.events = state.events.slice(-150);
 }
 
+function monitorAction(input) {
+  if (input.action) return String(input.action).toLowerCase();
+  return Boolean(input.enabled) ? "activate" : "pause";
+}
+
+function validDisplayDecimals(value) {
+  const decimals = Number(value ?? 3);
+  if (!Number.isInteger(decimals) || decimals < 1 || decimals > 5) throw new Error("Los decimales deben estar entre 1 y 5");
+  return decimals;
+}
+
+function validateLevels(direction, entry, stopLoss, takeProfit, volume) {
+  if (![entry, stopLoss, takeProfit].every((value) => Number.isFinite(value) && value > 0)) throw new Error("Entrada, SL y TP deben ser números válidos");
+  if (volume !== null && (!Number.isFinite(volume) || volume <= 0)) throw new Error("El volumen debe ser mayor que cero");
+  if (direction === "BUY" && !(stopLoss < entry && entry < takeProfit)) throw new Error("BUY requiere SL < entrada < TP");
+  if (direction === "SELL" && !(takeProfit < entry && entry < stopLoss)) throw new Error("SELL requiere TP < entrada < SL");
+}
+
+function mutateMonitor(state, tradeId, input, timestamp = new Date().toISOString()) {
+  state.monitors ||= {};
+  const existing = state.monitors[tradeId];
+  const action = monitorAction(input);
+  if (action === "pause") {
+    if (!existing) throw new Error("El seguimiento no existe");
+    state.monitors[tradeId] = {...existing, enabled:false, status:"paused", disabled_at:timestamp};
+    event(state, "warning", `⏸️ Seguimiento pausado: ${existing.asset || tradeId}`);
+    return "paused";
+  }
+  if (action === "resume") {
+    if (!existing) throw new Error("El seguimiento no existe");
+    const entry = Number(existing.entry), stopLoss = Number(existing.current_sl ?? existing.stop_loss);
+    const takeProfit = Number(existing.current_tp ?? existing.take_profit);
+    const volume = existing.volume === null || existing.volume === undefined || existing.volume === "" ? null : Number(existing.volume);
+    validateLevels(existing.direction, entry, stopLoss, takeProfit, volume);
+    state.monitors[tradeId] = {
+      ...existing, activation_id:crypto.randomUUID(), enabled:true, status:"active",
+      current_sl:stopLoss, current_tp:takeProfit, volume,
+      display_decimals:validDisplayDecimals(existing.display_decimals),
+      resumed_at:timestamp, disabled_at:null,
+    };
+    event(state, "success", `▶️ Seguimiento reanudado: ${existing.asset || tradeId}`);
+    return "active";
+  }
+  if (action !== "activate") throw new Error("Acción de seguimiento no válida");
+  const card = (state.session?.cards || []).find((item) => item.id === tradeId);
+  if (!card || !card.monitorable) throw new Error("Este trade no está disponible para seguimiento");
+  const entry = Number(input.entry), stopLoss = Number(input.stop_loss), takeProfit = Number(input.take_profit);
+  const volume = input.volume === null || input.volume === undefined || input.volume === "" ? null : Number(input.volume);
+  validateLevels(card.direction, entry, stopLoss, takeProfit, volume);
+  state.monitors[tradeId] = {
+    ...(existing || {}), trade_id:tradeId, activation_id:crypto.randomUUID(), enabled:true, status:"active",
+    asset:card.asset, direction:card.direction, order_type:card.order_type,
+    entry, stop_loss:stopLoss, original_sl:stopLoss, current_sl:stopLoss,
+    take_profit:takeProfit, original_tp:takeProfit, current_tp:takeProfit,
+    volume, display_decimals:validDisplayDecimals(input.display_decimals),
+    valid_until:card.valid_until, proxy_symbol:card.proxy_symbol,
+    provider:card.provider, source:card.source, session_run_id:state.session?.run_id,
+    session_date:state.session?.date, session_generated_at:state.session?.generated_at,
+    activated_at:timestamp, history:existing?.history || [], last_decision:null,
+  };
+  event(state, "success", `📡 Seguimiento activado: ${card.asset} ${card.direction}`);
+  return "active";
+}
+
+function deleteMonitor(state, tradeId) {
+  state.monitors ||= {};
+  const existing = state.monitors[tradeId];
+  if (!existing) throw new Error("El seguimiento no existe");
+  if (existing.enabled) throw new Error("Pausa el seguimiento antes de eliminarlo");
+  delete state.monitors[tradeId];
+  event(state, "warning", `🗑️ Seguimiento eliminado: ${existing.asset || tradeId}`);
+}
+
 async function body(request) {
   try { return await request.json(); } catch { return {}; }
 }
@@ -171,40 +244,19 @@ async function handle(request, env) {
   }
 
   const monitorMatch = url.pathname.match(/^\/monitors\/([^/]+)$/);
+  if (monitorMatch && request.method === "DELETE") {
+    const tradeId = decodeURIComponent(monitorMatch[1]);
+    await updateState(env, "runtime: monitor deleted", (current) => deleteMonitor(current, tradeId));
+    return response(request, env, {status:"deleted", trade_id:tradeId});
+  }
   if (monitorMatch && request.method === "PUT") {
     const tradeId = decodeURIComponent(monitorMatch[1]);
     const input = await body(request);
-    const enabled = Boolean(input.enabled);
-    const state = await updateState(env, `runtime: monitor ${enabled ? "on" : "off"}`, (current) => {
-      current.monitors ||= {};
-      const existing = current.monitors[tradeId] || {};
-      if (!enabled) {
-        current.monitors[tradeId] = {...existing, enabled:false, status:"paused", disabled_at:new Date().toISOString()};
-        event(current, "warning", `⏸️ Seguimiento desactivado: ${existing.asset || tradeId}`);
-        return;
-      }
-      const card = (current.session?.cards || []).find((item) => item.id === tradeId);
-      if (!card || !card.monitorable) throw new Error("Este trade no está disponible para seguimiento");
-      const entry = Number(input.entry), stopLoss = Number(input.stop_loss), takeProfit = Number(input.take_profit);
-      const volume = input.volume === null || input.volume === undefined || input.volume === "" ? null : Number(input.volume);
-      if (![entry, stopLoss, takeProfit].every((value) => Number.isFinite(value) && value > 0)) throw new Error("Entrada, SL y TP deben ser números válidos");
-      if (volume !== null && (!Number.isFinite(volume) || volume <= 0)) throw new Error("El volumen debe ser mayor que cero");
-      if (card.direction === "BUY" && !(stopLoss < entry && entry < takeProfit)) throw new Error("BUY requiere SL < entrada < TP");
-      if (card.direction === "SELL" && !(takeProfit < entry && entry < stopLoss)) throw new Error("SELL requiere TP < entrada < SL");
-      current.monitors[tradeId] = {
-        ...existing, trade_id:tradeId, activation_id:crypto.randomUUID(), enabled:true, status:"active",
-        asset:card.asset, direction:card.direction, order_type:card.order_type,
-        entry, stop_loss:stopLoss, original_sl:stopLoss, current_sl:stopLoss,
-        take_profit:takeProfit, original_tp:takeProfit, current_tp:takeProfit,
-        volume,
-        valid_until:card.valid_until, proxy_symbol:card.proxy_symbol,
-        provider:card.provider, source:card.source, session_run_id:current.session?.run_id,
-        activated_at:new Date().toISOString(), history:existing.history || [], last_decision:null,
-      };
-      event(current, "success", `📡 Seguimiento activado: ${card.asset} ${card.direction}`);
-    });
-    if (enabled) await dispatch(env, "monitor_tick", {trade_id:tradeId, reason:"activated"});
-    return response(request, env, {status:enabled ? "active" : "paused", monitor:state.monitors[tradeId]});
+    const action = monitorAction(input);
+    let status = "paused";
+    const state = await updateState(env, `runtime: monitor ${action}`, (current) => { status = mutateMonitor(current, tradeId, input); });
+    if (status === "active") await dispatch(env, "monitor_tick", {trade_id:tradeId, reason:action});
+    return response(request, env, {status, monitor:state.monitors[tradeId]});
   }
   return response(request, env, {error:"Ruta no encontrada"}, 404);
 }
@@ -212,7 +264,7 @@ async function handle(request, env) {
 export default {
   async fetch(request, env) {
     try { return await handle(request, env); }
-    catch (error) { return response(request, env, {error:error.message || "Error interno"}, /Ya existe|no está disponible|requiere|deben ser/.test(error.message) ? 409 : 500); }
+    catch (error) { return response(request, env, {error:error.message || "Error interno"}, /Ya existe|no está disponible|no existe|requiere|debe(?:n)?|Pausa|no válida|decimales/.test(error.message) ? 409 : 500); }
   },
   async scheduled(_controller, env, context) {
     context.waitUntil((async () => {
@@ -222,4 +274,4 @@ export default {
   },
 };
 
-export {constantTimeEqual, issueToken, verifyToken};
+export {constantTimeEqual, issueToken, verifyToken, mutateMonitor, deleteMonitor};

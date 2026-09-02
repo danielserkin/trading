@@ -60,6 +60,6 @@ Desde ese momento, **Nueva sesión** dispara el flujo sin aprobaciones interacti
 
 1. Pulsar **Nueva sesión**.
 2. Seguir el log hasta que aparezcan las tres cards o un slot `NO TRADE`.
-3. Copiar entrada, SL, TP y tamaño; ejecutar manualmente en FBS.
+3. Elegir entre 1 y 5 decimales en cada card (3 por defecto), copiar entrada, SL, TP y tamaño, y ejecutar manualmente en FBS. Si la precisión elegida altera la estructura o el R/R, el panel avisa y copia el valor exacto.
 4. Activar **Administrar trade**, confirmar los niveles realmente colocados y mantener el navegador cerrado si se desea: el seguimiento continúa en servidor.
-5. Usar `⏹` para detener cada seguimiento. Las recomendaciones de cierre no lo detienen solas; sólo el usuario lo desactiva.
+5. La pestaña **Activos** conserva los seguimientos aunque se cree una sesión nueva. Usar `⏸` para pausarlos y la pestaña **Pausados** para reanudarlos o eliminarlos. La eliminación exige pausar primero y confirmarla.

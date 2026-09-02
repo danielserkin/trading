@@ -132,12 +132,19 @@ sequenceDiagram
         end
     end
 
-    U->>P: Desactiva seguimiento
-    P->>W: PUT enabled = false
+    U->>P: Pausa seguimiento
+    P->>W: PUT action = pause
     W->>R: Estado = paused
+    U->>P: Reanuda seguimiento, incluso de una sesión anterior
+    P->>W: PUT action = resume
+    W->>R: Conserva origen e historial; enabled = true
+    W->>G: Evaluación inmediata
+    U->>P: Elimina un seguimiento pausado
+    P->>W: DELETE /monitors/{id}
+    W->>R: Elimina el seguimiento
 ```
 
-La primera evaluación comienza al activar el switch. El cron posterior está alineado a minutos fijos, por lo que la primera espera puede ser menor de 15 minutos. El monitor puede decidir `MANTENER`, `MOVER_SL`, `AJUSTAR_TP`, `CERRAR_TODO` o `EVIDENCIA_INSUFICIENTE`. Toda acción debe confirmarse en FBS.
+La primera evaluación comienza al activar el switch o reanudar un seguimiento. Crear una sesión nueva reemplaza las cards de oportunidades, pero no pisa los monitores activos ni pausados guardados en `runtime-data`. El cron posterior está alineado a minutos fijos, por lo que la primera espera puede ser menor de 15 minutos. El monitor puede decidir `MANTENER`, `MOVER_SL`, `AJUSTAR_TP`, `CERRAR_TODO` o `EVIDENCIA_INSUFICIENTE`. Toda acción debe confirmarse en FBS.
 
 ## Dónde vive y se usa cada secreto
 

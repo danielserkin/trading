@@ -855,6 +855,117 @@ def apply_position_sizing(candidate: dict[str, Any], max_risk_usd: float) -> Non
     candidate["sizing_note"] = sizing["note"]
 
 
+def apply_tiered_risk_policy(
+    candidates: list[dict[str, Any]],
+    params: dict[str, Any],
+    metadata: dict[str, Any],
+) -> list[tuple[int, list[str], dict[str, Any]]]:
+    """Resize actionable ideas by star quality and cap the primary basket risk."""
+    configured = params.get("risk_policy") or {}
+    policy = dict(configured)
+    if configured.get("enabled", True) is False:
+        policy["enabled"] = False
+        metadata["risk_policy"] = policy
+        ranked, _ = rank_candidates(
+            candidates,
+            float(params["max_risk_usd"]),
+            params.get("scoring_weights"),
+            params.get("source_trust"),
+        )
+        return select_distinct_candidates(ranked, int(params.get("primary_count", 3)))
+
+    policy["enabled"] = True
+    max_risk = float(params["max_risk_usd"])
+    minimum_stars = int(configured.get("minimum_actionable_stars", 3))
+    raw_tiers = configured.get("risk_by_stars_usd") or {5: 10, 4: 8, 3: 4}
+    tiers = {int(stars): float(limit) for stars, limit in raw_tiers.items()}
+    multipliers = {
+        str(asset).upper(): float(multiplier)
+        for asset, multiplier in (configured.get("symbol_multipliers") or {}).items()
+    }
+    max_same_usd_bias = int(configured.get("max_same_usd_bias", 2))
+    portfolio_cap = float(configured.get("max_primary_risk_usd", max_risk))
+    policy.update({
+        "minimum_actionable_stars": minimum_stars,
+        "risk_by_stars_usd": tiers,
+        "symbol_multipliers": multipliers,
+        "max_same_usd_bias": max_same_usd_bias,
+        "max_primary_risk_usd": portfolio_cap,
+    })
+    metadata["risk_policy"] = policy
+
+    ranked, _ = rank_candidates(
+        candidates, max_risk, params.get("scoring_weights"), params.get("source_trust")
+    )
+    for stars, _, candidate in ranked:
+        candidate["stars"] = stars
+        if stars < minimum_stars or stars not in tiers:
+            candidate["market_valid"] = False
+            candidate["signal_status"] = "descartada"
+            candidate["discard_reason"] = "quality_below_actionable"
+            candidate["risk_policy_note"] = f"{stars} estrellas: solo observación"
+            continue
+        multiplier = multipliers.get(str(candidate.get("asset") or "").upper(), 1.0)
+        tier_cap = min(max_risk, tiers[stars] * multiplier)
+        candidate["risk_tier_usd"] = round(tier_cap, 2)
+        candidate["risk_multiplier"] = multiplier
+        apply_position_sizing(candidate, tier_cap)
+        actual_risk = candidate.get("risk_usd")
+        if actual_risk is None or float(actual_risk) > tier_cap + 0.01:
+            candidate["market_valid"] = False
+            candidate["signal_status"] = "descartada"
+            candidate["discard_reason"] = "risk_tier_unavailable"
+            candidate["risk_policy_note"] = (
+                f"{stars} estrellas: lote mínimo excede el tope de {tier_cap:.2f} USD"
+            )
+            continue
+        candidate["risk_policy_note"] = (
+            f"{stars} estrellas: tope {tier_cap:.2f} USD"
+            + (f" (multiplicador {multiplier:.2f})" if multiplier != 1.0 else "")
+        )
+
+    primary: list[tuple[int, list[str], dict[str, Any]]] = []
+    requested_total = 0.0
+    selected_total = 0.0
+    scale = 1.0
+    for _ in range(3):
+        ranked, _ = rank_candidates(
+            candidates, max_risk, params.get("scoring_weights"), params.get("source_trust")
+        )
+        primary = select_distinct_candidates(
+            ranked,
+            int(params.get("primary_count", 3)),
+            minimum_stars=minimum_stars,
+            max_same_usd_bias=max_same_usd_bias,
+        )
+        requested_total = sum(float(item[2].get("risk_tier_usd") or 0) for item in primary)
+        scale = min(1.0, portfolio_cap / requested_total) if requested_total > 0 else 1.0
+        invalid_after_scaling = False
+        for _, _, candidate in primary:
+            scaled_cap = float(candidate["risk_tier_usd"]) * scale
+            if scale < 1.0:
+                apply_position_sizing(candidate, scaled_cap)
+                candidate["portfolio_scaled_risk_cap_usd"] = round(scaled_cap, 2)
+                base_note = str(candidate.get("risk_policy_note") or "").split("; ajustado por cartera", 1)[0]
+                candidate["risk_policy_note"] = f"{base_note}; ajustado por cartera a {scaled_cap:.2f} USD"
+            actual_risk = candidate.get("risk_usd")
+            if actual_risk is None or float(actual_risk) > scaled_cap + 0.01:
+                candidate["market_valid"] = False
+                candidate["signal_status"] = "descartada"
+                candidate["discard_reason"] = "portfolio_risk_unavailable"
+                candidate["risk_policy_note"] = f"el lote mínimo excede el tope de cartera {scaled_cap:.2f} USD"
+                invalid_after_scaling = True
+        if invalid_after_scaling:
+            continue
+        selected_total = sum(float(item[2].get("risk_usd") or 0) for item in primary)
+        break
+
+    policy["requested_primary_risk_usd"] = round(requested_total, 2)
+    policy["selected_primary_risk_usd"] = round(selected_total, 2)
+    policy["portfolio_scale"] = round(scale, 4)
+    return primary
+
+
 def estimate_fbs_lot_size(candidate: dict[str, Any], max_risk_usd: float) -> dict[str, Any] | None:
     asset = str(candidate.get("asset") or "")
     direction = candidate.get("direction")
@@ -1068,9 +1179,39 @@ def record_published_ideas(path: Path, candidates: list[dict[str, Any]]) -> None
                 "asset": candidate.get("asset"), "direction": candidate.get("direction"),
                 "entry": candidate.get("entry"), "stop_loss": candidate.get("stop_loss"),
                 "take_profits": candidate.get("take_profits") or [], "published_at": recorded_at,
+                "source": candidate.get("source"), "candidate_origin": candidate.get("candidate_origin"),
             }
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(ledger, indent=2, sort_keys=True) + "\n")
+
+
+def apply_market_scan_asset_cooldown(
+    candidates: list[dict[str, Any]],
+    ledger: dict[str, Any],
+    cooldown_hours: float,
+    now: datetime | None = None,
+) -> None:
+    """Prevent the automated scanner from republishing a recently used asset."""
+    if cooldown_hours <= 0:
+        return
+    now = now or utc_now()
+    cutoff = now - timedelta(hours=cooldown_hours)
+    recent_assets = set()
+    for item in (ledger.get("published_ideas") or {}).values():
+        published_at = parse_datetime(item.get("published_at")) if isinstance(item, dict) else None
+        if published_at and published_at >= cutoff and item.get("asset"):
+            recent_assets.add(str(item["asset"]).upper())
+    for candidate in candidates:
+        if candidate.get("candidate_origin") != "market_scan":
+            continue
+        if str(candidate.get("asset") or "").upper() not in recent_assets:
+            continue
+        if candidate.get("signal_status") in {"duplicada", "descartada", "vencida"}:
+            continue
+        candidate["market_valid"] = False
+        candidate["signal_status"] = "descartada"
+        candidate["discard_reason"] = "market_scan_asset_cooldown"
+        candidate.setdefault("missing", []).append("asset_cooldown")
 
 
 def run_session(config_dir: Path, limit_per_channel: int, input_paths: list[Path]) -> tuple[list[dict[str, Any]], dict[str, Any]]:
@@ -1186,12 +1327,18 @@ def main() -> int:
     ledger_path = args.output_dir.parent / "idea-ledger.json"
     ledger = load_idea_ledger(ledger_path)
     candidates = dedupe(candidates, set(ledger["published_ideas"]))
+    repeat_settings = params.get("repeat_control") or {}
+    apply_market_scan_asset_cooldown(
+        candidates,
+        ledger,
+        float(repeat_settings.get("market_scan_asset_cooldown_hours", 0)),
+    )
+    primary = apply_tiered_risk_policy(candidates, params, metadata)
     args.output_dir.mkdir(parents=True, exist_ok=True)
     candidates_path = args.output_dir / "telegram-fbs-candidates.json"
     metadata_path = args.output_dir / "telegram-fbs-metadata.json"
     report_path = args.output_dir / "session-report.md"
     ranked, _ = rank_candidates(candidates, float(params["max_risk_usd"]), params.get("scoring_weights"), params.get("source_trust"))
-    primary = select_distinct_candidates(ranked, int(params.get("primary_count", 3)))
     fallback_metadata = metadata.get("fallback_opportunities") or {}
     fallback_metadata["no_trade_slots"] = max(0, int(fallback_metadata.get("target", 3)) - len(primary))
     candidates_path.write_text(json.dumps(candidates, indent=2, sort_keys=True) + "\n")
@@ -1210,7 +1357,7 @@ def main() -> int:
                 raise ValueError("Both TELEGRAM_BOT_TOKEN and TELEGRAM_TARGET_CHAT_ID are required")
             delivery = publish_telegram_summary(candidates_path, metadata_path, float(params["max_risk_usd"]), token, chat_id)
             if delivery.get("status") == "sent":
-                delivered = [item[2] for item in select_distinct_candidates(ranked, 3)]
+                delivered = [item[2] for item in primary]
                 record_published_ideas(ledger_path, delivered)
         except Exception as exc:
             delivery = {"status": "delivery_failed", "error": str(exc)}

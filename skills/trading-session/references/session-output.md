@@ -29,12 +29,14 @@ Rules:
 - `Entry` must be the executable side of the quote: `Ask` for `BUY`, `Bid` for `SELL`.
 - `Current` should include `Bid / Ask` and spread when available, so the user can compare it with the trading platform before placing an order.
 - `Risk USD` and `Size` may show indicative FBS lot sizing for forex and metals when contract size and quote-currency conversion are available. Use `TBD` for markets whose FBS contract value is not modeled.
+- `Risk USD` must reflect the final star tier, symbol multiplier, and any primary-portfolio scaling. The summary must state both the absolute per-trade limit and the combined risk of the selected primary basket.
 - `Volume Est.` may show estimated lots and TP1 profit for forex/metals, or estimated asset units from a public market proxy. It is still an estimate that must be confirmed in FBS.
 - `Evidence` must summarize the Telegram message and any public proxy market data used for validation.
 - `Why` must include vigencia/status and any `modification_note` when the expert entry is no longer directly actionable.
 - `Why` must state the pending-order type and exact mechanical instruction; it must not delegate candle analysis to the user.
 - Derived rows must identify `reentry`, `technical_reversal`, or `market_scan`, include the pending order and expiry/cancellation rule, and link back to the seed message when available.
 - The three primary rows must use different assets. A technical market-scan row must state its setup family and 15m/1h/4h evidence.
+- Three-star rows may remain actionable with reduced risk. Rows below the configured actionable-star floor must be discarded rather than used to fill a slot.
 - Always show three evaluated primary slots. Use a `NO TRADE` row when evidence is insufficient; do not represent it as a valid candidate.
 
 ## Discarded Signals

@@ -21,6 +21,10 @@ REASON_LABELS = {
     "insufficient_closed_candles": "faltan velas cerradas",
     "multi_timeframe_confirmation_missing": "faltan dos marcos temporales confirmando la dirección",
     "market_scan_overextended_rsi": "el scanner encontró RSI sobreextendido",
+    "quality_below_actionable": "calidad por debajo de tres estrellas",
+    "risk_tier_unavailable": "el lote mínimo supera el riesgo permitido por estrellas",
+    "portfolio_risk_unavailable": "el lote mínimo supera el límite conjunto",
+    "market_scan_asset_cooldown": "símbolo del scanner todavía en pausa de 24 horas",
 }
 
 
@@ -138,6 +142,7 @@ def score(
         reasons.append("sin volumen/spread confirmado")
     candidate["score_total"] = total
     candidate["score_max"] = round(maximum, 4)
+    candidate["stars"] = stars
     candidate["score_components"] = weighted
     candidate["score_factors"] = {name: round(value, 4) for name, value in components.items()}
     return stars, reasons
@@ -224,32 +229,72 @@ def select_distinct_candidates(
     *,
     excluded_ids: set[int] | None = None,
     excluded_assets: set[str] | None = None,
+    minimum_stars: int = 1,
+    max_same_usd_bias: int | None = None,
 ) -> list[tuple[int, list[str], dict[str, Any]]]:
-    """Select the best candidates while allowing at most one idea per asset."""
+    """Select distinct assets while limiting repeated directional USD exposure."""
     selected = []
     seen_assets: set[str] = set(excluded_assets or set())
     excluded = excluded_ids or set()
+    usd_bias_counts: dict[str, int] = {}
     for item in ranked:
+        stars = item[0]
         candidate = item[2]
-        if id(candidate) in excluded or candidate.get("signal_status") == "llegada_tarde":
+        if stars < minimum_stars or id(candidate) in excluded or candidate.get("signal_status") == "llegada_tarde":
             continue
         asset = str(candidate.get("asset") or "")
         if not asset or asset in seen_assets:
             continue
+        bias = usd_bias(candidate)
+        if max_same_usd_bias is not None and bias and usd_bias_counts.get(bias, 0) >= max_same_usd_bias:
+            continue
         selected.append(item)
         seen_assets.add(asset)
+        if bias:
+            usd_bias_counts[bias] = usd_bias_counts.get(bias, 0) + 1
         if len(selected) >= count:
             break
     return selected
 
 
+def usd_bias(candidate: dict[str, Any]) -> str | None:
+    """Return LONG_USD/SHORT_USD for six-character USD quoted instruments."""
+    asset = str(candidate.get("asset") or "").upper()
+    direction = str(candidate.get("direction") or "").upper()
+    if len(asset) != 6 or direction not in {"BUY", "SELL"}:
+        return None
+    base, quote = asset[:3], asset[3:]
+    if base != "USD" and quote != "USD":
+        return None
+    long_usd = (base == "USD" and direction == "BUY") or (quote == "USD" and direction == "SELL")
+    return "LONG_USD" if long_usd else "SHORT_USD"
+
+
+def selection_policy(metadata: dict[str, Any] | None) -> tuple[int, int | None]:
+    policy = ((metadata or {}).get("risk_policy") or {})
+    minimum_stars = int(policy.get("minimum_actionable_stars", 1))
+    raw_bias_limit = policy.get("max_same_usd_bias")
+    max_same_usd_bias = int(raw_bias_limit) if raw_bias_limit is not None else None
+    return minimum_stars, max_same_usd_bias
+
+
 def render_report(candidates: list[dict[str, Any]], max_risk_usd: float, metadata: dict[str, Any] | None = None) -> str:
     metadata = metadata or {}
     ranked, discarded = rank_candidates(candidates, max_risk_usd, metadata.get("scoring_weights"), metadata.get("source_trust"))
-    top = select_distinct_candidates(ranked, 3)
+    minimum_stars, max_same_usd_bias = selection_policy(metadata)
+    top = select_distinct_candidates(
+        ranked, 3, minimum_stars=minimum_stars, max_same_usd_bias=max_same_usd_bias
+    )
     top_ids = {id(item[2]) for item in top}
     top_assets = {str(item[2].get("asset") or "") for item in top}
-    backup = select_distinct_candidates(ranked, 5 - len(top), excluded_ids=top_ids, excluded_assets=top_assets)
+    backup = select_distinct_candidates(
+        ranked,
+        5 - len(top),
+        excluded_ids=top_ids,
+        excluded_assets=top_assets,
+        minimum_stars=minimum_stars,
+        max_same_usd_bias=max_same_usd_bias,
+    )
 
     lines = [
         f"# Trading Session - {date.today().isoformat()}",
@@ -259,6 +304,7 @@ def render_report(candidates: list[dict[str, Any]], max_risk_usd: float, metadat
         f"- Candidates reviewed: {len(candidates)}",
         f"- Valid candidates: {len(ranked)}",
         f"- Risk limit: {max_risk_usd:.2f} USD",
+        *_risk_policy_summary(metadata),
         *_metadata_summary(metadata),
         "",
         "## Top Candidates",
@@ -405,8 +451,27 @@ def _why(candidate: dict[str, Any], reasons: list[str]) -> str:
         parts.append(f"semilla={candidate['seed_message_url']}")
     if candidate.get("sizing_note"):
         parts.append(str(candidate["sizing_note"]))
+    if candidate.get("risk_policy_note"):
+        parts.append(str(candidate["risk_policy_note"]))
     parts.extend(reasons[:2])
     return ", ".join(parts)
+
+
+def _risk_policy_summary(metadata: dict[str, Any] | None) -> list[str]:
+    policy = ((metadata or {}).get("risk_policy") or {})
+    if not policy.get("enabled"):
+        return []
+    tiers = policy.get("risk_by_stars_usd") or {}
+    tier_text = ", ".join(
+        f"{stars}* <= {float(limit):.2f} USD"
+        for stars, limit in sorted(tiers.items(), key=lambda item: int(item[0]), reverse=True)
+    )
+    lines = [f"- Tiered risk: {tier_text}"] if tier_text else []
+    if policy.get("max_primary_risk_usd") is not None:
+        actual = policy.get("selected_primary_risk_usd")
+        suffix = f"; selected {float(actual):.2f} USD" if actual is not None else ""
+        lines.append(f"- Primary portfolio risk cap: {float(policy['max_primary_risk_usd']):.2f} USD{suffix}")
+    return lines
 
 
 def _metadata_summary(metadata: dict[str, Any] | None) -> list[str]:
