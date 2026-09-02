@@ -1,12 +1,12 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-02T11:51:14.400Z",
+  "updated_at": "2026-09-02T11:51:27.182943+00:00",
   "session": {
     "schema_version": 1,
-    "run_id": "030857-776433",
+    "run_id": "33626767503-1",
     "date": "session-artifacts",
     "generated_at": "2026-09-02T03:09:40.240185+00:00",
-    "status": "queued",
+    "status": "running",
     "summary": {
       "candidates_reviewed": 9,
       "valid_candidates": 9,
@@ -230,7 +230,9 @@
     "review": null,
     "completed_at": "2026-09-02T03:09:40.665500+00:00",
     "request_id": "2a2dbc11-d382-475d-9daa-ac76e6848d55",
-    "requested_at": "2026-09-02T11:51:14.400Z"
+    "requested_at": "2026-09-02T11:51:14.400Z",
+    "started_at": "2026-09-02T11:51:27.182918+00:00",
+    "workflow_url": "https://github.com/danielserkin/trading/actions/runs/33626767503"
   },
   "monitors": {
     "df7e021461678e8051d3": {
@@ -5504,11 +5506,6 @@
   },
   "events": [
     {
-      "at": "2026-09-01T15:22:20.363463+00:00",
-      "level": "info",
-      "message": "📈 EURNZD: MANTENER · proxy 1.96419"
-    },
-    {
       "at": "2026-09-01T15:22:20.363491+00:00",
       "level": "info",
       "message": "📈 GBPNZD: MANTENER · proxy 2.29258"
@@ -6252,6 +6249,11 @@
       "at": "2026-09-02T11:51:14.400Z",
       "level": "info",
       "message": "⏳ Nueva sesión enviada a la cola"
+    },
+    {
+      "at": "2026-09-02T11:51:27.182937+00:00",
+      "level": "info",
+      "message": "🚀 Codex y el analizador iniciaron una nueva sesión"
     }
   ]
 }
