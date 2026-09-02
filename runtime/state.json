@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-02T14:07:19.255350+00:00",
+  "updated_at": "2026-09-02T14:22:17.087256+00:00",
   "session": {
     "schema_version": 1,
     "run_id": "115137-722171",
@@ -5763,46 +5763,60 @@
             "No ampliar ni retirar el stop"
           ],
           "urgency": "AHORA"
+        },
+        {
+          "evaluated_at": "2026-09-02T14:22:16.051348+00:00",
+          "candle_close": "2026-09-02T14:15:00+00:00",
+          "provider": "yahoo_finance_proxy",
+          "proxy_symbol": "USDSEK=X",
+          "current_price": 9.62097,
+          "current_r": -0.936,
+          "progress": -0.586,
+          "atr15": 0.01436,
+          "rsi15": 30.0,
+          "trends": {
+            "m15": "SELL",
+            "h1": "NEUTRAL",
+            "h4": "BUY"
+          },
+          "confidence": "baja",
+          "action": "MANTENER",
+          "instruction": "Mantener SL y TP actuales; confirmar que los niveles siguen iguales en FBS.",
+          "reasons": [
+            "Estructura M15/H1/H4: SELL/NEUTRAL/BUY",
+            "Progreso -59% · resultado -0.94R"
+          ],
+          "urgency": "PRÓXIMO PASO"
         }
       ],
       "last_decision": {
-        "evaluated_at": "2026-09-02T14:07:18.089275+00:00",
-        "candle_close": "2026-09-02T14:00:00+00:00",
+        "evaluated_at": "2026-09-02T14:22:16.051348+00:00",
+        "candle_close": "2026-09-02T14:15:00+00:00",
         "provider": "yahoo_finance_proxy",
         "proxy_symbol": "USDSEK=X",
-        "current_price": 9.60828,
-        "current_r": -1.346,
-        "progress": -0.843,
-        "atr15": 0.01352,
-        "rsi15": 20.5,
+        "current_price": 9.62097,
+        "current_r": -0.936,
+        "progress": -0.586,
+        "atr15": 0.01436,
+        "rsi15": 30.0,
         "trends": {
           "m15": "SELL",
           "h1": "NEUTRAL",
           "h4": "BUY"
         },
         "confidence": "baja",
-        "action": "CERRAR_TODO",
-        "instruction": "Verificar en FBS; si la posición continúa abierta, cerrarla a mercado.",
+        "action": "MANTENER",
+        "instruction": "Mantener SL y TP actuales; confirmar que los niveles siguen iguales en FBS.",
         "reasons": [
-          "El proxy cruzó el SL configurado",
-          "No ampliar ni retirar el stop"
+          "Estructura M15/H1/H4: SELL/NEUTRAL/BUY",
+          "Progreso -59% · resultado -0.94R"
         ],
-        "urgency": "AHORA"
+        "urgency": "PRÓXIMO PASO"
       },
-      "last_check_at": "2026-09-02T14:07:18.089275+00:00"
+      "last_check_at": "2026-09-02T14:22:16.051348+00:00"
     }
   },
   "events": [
-    {
-      "at": "2026-09-01T16:38:43.081122+00:00",
-      "level": "info",
-      "message": "📈 GBPNZD: CERRAR TODO · proxy 2.29391"
-    },
-    {
-      "at": "2026-09-01T16:38:43.081127+00:00",
-      "level": "info",
-      "message": "📡 3 trade(s) evaluados · Telegram not_needed"
-    },
     {
       "at": "2026-09-01T16:52:16.564158+00:00",
       "level": "info",
@@ -6540,6 +6554,16 @@
     },
     {
       "at": "2026-09-02T14:07:19.255346+00:00",
+      "level": "info",
+      "message": "📡 1 trade(s) evaluados · Telegram sent"
+    },
+    {
+      "at": "2026-09-02T14:22:17.087226+00:00",
+      "level": "info",
+      "message": "📈 USDSEK: MANTENER · proxy 9.62097"
+    },
+    {
+      "at": "2026-09-02T14:22:17.087251+00:00",
       "level": "info",
       "message": "📡 1 trade(s) evaluados · Telegram sent"
     }
