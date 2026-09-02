@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-02T02:22:16.054062+00:00",
+  "updated_at": "2026-09-02T02:24:36.980Z",
   "session": {
     "schema_version": 1,
     "run_id": "225359-733968",
@@ -4146,8 +4146,8 @@
     "51bc0e86b0127adf3372": {
       "trade_id": "51bc0e86b0127adf3372",
       "activation_id": "0a80a402-9e63-474b-9ea1-216be52760d7",
-      "enabled": true,
-      "status": "active",
+      "enabled": false,
+      "status": "paused",
       "asset": "EURNZD",
       "direction": "BUY",
       "order_type": "BUY STOP",
@@ -4551,7 +4551,8 @@
         ],
         "urgency": "AHORA"
       },
-      "last_check_at": "2026-09-02T02:22:15.178603+00:00"
+      "last_check_at": "2026-09-02T02:22:15.178603+00:00",
+      "disabled_at": "2026-09-02T02:24:36.980Z"
     },
     "9c8644641fe47e9747c4": {
       "trade_id": "9c8644641fe47e9747c4",
@@ -4701,11 +4702,6 @@
     }
   },
   "events": [
-    {
-      "at": "2026-09-01T03:07:16.464664+00:00",
-      "level": "info",
-      "message": "📡 1 trade(s) evaluados · Telegram sent"
-    },
     {
       "at": "2026-09-01T03:22:17.150086+00:00",
       "level": "info",
@@ -5450,6 +5446,11 @@
       "at": "2026-09-02T02:22:16.054058+00:00",
       "level": "info",
       "message": "📡 2 trade(s) evaluados · Telegram sent"
+    },
+    {
+      "at": "2026-09-02T02:24:36.980Z",
+      "level": "warning",
+      "message": "⏸️ Seguimiento desactivado: EURNZD"
     }
   ]
 }
