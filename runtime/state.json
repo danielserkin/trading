@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-02T03:16:18.394Z",
+  "updated_at": "2026-09-02T03:16:21.164Z",
   "session": {
     "schema_version": 1,
     "run_id": "030857-776433",
@@ -4751,7 +4751,7 @@
     },
     "765fee7750c94615f4b9": {
       "trade_id": "765fee7750c94615f4b9",
-      "activation_id": "67bbca58-4d7c-46d0-bbc6-2a2b88f08216",
+      "activation_id": "0b95dab1-f21e-4bfa-b966-68f376e56707",
       "enabled": true,
       "status": "active",
       "asset": "USDMXN",
@@ -4770,17 +4770,12 @@
       "provider": "yahoo_finance_chart",
       "source": "technical_market_scan",
       "session_run_id": "030857-776433",
-      "activated_at": "2026-09-02T03:16:18.394Z",
+      "activated_at": "2026-09-02T03:16:21.164Z",
       "history": [],
       "last_decision": null
     }
   },
   "events": [
-    {
-      "at": "2026-09-01T04:52:15.581509+00:00",
-      "level": "info",
-      "message": "📡 1 trade(s) evaluados · Telegram sent"
-    },
     {
       "at": "2026-09-01T05:07:17.592040+00:00",
       "level": "info",
@@ -5523,6 +5518,11 @@
     },
     {
       "at": "2026-09-02T03:16:18.394Z",
+      "level": "success",
+      "message": "📡 Seguimiento activado: USDMXN BUY"
+    },
+    {
+      "at": "2026-09-02T03:16:21.164Z",
       "level": "success",
       "message": "📡 Seguimiento activado: USDMXN BUY"
     }
