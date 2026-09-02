@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-02T12:23:01.139Z",
+  "updated_at": "2026-09-02T12:23:04.373Z",
   "session": {
     "schema_version": 1,
     "run_id": "115137-722171",
@@ -5500,7 +5500,7 @@
     },
     "eda3cf0426c01c628b1a": {
       "trade_id": "eda3cf0426c01c628b1a",
-      "activation_id": "0f110bd8-d3f9-4e16-930d-a1530b10bd41",
+      "activation_id": "9873cb95-9a7a-4e79-9ed5-1d1387a6470a",
       "enabled": true,
       "status": "active",
       "asset": "USDCAD",
@@ -5519,17 +5519,12 @@
       "provider": "yahoo_finance_chart",
       "source": "technical_market_scan",
       "session_run_id": "115137-722171",
-      "activated_at": "2026-09-02T12:23:01.139Z",
+      "activated_at": "2026-09-02T12:23:04.373Z",
       "history": [],
       "last_decision": null
     }
   },
   "events": [
-    {
-      "at": "2026-09-01T15:52:17.571465+00:00",
-      "level": "info",
-      "message": "📈 GBPNZD: MANTENER · proxy 2.29168"
-    },
     {
       "at": "2026-09-01T15:52:17.571469+00:00",
       "level": "info",
@@ -6272,6 +6267,11 @@
     },
     {
       "at": "2026-09-02T12:23:01.139Z",
+      "level": "success",
+      "message": "📡 Seguimiento activado: USDCAD BUY"
+    },
+    {
+      "at": "2026-09-02T12:23:04.373Z",
       "level": "success",
       "message": "📡 Seguimiento activado: USDCAD BUY"
     }
