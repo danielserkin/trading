@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-02T23:22:15.625924+00:00",
+  "updated_at": "2026-09-02T23:22:24.120Z",
   "session": {
     "schema_version": 1,
     "run_id": "214029-451847",
@@ -6084,8 +6084,8 @@
     "ea89e926e40be174bbe5": {
       "trade_id": "ea89e926e40be174bbe5",
       "activation_id": "6b2481e8-6c65-4059-a4e4-e22363afbff8",
-      "enabled": true,
-      "status": "active",
+      "enabled": false,
+      "status": "paused",
       "asset": "EURAUD",
       "direction": "SELL",
       "order_type": "SELL STOP",
@@ -6291,7 +6291,7 @@
           "current_r": -0.919,
           "progress": -0.612,
           "atr15": 0.00079,
-          "rsi15": 48.0,
+          "rsi15": 48,
           "trends": {
             "m15": "NEUTRAL",
             "h1": "SELL",
@@ -6316,7 +6316,7 @@
         "current_r": -0.919,
         "progress": -0.612,
         "atr15": 0.00079,
-        "rsi15": 48.0,
+        "rsi15": 48,
         "trends": {
           "m15": "NEUTRAL",
           "h1": "SELL",
@@ -6331,7 +6331,8 @@
         ],
         "urgency": "PRÓXIMO PASO"
       },
-      "last_check_at": "2026-09-02T23:22:14.720509+00:00"
+      "last_check_at": "2026-09-02T23:22:14.720509+00:00",
+      "disabled_at": "2026-09-02T23:22:24.120Z"
     },
     "6e9eba95c64bd701fe86": {
       "trade_id": "6e9eba95c64bd701fe86",
@@ -6362,8 +6363,8 @@
           "provider": "yahoo_finance_proxy",
           "proxy_symbol": "GBPUSD=X",
           "current_price": 1.3484,
-          "current_r": 0.0,
-          "progress": 0.0,
+          "current_r": 0,
+          "progress": 0,
           "atr15": 0.00035,
           "rsi15": 48.1,
           "trends": {
@@ -6443,11 +6444,6 @@
     }
   },
   "events": [
-    {
-      "at": "2026-09-02T01:52:19.819157+00:00",
-      "level": "info",
-      "message": "📈 GBPCAD: MANTENER · proxy 1.87699"
-    },
     {
       "at": "2026-09-02T01:52:19.819161+00:00",
       "level": "info",
@@ -7192,6 +7188,11 @@
       "at": "2026-09-02T23:22:15.625921+00:00",
       "level": "info",
       "message": "📡 2 trade(s) evaluados · Telegram sent"
+    },
+    {
+      "at": "2026-09-02T23:22:24.120Z",
+      "level": "warning",
+      "message": "⏸️ Seguimiento desactivado: EURAUD"
     }
   ]
 }
