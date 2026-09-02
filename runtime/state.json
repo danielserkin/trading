@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-02T12:23:33.735Z",
+  "updated_at": "2026-09-02T12:52:11.872Z",
   "session": {
     "schema_version": 1,
     "run_id": "115137-722171",
@@ -5596,14 +5596,34 @@
       },
       "last_check_at": "2026-09-02T12:23:22.250836+00:00",
       "disabled_at": "2026-09-02T12:23:33.735Z"
+    },
+    "4d22677cd85612ce6e72": {
+      "trade_id": "4d22677cd85612ce6e72",
+      "activation_id": "514ecfb6-87a4-4aee-9d35-7c1d95de8416",
+      "enabled": true,
+      "status": "active",
+      "asset": "USDSEK",
+      "direction": "BUY",
+      "order_type": "BUY STOP",
+      "entry": 9.65,
+      "stop_loss": 9.619,
+      "original_sl": 9.619,
+      "current_sl": 9.619,
+      "take_profit": 9.6995,
+      "original_tp": 9.6995,
+      "current_tp": 9.6995,
+      "volume": 0.06,
+      "valid_until": "2026-09-02T15:51:33.306035+00:00",
+      "proxy_symbol": null,
+      "provider": "yahoo_finance_chart",
+      "source": "technical_market_scan",
+      "session_run_id": "115137-722171",
+      "activated_at": "2026-09-02T12:52:11.872Z",
+      "history": [],
+      "last_decision": null
     }
   },
   "events": [
-    {
-      "at": "2026-09-01T16:22:20.475884+00:00",
-      "level": "info",
-      "message": "📈 GBPNZD: MANTENER · proxy 2.29261"
-    },
     {
       "at": "2026-09-01T16:22:20.475890+00:00",
       "level": "info",
@@ -6348,6 +6368,11 @@
       "at": "2026-09-02T12:23:33.735Z",
       "level": "warning",
       "message": "⏸️ Seguimiento desactivado: USDCAD"
+    },
+    {
+      "at": "2026-09-02T12:52:11.872Z",
+      "level": "success",
+      "message": "📡 Seguimiento activado: USDSEK BUY"
     }
   ]
 }
