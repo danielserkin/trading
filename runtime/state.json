@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-02T23:37:24.161Z",
+  "updated_at": "2026-09-02T23:37:32.182Z",
   "session": {
     "schema_version": 1,
     "run_id": "214029-451847",
@@ -6336,9 +6336,9 @@
     },
     "6e9eba95c64bd701fe86": {
       "trade_id": "6e9eba95c64bd701fe86",
-      "activation_id": "c5e68a66-6ec5-4a70-89b6-b6ba8305f520",
-      "enabled": false,
-      "status": "paused",
+      "activation_id": "4b274d7e-8b43-438b-b859-6589db4b108c",
+      "enabled": true,
+      "status": "active",
       "asset": "GBPUSD",
       "direction": "SELL",
       "order_type": "SELL STOP",
@@ -6355,7 +6355,7 @@
       "provider": "yahoo_finance_chart",
       "source": "technical_market_scan",
       "session_run_id": "214029-451847",
-      "activated_at": "2026-09-02T22:52:57.248Z",
+      "activated_at": "2026-09-02T23:37:32.182Z",
       "history": [
         {
           "evaluated_at": "2026-09-02T22:53:05.744178+00:00",
@@ -6440,40 +6440,12 @@
           "urgency": "PRÓXIMO PASO"
         }
       ],
-      "last_decision": {
-        "evaluated_at": "2026-09-02T23:37:14.718511+00:00",
-        "candle_close": "2026-09-02T23:30:00+00:00",
-        "provider": "yahoo_finance_proxy",
-        "proxy_symbol": "GBPUSD=X",
-        "current_price": 1.34818,
-        "current_r": 0.137,
-        "progress": 0.087,
-        "atr15": 0.00035,
-        "rsi15": 8.3,
-        "trends": {
-          "m15": "SELL",
-          "h1": "SELL",
-          "h4": "SELL"
-        },
-        "confidence": "baja",
-        "action": "MANTENER",
-        "instruction": "Mantener SL y TP actuales; confirmar que los niveles siguen iguales en FBS.",
-        "reasons": [
-          "Estructura M15/H1/H4: SELL/SELL/SELL",
-          "Progreso 9% · resultado 0.14R"
-        ],
-        "urgency": "PRÓXIMO PASO"
-      },
+      "last_decision": null,
       "last_check_at": "2026-09-02T23:37:14.718511+00:00",
       "disabled_at": "2026-09-02T23:37:24.161Z"
     }
   },
   "events": [
-    {
-      "at": "2026-09-02T02:07:15.968730+00:00",
-      "level": "info",
-      "message": "📡 2 trade(s) evaluados · Telegram sent"
-    },
     {
       "at": "2026-09-02T02:22:16.054021+00:00",
       "level": "info",
@@ -7218,6 +7190,11 @@
       "at": "2026-09-02T23:37:24.161Z",
       "level": "warning",
       "message": "⏸️ Seguimiento desactivado: GBPUSD"
+    },
+    {
+      "at": "2026-09-02T23:37:32.182Z",
+      "level": "success",
+      "message": "📡 Seguimiento activado: GBPUSD SELL"
     }
   ]
 }
