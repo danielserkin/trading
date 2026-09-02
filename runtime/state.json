@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-02T04:37:15.336932+00:00",
+  "updated_at": "2026-09-02T04:52:17.361545+00:00",
   "session": {
     "schema_version": 1,
     "run_id": "030857-776433",
@@ -4963,18 +4963,42 @@
             "Progreso -4% · resultado -0.07R"
           ],
           "urgency": "PRÓXIMO PASO"
+        },
+        {
+          "evaluated_at": "2026-09-02T04:52:16.190861+00:00",
+          "candle_close": "2026-09-02T04:45:00+00:00",
+          "provider": "yahoo_finance_proxy",
+          "proxy_symbol": "USDMXN=X",
+          "current_price": 17.011,
+          "current_r": 0.154,
+          "progress": 0.097,
+          "atr15": 0.01,
+          "rsi15": 57.9,
+          "trends": {
+            "m15": "BUY",
+            "h1": "BUY",
+            "h4": "BUY"
+          },
+          "confidence": "baja",
+          "action": "MANTENER",
+          "instruction": "Mantener SL y TP actuales; confirmar que los niveles siguen iguales en FBS.",
+          "reasons": [
+            "Estructura M15/H1/H4: BUY/BUY/BUY",
+            "Progreso 10% · resultado 0.15R"
+          ],
+          "urgency": "PRÓXIMO PASO"
         }
       ],
       "last_decision": {
-        "evaluated_at": "2026-09-02T04:37:14.475123+00:00",
-        "candle_close": "2026-09-02T04:30:00+00:00",
+        "evaluated_at": "2026-09-02T04:52:16.190861+00:00",
+        "candle_close": "2026-09-02T04:45:00+00:00",
         "provider": "yahoo_finance_proxy",
         "proxy_symbol": "USDMXN=X",
-        "current_price": 17.004,
-        "current_r": -0.066,
-        "progress": -0.041,
+        "current_price": 17.011,
+        "current_r": 0.154,
+        "progress": 0.097,
         "atr15": 0.01,
-        "rsi15": 47.3,
+        "rsi15": 57.9,
         "trends": {
           "m15": "BUY",
           "h1": "BUY",
@@ -4985,11 +5009,11 @@
         "instruction": "Mantener SL y TP actuales; confirmar que los niveles siguen iguales en FBS.",
         "reasons": [
           "Estructura M15/H1/H4: BUY/BUY/BUY",
-          "Progreso -4% · resultado -0.07R"
+          "Progreso 10% · resultado 0.15R"
         ],
         "urgency": "PRÓXIMO PASO"
       },
-      "last_check_at": "2026-09-02T04:37:14.475123+00:00"
+      "last_check_at": "2026-09-02T04:52:16.190861+00:00"
     },
     "984707f45aff14730a46": {
       "trade_id": "984707f45aff14730a46",
@@ -5181,18 +5205,42 @@
             "Progreso -28% · resultado -0.45R"
           ],
           "urgency": "PRÓXIMO PASO"
+        },
+        {
+          "evaluated_at": "2026-09-02T04:52:16.323481+00:00",
+          "candle_close": "2026-09-02T04:45:00+00:00",
+          "provider": "yahoo_finance_proxy",
+          "proxy_symbol": "USDJPY=X",
+          "current_price": 160.15,
+          "current_r": -0.774,
+          "progress": -0.484,
+          "atr15": 0.05,
+          "rsi15": 31.4,
+          "trends": {
+            "m15": "SELL",
+            "h1": "BUY",
+            "h4": "BUY"
+          },
+          "confidence": "baja",
+          "action": "MANTENER",
+          "instruction": "Mantener SL y TP actuales; confirmar que los niveles siguen iguales en FBS.",
+          "reasons": [
+            "Estructura M15/H1/H4: SELL/BUY/BUY",
+            "Progreso -48% · resultado -0.77R"
+          ],
+          "urgency": "PRÓXIMO PASO"
         }
       ],
       "last_decision": {
-        "evaluated_at": "2026-09-02T04:37:14.598001+00:00",
-        "candle_close": "2026-09-02T04:30:00+00:00",
+        "evaluated_at": "2026-09-02T04:52:16.323481+00:00",
+        "candle_close": "2026-09-02T04:45:00+00:00",
         "provider": "yahoo_finance_proxy",
         "proxy_symbol": "USDJPY=X",
-        "current_price": 160.2,
-        "current_r": -0.447,
-        "progress": -0.28,
+        "current_price": 160.15,
+        "current_r": -0.774,
+        "progress": -0.484,
         "atr15": 0.05,
-        "rsi15": 36.4,
+        "rsi15": 31.4,
         "trends": {
           "m15": "SELL",
           "h1": "BUY",
@@ -5203,29 +5251,14 @@
         "instruction": "Mantener SL y TP actuales; confirmar que los niveles siguen iguales en FBS.",
         "reasons": [
           "Estructura M15/H1/H4: SELL/BUY/BUY",
-          "Progreso -28% · resultado -0.45R"
+          "Progreso -48% · resultado -0.77R"
         ],
         "urgency": "PRÓXIMO PASO"
       },
-      "last_check_at": "2026-09-02T04:37:14.598001+00:00"
+      "last_check_at": "2026-09-02T04:52:16.323481+00:00"
     }
   },
   "events": [
-    {
-      "at": "2026-09-01T13:52:18.452855+00:00",
-      "level": "info",
-      "message": "📡 1 trade(s) evaluados · Telegram sent"
-    },
-    {
-      "at": "2026-09-01T14:07:18.401559+00:00",
-      "level": "info",
-      "message": "📈 EURNZD: MANTENER · proxy 1.96364"
-    },
-    {
-      "at": "2026-09-01T14:07:18.401581+00:00",
-      "level": "info",
-      "message": "📡 1 trade(s) evaluados · Telegram sent"
-    },
     {
       "at": "2026-09-01T14:22:17.629743+00:00",
       "level": "info",
@@ -5958,6 +5991,21 @@
     },
     {
       "at": "2026-09-02T04:37:15.336929+00:00",
+      "level": "info",
+      "message": "📡 2 trade(s) evaluados · Telegram sent"
+    },
+    {
+      "at": "2026-09-02T04:52:17.361510+00:00",
+      "level": "info",
+      "message": "📈 USDMXN: MANTENER · proxy 17.011"
+    },
+    {
+      "at": "2026-09-02T04:52:17.361536+00:00",
+      "level": "info",
+      "message": "📈 USDJPY: MANTENER · proxy 160.15"
+    },
+    {
+      "at": "2026-09-02T04:52:17.361542+00:00",
       "level": "info",
       "message": "📡 2 trade(s) evaluados · Telegram sent"
     }
