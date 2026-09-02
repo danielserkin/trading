@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-02T15:22:18.879713+00:00",
+  "updated_at": "2026-09-02T15:37:17.238557+00:00",
   "session": {
     "schema_version": 1,
     "run_id": "115137-722171",
@@ -5883,18 +5883,42 @@
             "Progreso menor al 75%: -58%"
           ],
           "urgency": "AHORA"
+        },
+        {
+          "evaluated_at": "2026-09-02T15:37:16.249426+00:00",
+          "candle_close": "2026-09-02T15:30:00+00:00",
+          "provider": "yahoo_finance_proxy",
+          "proxy_symbol": "USDSEK=X",
+          "current_price": 9.61991,
+          "current_r": -0.971,
+          "progress": -0.608,
+          "atr15": 0.01331,
+          "rsi15": 40.1,
+          "trends": {
+            "m15": "SELL",
+            "h1": "NEUTRAL",
+            "h4": "BUY"
+          },
+          "confidence": "baja",
+          "action": "CERRAR_TODO",
+          "instruction": "Cerrar antes del fin de la vigencia tras confirmar la cotización FBS.",
+          "reasons": [
+            "Restan 14 min",
+            "Progreso menor al 75%: -61%"
+          ],
+          "urgency": "AHORA"
         }
       ],
       "last_decision": {
-        "evaluated_at": "2026-09-02T15:22:17.677272+00:00",
-        "candle_close": "2026-09-02T15:15:00+00:00",
+        "evaluated_at": "2026-09-02T15:37:16.249426+00:00",
+        "candle_close": "2026-09-02T15:30:00+00:00",
         "provider": "yahoo_finance_proxy",
         "proxy_symbol": "USDSEK=X",
-        "current_price": 9.62123,
-        "current_r": -0.928,
-        "progress": -0.581,
-        "atr15": 0.01374,
-        "rsi15": 36.1,
+        "current_price": 9.61991,
+        "current_r": -0.971,
+        "progress": -0.608,
+        "atr15": 0.01331,
+        "rsi15": 40.1,
         "trends": {
           "m15": "SELL",
           "h1": "NEUTRAL",
@@ -5904,25 +5928,15 @@
         "action": "CERRAR_TODO",
         "instruction": "Cerrar antes del fin de la vigencia tras confirmar la cotización FBS.",
         "reasons": [
-          "Restan 29 min",
-          "Progreso menor al 75%: -58%"
+          "Restan 14 min",
+          "Progreso menor al 75%: -61%"
         ],
         "urgency": "AHORA"
       },
-      "last_check_at": "2026-09-02T15:22:17.677272+00:00"
+      "last_check_at": "2026-09-02T15:37:16.249426+00:00"
     }
   },
   "events": [
-    {
-      "at": "2026-09-01T17:16:07.694Z",
-      "level": "warning",
-      "message": "⏸️ Seguimiento desactivado: NZDJPY"
-    },
-    {
-      "at": "2026-09-01T17:16:09.801Z",
-      "level": "warning",
-      "message": "⏸️ Seguimiento desactivado: GBPNZD"
-    },
     {
       "at": "2026-09-01T17:16:12.681Z",
       "level": "warning",
@@ -6660,6 +6674,16 @@
     },
     {
       "at": "2026-09-02T15:22:18.879708+00:00",
+      "level": "info",
+      "message": "📡 1 trade(s) evaluados · Telegram sent"
+    },
+    {
+      "at": "2026-09-02T15:37:17.238539+00:00",
+      "level": "info",
+      "message": "📈 USDSEK: CERRAR TODO · proxy 9.61991"
+    },
+    {
+      "at": "2026-09-02T15:37:17.238553+00:00",
       "level": "info",
       "message": "📡 1 trade(s) evaluados · Telegram sent"
     }
