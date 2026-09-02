@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-02T22:01:45.474131+00:00",
+  "updated_at": "2026-09-02T22:01:56.570346+00:00",
   "session": {
     "schema_version": 1,
     "run_id": "214029-451847",
@@ -6127,10 +6127,34 @@
             "Progreso 10% · resultado 0.16R"
           ],
           "urgency": "PRÓXIMO PASO"
+        },
+        {
+          "evaluated_at": "2026-09-02T22:01:56.105449+00:00",
+          "candle_close": "2026-09-02T22:00:00+00:00",
+          "provider": "yahoo_finance_proxy",
+          "proxy_symbol": "EURAUD=X",
+          "current_price": 1.61525,
+          "current_r": 0.156,
+          "progress": 0.104,
+          "atr15": 0.00084,
+          "rsi15": 34.2,
+          "trends": {
+            "m15": "SELL",
+            "h1": "SELL",
+            "h4": "SELL"
+          },
+          "confidence": "baja",
+          "action": "MANTENER",
+          "instruction": "Mantener SL y TP actuales; confirmar que los niveles siguen iguales en FBS.",
+          "reasons": [
+            "Estructura M15/H1/H4: SELL/SELL/SELL",
+            "Progreso 10% · resultado 0.16R"
+          ],
+          "urgency": "PRÓXIMO PASO"
         }
       ],
       "last_decision": {
-        "evaluated_at": "2026-09-02T22:01:44.510695+00:00",
+        "evaluated_at": "2026-09-02T22:01:56.105449+00:00",
         "candle_close": "2026-09-02T22:00:00+00:00",
         "provider": "yahoo_finance_proxy",
         "proxy_symbol": "EURAUD=X",
@@ -6153,20 +6177,10 @@
         ],
         "urgency": "PRÓXIMO PASO"
       },
-      "last_check_at": "2026-09-02T22:01:44.510695+00:00"
+      "last_check_at": "2026-09-02T22:01:56.105449+00:00"
     }
   },
   "events": [
-    {
-      "at": "2026-09-01T23:52:15.235266+00:00",
-      "level": "info",
-      "message": "📡 1 trade(s) evaluados · Telegram sent"
-    },
-    {
-      "at": "2026-09-02T00:07:17.848530+00:00",
-      "level": "info",
-      "message": "📈 EURNZD: MANTENER · proxy 1.96645"
-    },
     {
       "at": "2026-09-02T00:07:17.848553+00:00",
       "level": "info",
@@ -6906,6 +6920,16 @@
       "at": "2026-09-02T22:01:45.474126+00:00",
       "level": "info",
       "message": "📡 1 trade(s) evaluados · Telegram sent"
+    },
+    {
+      "at": "2026-09-02T22:01:56.570315+00:00",
+      "level": "info",
+      "message": "📈 EURAUD: MANTENER · proxy 1.61525"
+    },
+    {
+      "at": "2026-09-02T22:01:56.570341+00:00",
+      "level": "info",
+      "message": "📡 1 trade(s) evaluados · Telegram not_needed"
     }
   ]
 }
