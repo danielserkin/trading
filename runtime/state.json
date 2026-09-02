@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-02T22:53:06.612156+00:00",
+  "updated_at": "2026-09-02T23:07:15.707332+00:00",
   "session": {
     "schema_version": 1,
     "run_id": "214029-451847",
@@ -6271,33 +6271,29 @@
             "Progreso -43% · resultado -0.64R"
           ],
           "urgency": "PRÓXIMO PASO"
+        },
+        {
+          "evaluated_at": "2026-09-02T23:07:14.785158+00:00",
+          "action": "EVIDENCIA_INSUFICIENTE",
+          "instruction": "No modificar la operación con estos datos; revisar FBS manualmente.",
+          "reasons": [
+            "La última vela M15 está desactualizada"
+          ],
+          "confidence": "baja",
+          "urgency": "REVISAR"
         }
       ],
       "last_decision": {
-        "evaluated_at": "2026-09-02T22:53:05.565992+00:00",
-        "candle_close": "2026-09-02T22:45:00+00:00",
-        "provider": "yahoo_finance_proxy",
-        "proxy_symbol": "EURAUD=X",
-        "current_price": 1.61652,
-        "current_r": -0.638,
-        "progress": -0.425,
-        "atr15": 0.00089,
-        "rsi15": 57.1,
-        "trends": {
-          "m15": "NEUTRAL",
-          "h1": "SELL",
-          "h4": "SELL"
-        },
-        "confidence": "baja",
-        "action": "MANTENER",
-        "instruction": "Mantener SL y TP actuales; confirmar que los niveles siguen iguales en FBS.",
+        "evaluated_at": "2026-09-02T23:07:14.785158+00:00",
+        "action": "EVIDENCIA_INSUFICIENTE",
+        "instruction": "No modificar la operación con estos datos; revisar FBS manualmente.",
         "reasons": [
-          "Estructura M15/H1/H4: NEUTRAL/SELL/SELL",
-          "Progreso -43% · resultado -0.64R"
+          "La última vela M15 está desactualizada"
         ],
-        "urgency": "PRÓXIMO PASO"
+        "confidence": "baja",
+        "urgency": "REVISAR"
       },
-      "last_check_at": "2026-09-02T22:53:05.565992+00:00"
+      "last_check_at": "2026-09-02T23:07:14.785158+00:00"
     },
     "6e9eba95c64bd701fe86": {
       "trade_id": "6e9eba95c64bd701fe86",
@@ -6345,51 +6341,32 @@
             "Progreso 0% · resultado 0.00R"
           ],
           "urgency": "PRÓXIMO PASO"
+        },
+        {
+          "evaluated_at": "2026-09-02T23:07:14.949535+00:00",
+          "action": "EVIDENCIA_INSUFICIENTE",
+          "instruction": "No modificar la operación con estos datos; revisar FBS manualmente.",
+          "reasons": [
+            "La última vela M15 está desactualizada"
+          ],
+          "confidence": "baja",
+          "urgency": "REVISAR"
         }
       ],
       "last_decision": {
-        "evaluated_at": "2026-09-02T22:53:05.744178+00:00",
-        "candle_close": "2026-09-02T22:45:00+00:00",
-        "provider": "yahoo_finance_proxy",
-        "proxy_symbol": "GBPUSD=X",
-        "current_price": 1.3484,
-        "current_r": 0.0,
-        "progress": 0.0,
-        "atr15": 0.00035,
-        "rsi15": 48.1,
-        "trends": {
-          "m15": "SELL",
-          "h1": "SELL",
-          "h4": "SELL"
-        },
-        "confidence": "baja",
-        "action": "MANTENER",
-        "instruction": "Mantener SL y TP actuales; confirmar que los niveles siguen iguales en FBS.",
+        "evaluated_at": "2026-09-02T23:07:14.949535+00:00",
+        "action": "EVIDENCIA_INSUFICIENTE",
+        "instruction": "No modificar la operación con estos datos; revisar FBS manualmente.",
         "reasons": [
-          "Estructura M15/H1/H4: SELL/SELL/SELL",
-          "Progreso 0% · resultado 0.00R"
+          "La última vela M15 está desactualizada"
         ],
-        "urgency": "PRÓXIMO PASO"
+        "confidence": "baja",
+        "urgency": "REVISAR"
       },
-      "last_check_at": "2026-09-02T22:53:05.744178+00:00"
+      "last_check_at": "2026-09-02T23:07:14.949535+00:00"
     }
   },
   "events": [
-    {
-      "at": "2026-09-02T01:37:15.430332+00:00",
-      "level": "info",
-      "message": "📡 1 trade(s) evaluados · Telegram sent"
-    },
-    {
-      "at": "2026-09-02T01:41:09.171Z",
-      "level": "success",
-      "message": "📡 Seguimiento activado: GBPCAD SELL"
-    },
-    {
-      "at": "2026-09-02T01:41:21.624678+00:00",
-      "level": "info",
-      "message": "📈 EURNZD: CERRAR TODO · proxy 1.96376"
-    },
     {
       "at": "2026-09-02T01:41:21.624700+00:00",
       "level": "info",
@@ -7122,6 +7099,21 @@
     },
     {
       "at": "2026-09-02T22:53:06.612152+00:00",
+      "level": "info",
+      "message": "📡 2 trade(s) evaluados · Telegram sent"
+    },
+    {
+      "at": "2026-09-02T23:07:15.707296+00:00",
+      "level": "warning",
+      "message": "📈 EURAUD: EVIDENCIA INSUFICIENTE"
+    },
+    {
+      "at": "2026-09-02T23:07:15.707323+00:00",
+      "level": "warning",
+      "message": "📈 GBPUSD: EVIDENCIA INSUFICIENTE"
+    },
+    {
+      "at": "2026-09-02T23:07:15.707329+00:00",
       "level": "info",
       "message": "📡 2 trade(s) evaluados · Telegram sent"
     }
