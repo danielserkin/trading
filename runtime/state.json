@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-02T21:40:24.381752+00:00",
+  "updated_at": "2026-09-02T21:40:30.270228+00:00",
   "session": {
     "schema_version": 1,
     "run_id": "33686390197-1",
@@ -6087,11 +6087,6 @@
   },
   "events": [
     {
-      "at": "2026-09-01T23:17:23.123Z",
-      "level": "success",
-      "message": "📡 Seguimiento activado: EURNZD BUY"
-    },
-    {
       "at": "2026-09-01T23:17:35.404680+00:00",
       "level": "info",
       "message": "📈 EURNZD: MANTENER · proxy 1.9668"
@@ -6835,6 +6830,11 @@
       "at": "2026-09-02T21:40:24.381732+00:00",
       "level": "info",
       "message": "📡 Telegram conectado · iniciando validación y escaneo de mercado"
+    },
+    {
+      "at": "2026-09-02T21:40:30.270207+00:00",
+      "level": "success",
+      "message": "✅ Mercado analizado · preparando revisión Codex y cards"
     }
   ]
 }
