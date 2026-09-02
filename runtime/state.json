@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-02T03:08:46.550988+00:00",
+  "updated_at": "2026-09-02T03:08:50.281326+00:00",
   "session": {
     "schema_version": 1,
     "run_id": "33585903885-1",
@@ -4756,11 +4756,6 @@
   },
   "events": [
     {
-      "at": "2026-09-01T04:07:15.088298+00:00",
-      "level": "info",
-      "message": "📡 1 trade(s) evaluados · Telegram sent"
-    },
-    {
       "at": "2026-09-01T04:22:15.663021+00:00",
       "level": "info",
       "message": "📈 EURCHF: MANTENER · proxy 0.9398"
@@ -5504,6 +5499,11 @@
       "at": "2026-09-02T03:08:46.550983+00:00",
       "level": "info",
       "message": "🚀 Codex y el analizador iniciaron una nueva sesión"
+    },
+    {
+      "at": "2026-09-02T03:08:50.281311+00:00",
+      "level": "info",
+      "message": "📡 Telegram conectado · iniciando validación y escaneo de mercado"
     }
   ]
 }
