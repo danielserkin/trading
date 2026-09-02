@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-02T21:40:20.956005+00:00",
+  "updated_at": "2026-09-02T21:40:24.381752+00:00",
   "session": {
     "schema_version": 1,
     "run_id": "33686390197-1",
@@ -6087,11 +6087,6 @@
   },
   "events": [
     {
-      "at": "2026-09-01T22:54:51.020501+00:00",
-      "level": "success",
-      "message": "📲 Telegram: sent"
-    },
-    {
       "at": "2026-09-01T23:17:23.123Z",
       "level": "success",
       "message": "📡 Seguimiento activado: EURNZD BUY"
@@ -6835,6 +6830,11 @@
       "at": "2026-09-02T21:40:20.955999+00:00",
       "level": "info",
       "message": "🚀 Codex y el analizador iniciaron una nueva sesión"
+    },
+    {
+      "at": "2026-09-02T21:40:24.381732+00:00",
+      "level": "info",
+      "message": "📡 Telegram conectado · iniciando validación y escaneo de mercado"
     }
   ]
 }
