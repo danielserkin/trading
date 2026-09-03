@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-03T00:03:13.172970+00:00",
+  "updated_at": "2026-09-03T00:07:16.694628+00:00",
   "session": {
     "schema_version": 1,
     "run_id": "000221-240670",
@@ -6488,18 +6488,42 @@
             "Progreso 8% · resultado 0.13R"
           ],
           "urgency": "PRÓXIMO PASO"
+        },
+        {
+          "evaluated_at": "2026-09-03T00:07:15.745462+00:00",
+          "candle_close": "2026-09-03T00:00:00+00:00",
+          "provider": "yahoo_finance_proxy",
+          "proxy_symbol": "GBPUSD=X",
+          "current_price": 1.34833,
+          "current_r": 0.046,
+          "progress": 0.029,
+          "atr15": 0.0003,
+          "rsi15": 32.6,
+          "trends": {
+            "m15": "SELL",
+            "h1": "SELL",
+            "h4": "SELL"
+          },
+          "confidence": "baja",
+          "action": "MANTENER",
+          "instruction": "Mantener SL y TP actuales; confirmar que los niveles siguen iguales en FBS.",
+          "reasons": [
+            "Estructura M15/H1/H4: SELL/SELL/SELL",
+            "Progreso 3% · resultado 0.05R"
+          ],
+          "urgency": "PRÓXIMO PASO"
         }
       ],
       "last_decision": {
-        "evaluated_at": "2026-09-02T23:52:15.070758+00:00",
-        "candle_close": "2026-09-02T23:45:00+00:00",
+        "evaluated_at": "2026-09-03T00:07:15.745462+00:00",
+        "candle_close": "2026-09-03T00:00:00+00:00",
         "provider": "yahoo_finance_proxy",
         "proxy_symbol": "GBPUSD=X",
-        "current_price": 1.3482,
-        "current_r": 0.125,
-        "progress": 0.08,
-        "atr15": 0.00032,
-        "rsi15": 10.9,
+        "current_price": 1.34833,
+        "current_r": 0.046,
+        "progress": 0.029,
+        "atr15": 0.0003,
+        "rsi15": 32.6,
         "trends": {
           "m15": "SELL",
           "h1": "SELL",
@@ -6510,25 +6534,15 @@
         "instruction": "Mantener SL y TP actuales; confirmar que los niveles siguen iguales en FBS.",
         "reasons": [
           "Estructura M15/H1/H4: SELL/SELL/SELL",
-          "Progreso 8% · resultado 0.13R"
+          "Progreso 3% · resultado 0.05R"
         ],
         "urgency": "PRÓXIMO PASO"
       },
-      "last_check_at": "2026-09-02T23:52:15.070758+00:00",
+      "last_check_at": "2026-09-03T00:07:15.745462+00:00",
       "disabled_at": "2026-09-02T23:37:24.161Z"
     }
   },
   "events": [
-    {
-      "at": "2026-09-02T03:08:50.281311+00:00",
-      "level": "info",
-      "message": "📡 Telegram conectado · iniciando validación y escaneo de mercado"
-    },
-    {
-      "at": "2026-09-02T03:08:58.775448+00:00",
-      "level": "success",
-      "message": "✅ Mercado analizado · preparando revisión Codex y cards"
-    },
     {
       "at": "2026-09-02T03:09:40.665540+00:00",
       "level": "warning",
@@ -7268,6 +7282,16 @@
       "at": "2026-09-03T00:03:13.172966+00:00",
       "level": "success",
       "message": "📲 Telegram: sent"
+    },
+    {
+      "at": "2026-09-03T00:07:16.694599+00:00",
+      "level": "info",
+      "message": "📈 GBPUSD: MANTENER · proxy 1.34833"
+    },
+    {
+      "at": "2026-09-03T00:07:16.694623+00:00",
+      "level": "info",
+      "message": "📡 1 trade(s) evaluados · Telegram sent"
     }
   ]
 }
