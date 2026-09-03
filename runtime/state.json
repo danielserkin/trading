@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-03T00:02:14.796428+00:00",
+  "updated_at": "2026-09-03T00:02:23.051359+00:00",
   "session": {
     "schema_version": 1,
     "run_id": "33697728643-1",
@@ -6522,11 +6522,6 @@
   },
   "events": [
     {
-      "at": "2026-09-02T02:52:14.832771+00:00",
-      "level": "info",
-      "message": "📡 1 trade(s) evaluados · Telegram sent"
-    },
-    {
       "at": "2026-09-02T02:52:50.707Z",
       "level": "warning",
       "message": "⏸️ Seguimiento desactivado: GBPCAD"
@@ -7270,6 +7265,11 @@
       "at": "2026-09-03T00:02:14.796402+00:00",
       "level": "info",
       "message": "📡 Telegram conectado · iniciando validación y escaneo de mercado"
+    },
+    {
+      "at": "2026-09-03T00:02:23.051333+00:00",
+      "level": "success",
+      "message": "✅ Mercado analizado · preparando revisión Codex y cards"
     }
   ]
 }
