@@ -1,12 +1,12 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-03T00:01:58.847Z",
+  "updated_at": "2026-09-03T00:02:11.417914+00:00",
   "session": {
     "schema_version": 1,
-    "run_id": "214029-451847",
+    "run_id": "33697728643-1",
     "date": "214029-451847",
     "generated_at": "2026-09-02T21:41:09.684074+00:00",
-    "status": "queued",
+    "status": "running",
     "summary": {
       "candidates_reviewed": 9,
       "valid_candidates": 9,
@@ -230,7 +230,9 @@
     "review": null,
     "completed_at": "2026-09-02T21:41:09.984485+00:00",
     "request_id": "fdb66cc2-f260-4ef3-a4ea-10195734d47c",
-    "requested_at": "2026-09-03T00:01:58.847Z"
+    "requested_at": "2026-09-03T00:01:58.847Z",
+    "started_at": "2026-09-03T00:02:11.417861+00:00",
+    "workflow_url": "https://github.com/danielserkin/trading/actions/runs/33697728643"
   },
   "monitors": {
     "df7e021461678e8051d3": {
@@ -6520,11 +6522,6 @@
   },
   "events": [
     {
-      "at": "2026-09-02T02:37:16.653205+00:00",
-      "level": "info",
-      "message": "📡 1 trade(s) evaluados · Telegram sent"
-    },
-    {
       "at": "2026-09-02T02:52:14.832749+00:00",
       "level": "info",
       "message": "📈 GBPCAD: CERRAR TODO · proxy 1.87839"
@@ -7268,6 +7265,11 @@
       "at": "2026-09-03T00:01:58.847Z",
       "level": "info",
       "message": "⏳ Nueva sesión enviada a la cola"
+    },
+    {
+      "at": "2026-09-03T00:02:11.417907+00:00",
+      "level": "info",
+      "message": "🚀 Codex y el analizador iniciaron una nueva sesión"
     }
   ]
 }
