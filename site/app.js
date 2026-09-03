@@ -68,10 +68,15 @@ function toast(message) {
 
 async function api(path, options = {}) {
   if (!app.api) throw new Error("Configura la URL del Worker");
-  const response = await fetch(`${app.api.replace(/\/$/, "")}${path}`, {
-    ...options,
-    headers: {"Content-Type":"application/json", ...(app.token ? {Authorization:`Bearer ${app.token}`} : {}), ...(options.headers || {})},
-  });
+  let response;
+  try {
+    response = await fetch(`${app.api.replace(/\/$/, "")}${path}`, {
+      ...options,
+      headers: {"Content-Type":"application/json", ...(app.token ? {Authorization:`Bearer ${app.token}`} : {}), ...(options.headers || {})},
+    });
+  } catch (cause) {
+    throw new Error("No se pudo contactar al Worker. Comprueba la conexión y reintenta.", {cause});
+  }
   const payload = await response.json().catch(() => ({}));
   if (!response.ok) throw new Error(payload.error || `Error HTTP ${response.status}`);
   return payload;
@@ -231,7 +236,23 @@ async function pauseMonitor(tradeId) {
 }
 
 async function resumeMonitor(tradeId) {
-  await api(`/monitors/${encodeURIComponent(tradeId)}`, {method:"PUT", body:JSON.stringify({action:"resume"})});
+  const path = `/monitors/${encodeURIComponent(tradeId)}`;
+  try {
+    await api(path, {method:"PUT", body:JSON.stringify({action:"resume"})});
+  } catch (error) {
+    // A network interruption can hide a successful write. Reconcile with the
+    // server before retrying so the button remains safe for legacy monitors.
+    if (!error.cause) throw error;
+    await new Promise((resolve) => setTimeout(resolve, 500));
+    try {
+      app.state = await api("/state");
+    } catch {
+      // The retry below will surface the localized connection error if needed.
+    }
+    if (!app.state?.monitors?.[tradeId]?.enabled) {
+      await api(path, {method:"PUT", body:JSON.stringify({action:"resume"})});
+    }
+  }
   toast("▶️ Seguimiento reanudado");
   app.monitorTab = "active";
   await refresh();
