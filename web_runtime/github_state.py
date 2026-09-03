@@ -16,6 +16,7 @@ from pathlib import Path
 from typing import Any, Callable
 
 STATE_PATH = "runtime/state.json"
+MAX_MONITOR_HISTORY = 24
 
 
 def now() -> str:
@@ -71,11 +72,12 @@ class GitHubState:
         for attempt in range(4):
             state, sha = self.read()
             mutate(state)
+            compact_state(state)
             state["updated_at"] = now()
             body: dict[str, Any] = {
                 "message": message,
                 "branch": self.branch,
-                "content": base64.b64encode((json.dumps(state, ensure_ascii=False, indent=2) + "\n").encode()).decode(),
+                "content": base64.b64encode((json.dumps(state, ensure_ascii=False, separators=(",", ":")) + "\n").encode()).decode(),
             }
             if sha:
                 body["sha"] = sha
@@ -93,6 +95,13 @@ def add_event(state: dict[str, Any], level: str, message: str) -> None:
     events = state.setdefault("events", [])
     events.append({"at": now(), "level": level, "message": message})
     state["events"] = events[-150:]
+
+
+def compact_state(state: dict[str, Any]) -> None:
+    """Bound runtime state so the edge Worker can decode it reliably."""
+    state["events"] = list(state.get("events") or [])[-150:]
+    for monitor in (state.get("monitors") or {}).values():
+        monitor["history"] = list(monitor.get("history") or [])[-MAX_MONITOR_HISTORY:]
 
 
 def client() -> GitHubState:
@@ -190,7 +199,7 @@ def main() -> int:
                 continue
             history = current.setdefault("history", [])
             history.append(result["decision"])
-            current["history"] = history[-100:]
+            current["history"] = history[-MAX_MONITOR_HISTORY:]
             current["last_decision"] = result["decision"]
             current["last_check_at"] = result["decision"].get("evaluated_at")
             action = str(result["decision"].get("action") or "ACTUALIZADO").replace("_", " ")

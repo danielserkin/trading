@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 
-import worker, {constantTimeEqual, deleteMonitor, issueToken, mutateMonitor, verifyToken} from "../src/index.js";
+import worker, {compactState, constantTimeEqual, dashboardState, deleteMonitor, issueToken, mutateMonitor, verifyToken} from "../src/index.js";
 
 test("constant-time comparison handles matching and empty values", () => {
   assert.equal(constantTimeEqual("same", "same"), true);
@@ -73,4 +73,22 @@ test("display decimals are restricted to one through five", () => {
     () => mutateMonitor(state, "trade", {action:"activate", entry:1.1, stop_loss:1.09, take_profit:1.12, display_decimals:6}),
     /decimales/,
   );
+});
+
+test("dashboard state returns a bounded monitor history without losing its count", () => {
+  const history = Array.from({length:30}, (_, index) => ({action:"MANTENER", index}));
+  const state = {monitors:{trade:{history}}, events:Array.from({length:90}, (_, index) => ({index}))};
+  const projected = dashboardState(state);
+  assert.equal(projected.monitors.trade.history.length, 4);
+  assert.equal(projected.monitors.trade.history[0].index, 26);
+  assert.equal(projected.monitors.trade.history_count, 30);
+  assert.equal(projected.events.length, 75);
+  assert.equal(state.monitors.trade.history.length, 30);
+});
+
+test("stored state bounds monitor histories", () => {
+  const state = {monitors:{trade:{history:Array.from({length:30}, (_, index) => ({index}))}}, events:[]};
+  compactState(state);
+  assert.equal(state.monitors.trade.history.length, 24);
+  assert.equal(state.monitors.trade.history[0].index, 6);
 });

@@ -1,4 +1,7 @@
 const STATE_PATH = "runtime/state.json";
+const DASHBOARD_HISTORY_LIMIT = 4;
+const STORED_HISTORY_LIMIT = 24;
+const DASHBOARD_EVENT_LIMIT = 75;
 
 const encoder = new TextEncoder();
 const decoder = new TextDecoder();
@@ -13,13 +16,34 @@ function fromBase64(value) {
   const unpadded = value.replace(/\s/g, "");
   const clean = unpadded + "=".repeat((4 - (unpadded.length % 4)) % 4);
   const binary = atob(clean);
-  return Uint8Array.from(binary, (character) => character.charCodeAt(0));
+  const bytes = new Uint8Array(binary.length);
+  for (let index = 0; index < binary.length; index++) bytes[index] = binary.charCodeAt(index);
+  return bytes;
 }
 
 function toBase64(value) {
+  const bytes = encoder.encode(value);
   let binary = "";
-  for (const byte of encoder.encode(value)) binary += String.fromCharCode(byte);
+  for (let index = 0; index < bytes.length; index += 0x8000) {
+    binary += String.fromCharCode(...bytes.subarray(index, index + 0x8000));
+  }
   return btoa(binary);
+}
+
+function compactState(state) {
+  state.events = (state.events || []).slice(-150);
+  for (const monitor of Object.values(state.monitors || {})) {
+    monitor.history = (monitor.history || []).slice(-STORED_HISTORY_LIMIT);
+  }
+  return state;
+}
+
+function dashboardState(state) {
+  const monitors = Object.fromEntries(Object.entries(state.monitors || {}).map(([tradeId, monitor]) => {
+    const history = monitor.history || [];
+    return [tradeId, {...monitor, history:history.slice(-DASHBOARD_HISTORY_LIMIT), history_count:history.length}];
+  }));
+  return {...state, monitors, events:(state.events || []).slice(-DASHBOARD_EVENT_LIMIT)};
 }
 
 function constantTimeEqual(a, b) {
@@ -102,11 +126,12 @@ async function updateState(env, message, mutate) {
   for (let attempt = 0; attempt < 4; attempt++) {
     const {state, sha} = await readState(env);
     await mutate(state);
+    compactState(state);
     state.updated_at = new Date().toISOString();
     const result = await fetch(`${githubBase(env)}/contents/${STATE_PATH}`, {
       method:"PUT", headers:githubHeaders(env), body:JSON.stringify({
         message, branch:env.DATA_BRANCH || "runtime-data", sha,
-        content:toBase64(`${JSON.stringify(state, null, 2)}\n`),
+        content:toBase64(`${JSON.stringify(state)}\n`),
       }),
     });
     if (result.ok) return state;
@@ -217,7 +242,7 @@ async function handle(request, env) {
     return response(request, env, {token:await issueToken(env), expires_in:12 * 3600});
   }
   if (!(await verifyToken(request, env))) return response(request, env, {error:"Sesión no autorizada o vencida"}, 401);
-  if (url.pathname === "/state" && request.method === "GET") return response(request, env, (await readState(env)).state);
+  if (url.pathname === "/state" && request.method === "GET") return response(request, env, dashboardState((await readState(env)).state));
 
   if (url.pathname === "/sessions" && request.method === "POST") {
     const requestId = crypto.randomUUID();
@@ -274,4 +299,4 @@ export default {
   },
 };
 
-export {constantTimeEqual, issueToken, verifyToken, mutateMonitor, deleteMonitor};
+export {constantTimeEqual, issueToken, verifyToken, mutateMonitor, deleteMonitor, compactState, dashboardState};
