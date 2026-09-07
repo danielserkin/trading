@@ -66,6 +66,9 @@ def card_from_candidate(
         "risk_usd": candidate.get("risk_usd"),
         "size": candidate.get("size") or "TBD",
         "valid_until": candidate.get("valid_until"),
+        "entry_valid_until": candidate.get("entry_valid_until") or candidate.get("valid_until"),
+        "management_horizon_hours": candidate.get("management_horizon_hours"),
+        "target_basis": candidate.get("target_basis"),
         "source": candidate.get("source"),
         "provider": candidate.get("provider"),
         "origin": candidate.get("candidate_origin"),
@@ -117,13 +120,16 @@ def export_session(session_dir: Path) -> dict[str, Any]:
         metadata.get("source_trust"),
     )
     minimum_stars, max_same_usd_bias = selection_policy(metadata)
+    configured_selection = metadata.get("selection_policy") or {}
+    primary_count = max(0, int(configured_selection.get("primary_count", 3)))
+    backup_count = max(0, int(configured_selection.get("backup_count", 0)))
     primary = select_distinct_candidates(
-        ranked, 3, minimum_stars=minimum_stars, max_same_usd_bias=max_same_usd_bias
+        ranked, primary_count, minimum_stars=minimum_stars, max_same_usd_bias=max_same_usd_bias
     )
     primary_ids = {id(item[2]) for item in primary}
     backups = select_distinct_candidates(
         ranked,
-        2,
+        backup_count,
         excluded_ids=primary_ids,
         minimum_stars=minimum_stars,
         max_same_usd_bias=max_same_usd_bias,
@@ -134,7 +140,7 @@ def export_session(session_dir: Path) -> dict[str, Any]:
         for index, (stars, reasons, candidate) in enumerate(primary, 1)
     ]
     rejection_reasons = [str(item[1]) for item in discarded[:4]]
-    while len(cards) < 3:
+    while len(cards) < primary_count:
         cards.append(no_trade_card(len(cards) + 1, run_id, rejection_reasons))
 
     return {
@@ -154,7 +160,7 @@ def export_session(session_dir: Path) -> dict[str, Any]:
         },
         "cards": cards,
         "backups": [
-            card_from_candidate(candidate, stars, reasons, index + 4, run_id)
+            card_from_candidate(candidate, stars, reasons, index + primary_count + 1, run_id)
             for index, (stars, reasons, candidate) in enumerate(backups)
         ],
         "telegram": {key: value for key, value in delivery.items() if key != "chat_id"},

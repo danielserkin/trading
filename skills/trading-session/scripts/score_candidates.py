@@ -24,7 +24,14 @@ REASON_LABELS = {
     "quality_below_actionable": "calidad por debajo de tres estrellas",
     "risk_tier_unavailable": "el lote mínimo supera el riesgo permitido por estrellas",
     "portfolio_risk_unavailable": "el lote mínimo supera el límite conjunto",
-    "market_scan_asset_cooldown": "símbolo del scanner todavía en pausa de 24 horas",
+    "market_scan_asset_cooldown": "símbolo del scanner todavía en pausa",
+    "asset_paused": "símbolo pausado durante la validación",
+    "strict_setup_required": "no apareció una configuración estricta",
+    "full_timeframe_alignment_required": "15m, 1h y 4h no están totalmente alineados",
+    "full_timeframe_confirmation_unavailable": "la señal original no tiene confirmación completa 15m/1h/4h",
+    "structural_target_unavailable": "no hay un objetivo estructural confirmado",
+    "structural_room_below_rr": "la primera barrera no deja el R/R mínimo",
+    "structural_target_too_far": "el objetivo estructural queda demasiado lejos",
 }
 
 
@@ -282,14 +289,19 @@ def render_report(candidates: list[dict[str, Any]], max_risk_usd: float, metadat
     metadata = metadata or {}
     ranked, discarded = rank_candidates(candidates, max_risk_usd, metadata.get("scoring_weights"), metadata.get("source_trust"))
     minimum_stars, max_same_usd_bias = selection_policy(metadata)
+    selection = metadata.get("selection_policy") or {}
+    primary_count = max(0, int(selection.get("primary_count", 3)))
+    backup_count = max(0, int(selection.get("backup_count", 2)))
+    max_final = max(primary_count, int(selection.get("max_final_candidates", primary_count + backup_count)))
+    backup_count = min(backup_count, max(0, max_final - primary_count))
     top = select_distinct_candidates(
-        ranked, 3, minimum_stars=minimum_stars, max_same_usd_bias=max_same_usd_bias
+        ranked, primary_count, minimum_stars=minimum_stars, max_same_usd_bias=max_same_usd_bias
     )
     top_ids = {id(item[2]) for item in top}
     top_assets = {str(item[2].get("asset") or "") for item in top}
     backup = select_distinct_candidates(
         ranked,
-        5 - len(top),
+        backup_count,
         excluded_ids=top_ids,
         excluded_assets=top_assets,
         minimum_stars=minimum_stars,
@@ -313,8 +325,7 @@ def render_report(candidates: list[dict[str, Any]], max_risk_usd: float, metadat
         "| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |",
     ]
     lines.extend(_candidate_rows(top, 1))
-    target = int(((metadata or {}).get("fallback_opportunities") or {}).get("target", 3))
-    no_trade_slots = max(0, target - len(top))
+    no_trade_slots = max(0, primary_count - len(top))
     lines.extend(_no_trade_rows(no_trade_slots, len(top) + 1, metadata))
     lines.extend([
         "",

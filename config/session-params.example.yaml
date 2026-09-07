@@ -2,9 +2,9 @@
 capital_usd: 1000
 max_risk_usd: 20
 signal_window_hours: 24
-max_final_candidates: 5
+max_final_candidates: 3
 primary_count: 3
-backup_count: 2
+backup_count: 0
 mode: "recommend_only"
 broker: "fbs"
 primary_source: "telegram_signals"
@@ -13,11 +13,14 @@ min_rr: 1.6
 market_data:
   max_spread_points: null
   max_entry_distance_percent: 1.2
+  excluded_assets: ["USDTRY", "USDSEK", "USDNOK", "USDMXN"]
 fallback_opportunities:
   enabled: true
   target_primary_candidates: 3
   lookback_hours: 168
-  allow_reversal: true
+  allow_reversal: false
+  require_full_timeframe_alignment: true
+  management_horizon_hours: 8
   intervals: ["15m", "1h", "4h"]
   min_rr: 1.6
   no_trade_placeholders: true
@@ -25,24 +28,26 @@ fallback_opportunities:
     enabled: true
     max_assets: 45
     max_workers: 8
-    candidate_pool_size: 9
+    candidate_pool_size: 3
     validity_hours: 4
+    allow_conditional: false
+    require_structural_room: true
+    max_target_atr: 5.0
 risk_policy:
   enabled: true
-  minimum_actionable_stars: 3
+  minimum_actionable_stars: 4
   risk_by_stars_usd:
-    5: 10
-    4: 8
-    3: 4
-  max_primary_risk_usd: 25
-  max_same_usd_bias: 2
+    5: 5
+    4: 2.5
+  max_primary_risk_usd: 5
+  max_same_usd_bias: 1
   symbol_multipliers:
     USDJPY: 0.75
     USDSEK: 0.50
     USDNOK: 0.50
     USDMXN: 0.50
 repeat_control:
-  market_scan_asset_cooldown_hours: 24
+  market_scan_asset_cooldown_hours: 72
 telegram_delivery:
   enabled: "auto"
   send_on_no_trade: true

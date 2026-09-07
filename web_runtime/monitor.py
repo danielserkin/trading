@@ -205,7 +205,13 @@ def decision_for(monitor: dict[str, Any], snapshot: dict[str, Any], now: datetim
     against = "SELL" if direction == "BUY" else "BUY"
     activated = parse_time(monitor.get("activated_at")) or now
     age = now - activated
-    valid_until = parse_time(monitor.get("valid_until"))
+    raw_management_horizon = monitor.get("management_horizon_hours")
+    management_horizon_hours = int(raw_management_horizon) if raw_management_horizon not in (None, "") else None
+    management_deadline = (
+        activated + timedelta(hours=management_horizon_hours)
+        if management_horizon_hours is not None
+        else None
+    )
     base = {
         "evaluated_at": now.isoformat(),
         "candle_close": m15[-1].closed_at.isoformat(),
@@ -218,6 +224,7 @@ def decision_for(monitor: dict[str, Any], snapshot: dict[str, Any], now: datetim
         "rsi15": round(rsi(m15), 1),
         "trends": trends,
         "confidence": "media" if snapshot["provider"] == "binance_spot_proxy" else "baja",
+        "management_deadline": management_deadline.isoformat() if management_deadline else None,
     }
 
     def finish(action: str, instruction: str, reasons: list[str], urgency: str = "PRÓXIMO PASO", **levels: Any) -> dict[str, Any]:
@@ -231,10 +238,13 @@ def decision_for(monitor: dict[str, Any], snapshot: dict[str, Any], now: datetim
         return finish("CERRAR_TODO", "Verificar en FBS que el TP se ejecutó; si sigue abierta, cerrar el remanente.", ["El proxy alcanzó el TP", "Evitar devolver una ganancia ya conseguida"], "AHORA")
     if now.weekday() == 4 and now.hour >= 19:
         return finish("CERRAR_TODO", "Cerrar la posición antes del fin de semana tras confirmar el precio en FBS.", ["Cierre semanal próximo", "El seguimiento usa una estrategia intradía"], "AHORA")
-    if valid_until and now >= valid_until:
-        return finish("CERRAR_TODO", "Cerrar por vencimiento de la idea tras confirmar la cotización FBS.", ["La vigencia intradía original terminó", f"Progreso alcanzado: {progress:.0%}"], "AHORA")
-    if valid_until and timedelta() <= valid_until - now <= timedelta(minutes=30) and progress < 0.75:
-        return finish("CERRAR_TODO", "Cerrar antes del fin de la vigencia tras confirmar la cotización FBS.", [f"Restan {(valid_until-now).total_seconds()/60:.0f} min", f"Progreso menor al 75%: {progress:.0%}"], "AHORA")
+    if management_deadline and now >= management_deadline:
+        return finish(
+            "CERRAR_TODO",
+            "Cerrar al terminar el horizonte intradía tras confirmar la cotización FBS.",
+            [f"Horizonte de gestión cumplido: {management_horizon_hours} h", f"Progreso alcanzado: {progress:.0%}"],
+            "AHORA",
+        )
     if age >= timedelta(hours=6) and current_r <= 0 and trends["m15"] == against:
         return finish("CERRAR_TODO", "Cerrar por falta prolongada de progreso y deterioro M15.", [f"Trade abierto {age.total_seconds()/3600:.1f} h", "Resultado no positivo y M15 contrario"], "AHORA")
     if trends["m15"] == against and trends["h1"] == against and current_r <= -0.35:

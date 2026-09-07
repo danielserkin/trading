@@ -35,9 +35,9 @@ Rules:
 - `Why` must include vigencia/status and any `modification_note` when the expert entry is no longer directly actionable.
 - `Why` must state the pending-order type and exact mechanical instruction; it must not delegate candle analysis to the user.
 - Derived rows must identify `reentry`, `technical_reversal`, or `market_scan`, include the pending order and expiry/cancellation rule, and link back to the seed message when available.
-- The three primary rows must use different assets. A technical market-scan row must state its setup family and 15m/1h/4h evidence.
-- Three-star rows may remain actionable with reduced risk. Rows below the configured actionable-star floor must be discarded rather than used to fill a slot.
-- Always show three evaluated primary slots. Use a `NO TRADE` row when evidence is insufficient; do not represent it as a valid candidate.
+- Primary rows must use different assets. A technical market-scan row must state its setup family and 15m/1h/4h evidence.
+- Rows below the configured actionable-star floor must be discarded rather than used to fill a slot.
+- Always show the configured number of evaluated primary slots. Use a `NO TRADE` row when evidence is insufficient; do not represent it as a valid candidate.
 
 ## Discarded Signals
 

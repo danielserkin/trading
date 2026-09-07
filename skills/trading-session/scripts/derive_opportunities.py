@@ -53,18 +53,74 @@ def _atr(rows: list[dict[str, float]], length: int = 14) -> float:
     return _mean(ranges[-length:])
 
 
-def _rounded_trade_levels(direction: str, entry: float, stop: float, min_rr: float) -> tuple[float, float, float]:
-    """Round levels while keeping the published R/R at or above the configured minimum."""
+def _rounded_trade_levels(
+    direction: str,
+    entry: float,
+    stop: float,
+    min_rr: float,
+    target: float | None = None,
+) -> tuple[float, float, float]:
+    """Round levels without moving a structural target beyond its market level."""
     rounded_entry = round(entry, 8)
     rounded_stop = round(stop, 8)
     scale = 100_000_000
     if direction == "BUY":
-        raw_target = rounded_entry + (rounded_entry - rounded_stop) * min_rr
-        rounded_target = math.ceil(raw_target * scale) / scale
+        raw_target = target if target is not None else rounded_entry + (rounded_entry - rounded_stop) * min_rr
+        rounding = math.floor if target is not None else math.ceil
+        rounded_target = rounding(raw_target * scale) / scale
     else:
-        raw_target = rounded_entry - (rounded_stop - rounded_entry) * min_rr
-        rounded_target = math.floor(raw_target * scale) / scale
+        raw_target = target if target is not None else rounded_entry - (rounded_stop - rounded_entry) * min_rr
+        rounding = math.ceil if target is not None else math.floor
+        rounded_target = rounding(raw_target * scale) / scale
     return rounded_entry, rounded_stop, rounded_target
+
+
+def _pivot_levels(rows: list[dict[str, float]], direction: str, wing: int = 2) -> list[float]:
+    """Return confirmed local swing levels from closed candles."""
+    field = "high" if direction == "BUY" else "low"
+    levels: list[float] = []
+    usable = rows[-64:]
+    for index in range(wing, len(usable) - wing):
+        value = float(usable[index][field])
+        neighbors = [float(row[field]) for row in usable[index - wing:index] + usable[index + 1:index + wing + 1]]
+        if direction == "BUY" and value >= max(neighbors) and value > min(neighbors):
+            levels.append(value)
+        elif direction == "SELL" and value <= min(neighbors) and value < max(neighbors):
+            levels.append(value)
+    return levels
+
+
+def _structural_target(
+    rows_by_interval: dict[str, list[dict[str, float]]],
+    direction: str,
+    entry: float,
+    stop: float,
+    volatility: float,
+    min_rr: float,
+    max_target_atr: float,
+) -> tuple[float | None, str]:
+    """Use the nearest confirmed 1h/4h swing as TP and reject blocked or remote targets."""
+    risk = entry - stop if direction == "BUY" else stop - entry
+    if risk <= 0 or volatility <= 0:
+        return None, "invalid_trade_structure"
+    levels = []
+    for interval in ("1h", "4h"):
+        levels.extend(_pivot_levels(rows_by_interval.get(interval) or [], direction))
+    favorable = sorted(
+        {level for level in levels if level > entry} if direction == "BUY" else {level for level in levels if level < entry},
+        reverse=direction == "SELL",
+    )
+    if not favorable:
+        return None, "structural_target_unavailable"
+    barrier = favorable[0]
+    buffer = 0.10 * volatility
+    target = barrier - buffer if direction == "BUY" else barrier + buffer
+    reward = target - entry if direction == "BUY" else entry - target
+    if reward / risk + 1e-9 < min_rr:
+        return None, "structural_room_below_rr"
+    if reward > max_target_atr * volatility:
+        return None, "structural_target_too_far"
+    return target, "accepted"
 
 
 def _get_json(url: str) -> Any:
@@ -172,7 +228,18 @@ def _seed_candidates(candidates: list[dict[str, Any]], lookback_hours: int, now:
     return sorted(eligible, key=lambda item: _parse_time(item.get("timestamp")) or cutoff, reverse=True)
 
 
-def build_derived_candidate(seed: dict[str, Any], snapshot: dict[str, Any], min_rr: float, allow_reversal: bool, now: datetime) -> tuple[dict[str, Any] | None, str]:
+def build_derived_candidate(
+    seed: dict[str, Any],
+    snapshot: dict[str, Any],
+    min_rr: float,
+    allow_reversal: bool,
+    now: datetime,
+    *,
+    require_full_timeframe_alignment: bool = False,
+    require_structural_room: bool = False,
+    max_target_atr: float = 5.0,
+    management_horizon_hours: int = 8,
+) -> tuple[dict[str, Any] | None, str]:
     rows_by_interval = snapshot.get("rows") or {}
     if any(len(rows_by_interval.get(interval) or []) < 52 for interval in ("15m", "1h", "4h")):
         return None, "insufficient_closed_candles"
@@ -188,6 +255,8 @@ def build_derived_candidate(seed: dict[str, Any], snapshot: dict[str, Any], min_
         return None, "higher_timeframes_not_aligned"
     if trends["15m"] not in {direction, "NEUTRAL"}:
         return None, "15m_opposes_higher_timeframes"
+    if require_full_timeframe_alignment and any(trends[interval] != direction for interval in ("15m", "1h", "4h")):
+        return None, "full_timeframe_alignment_required"
 
     closes_15 = [row["close"] for row in rows_15]
     rsi_values = {interval: _rsi([row["close"] for row in rows_by_interval[interval]]) for interval in ("15m", "1h", "4h")}
@@ -214,26 +283,35 @@ def build_derived_candidate(seed: dict[str, Any], snapshot: dict[str, Any], min_
         entry = float(snapshot.get("ask") or trigger)
         entry = max(entry, trigger)
         stop = min(recent_low - 0.2 * volatility, entry - volatility)
-        take_profit = entry + (entry - stop) * min_rr
         pending_order_type = "BUY STOP"
     else:
         trigger = min(current, recent[-1]["low"] - 0.05 * volatility)
         entry = float(snapshot.get("bid") or trigger)
         entry = min(entry, trigger)
         stop = max(recent_high + 0.2 * volatility, entry + volatility)
-        take_profit = entry - (stop - entry) * min_rr
         pending_order_type = "SELL STOP"
     risk_percent = abs(entry - stop) / entry * 100 if entry else 100
     if risk_percent > 5:
         return None, "stop_distance_excessive"
 
-    rounded_entry, rounded_stop, rounded_take_profit = _rounded_trade_levels(direction, entry, stop, min_rr)
+    structural_target = None
+    if require_structural_room:
+        structural_target, reason = _structural_target(
+            rows_by_interval, direction, entry, stop, volatility, min_rr, max_target_atr
+        )
+        if structural_target is None:
+            return None, reason
+    rounded_entry, rounded_stop, rounded_take_profit = _rounded_trade_levels(
+        direction, entry, stop, min_rr, structural_target
+    )
     evidence = (
         f"Semilla {seed.get('channel')} {seed_direction}; tendencias 15m/1h/4h="
         f"{trends['15m']}/{trends['1h']}/{trends['4h']}; RSI="
         f"{rsi_values['15m']:.1f}/{rsi_values['1h']:.1f}/{rsi_values['4h']:.1f}; "
         f"ATR15={volatility:.8g}" + (f"; volumen relativo={volume_ratio:.2f}" if volume_ratio is not None else "; volumen no disponible en el proxy")
     )
+    if structural_target is not None:
+        evidence += "; TP antes del swing confirmado 1h/4h más cercano"
     valid_until = (now + timedelta(hours=2)).isoformat()
     alternate_order_type = "BUY LIMIT" if pending_order_type == "BUY STOP" else "SELL LIMIT"
     order_instruction = (
@@ -254,7 +332,9 @@ def build_derived_candidate(seed: dict[str, Any], snapshot: dict[str, Any], min_
         "alternate_order_type": alternate_order_type,
         "order_instruction": order_instruction,
         "invalidation_condition": invalidation, "technical_evidence": evidence,
-        "evidence": evidence, "valid_until": valid_until,
+        "evidence": evidence, "valid_until": valid_until, "entry_valid_until": valid_until,
+        "management_horizon_hours": management_horizon_hours,
+        "target_basis": "nearest_confirmed_1h_4h_swing" if structural_target is not None else "minimum_rr_projection",
         "source_context": {"market_proxy": snapshot.get("provider"), "market_symbol": snapshot.get("market_symbol"), "seed_direction": seed_direction},
         "analysis": {"bid": snapshot.get("bid"), "ask": snapshot.get("ask"), "trend_15m": trends["15m"], "trend_1h": trends["1h"], "trend_4h": trends["4h"], "rsi_15m": round(rsi_values["15m"], 2), "rsi_1h": round(rsi_values["1h"], 2), "rsi_4h": round(rsi_values["4h"], 2), "atr_15m": round(volatility, 8), "volume_ratio_15m": round(volume_ratio, 4) if volume_ratio is not None else None},
         "missing": [],
@@ -267,6 +347,12 @@ def build_market_scan_candidate(
     min_rr: float,
     now: datetime,
     validity_hours: int = 4,
+    *,
+    allow_conditional: bool = True,
+    require_full_timeframe_alignment: bool = False,
+    require_structural_room: bool = False,
+    max_target_atr: float = 5.0,
+    management_horizon_hours: int = 8,
 ) -> tuple[dict[str, Any] | None, str]:
     """Build a fully recalculated technical setup without attributing it to Telegram."""
     rows_by_interval = snapshot.get("rows") or {}
@@ -311,6 +397,8 @@ def build_market_scan_candidate(
     setup_tier = "strict"
 
     if setup is None:
+        if not allow_conditional:
+            return None, "strict_setup_required"
         directional_votes = {
             direction: sum(trends[interval] == direction for interval in ("15m", "1h", "4h"))
             for direction in ("BUY", "SELL")
@@ -339,6 +427,8 @@ def build_market_scan_candidate(
 
     direction = str(setup["direction"])
     setup_type = str(setup["setup_type"])
+    if require_full_timeframe_alignment and any(trends[interval] != direction for interval in ("15m", "1h", "4h")):
+        return None, "full_timeframe_alignment_required"
     if setup_type == "pullback":
         if direction == "BUY":
             entry = min(current - 0.25 * volatility, float(snapshot.get("ask") or current))
@@ -363,8 +453,16 @@ def build_market_scan_candidate(
     risk_percent = abs(entry - stop) / entry * 100 if entry else 100
     if risk_percent > 5:
         return None, "stop_distance_excessive"
-    take_profit = entry + (entry - stop) * min_rr if direction == "BUY" else entry - (stop - entry) * min_rr
-    rounded_entry, rounded_stop, rounded_take_profit = _rounded_trade_levels(direction, entry, stop, min_rr)
+    structural_target = None
+    if require_structural_room:
+        structural_target, reason = _structural_target(
+            rows_by_interval, direction, entry, stop, volatility, min_rr, max_target_atr
+        )
+        if structural_target is None:
+            return None, reason
+    rounded_entry, rounded_stop, rounded_take_profit = _rounded_trade_levels(
+        direction, entry, stop, min_rr, structural_target
+    )
     valid_until = (now + timedelta(hours=max(2, validity_hours))).isoformat()
     alternate_order_type = "BUY LIMIT" if pending_order_type == "BUY STOP" else "BUY STOP" if pending_order_type == "BUY LIMIT" else "SELL LIMIT" if pending_order_type == "SELL STOP" else "SELL STOP"
     order_instruction = (
@@ -382,6 +480,8 @@ def build_market_scan_candidate(
         + (f"; volumen_relativo={volume_ratio:.2f}" if volume_ratio is not None else "; volumen no disponible en el proxy")
         + f"; condición={setup.get('condition')}"
     )
+    if structural_target is not None:
+        evidence += "; TP antes del swing confirmado 1h/4h más cercano"
     alignment_score = directional_votes[direction] if setup_tier == "conditional" else sum(trends[interval] == direction for interval in ("15m", "1h", "4h"))
     quality_score = 3.0 + min(1.0, alignment_score / 3) + min(1.0, volume_ratio or 0.75)
     return {
@@ -397,6 +497,8 @@ def build_market_scan_candidate(
         "alternate_order_type": alternate_order_type, "order_instruction": order_instruction,
         "invalidation_condition": f"Cancelar la orden pendiente si no se activa antes de {valid_until}.",
         "technical_evidence": evidence, "evidence": evidence, "valid_until": valid_until,
+        "entry_valid_until": valid_until, "management_horizon_hours": management_horizon_hours,
+        "target_basis": "nearest_confirmed_1h_4h_swing" if structural_target is not None else "minimum_rr_projection",
         "source_context": {"market_proxy": snapshot.get("provider"), "market_symbol": snapshot.get("market_symbol"), "scan_tier": setup_tier},
         "analysis": {
             "bid": snapshot.get("bid"), "ask": snapshot.get("ask"), "spread": round(spread, 8) if spread is not None else None,
@@ -421,8 +523,19 @@ def derive_opportunities(
         return [], {"target": target, "attempted": 0, "accepted": 0, "rejections": []}
     now = now or datetime.now(timezone.utc)
     minimum_rr = float(settings.get("min_rr", params.get("min_rr", 1.6)))
+    market_settings = settings.get("market_scan") or {}
+    require_full_alignment = bool(settings.get("require_full_timeframe_alignment", False))
+    require_structural_room = bool(market_settings.get("require_structural_room", False))
+    max_target_atr = float(market_settings.get("max_target_atr", 5.0))
+    management_horizon_hours = int(settings.get("management_horizon_hours", 8))
+    excluded_assets = {
+        str(asset).upper()
+        for asset in ((params.get("market_data") or {}).get("excluded_assets") or [])
+    }
 
     def is_complete_valid(item: dict[str, Any]) -> bool:
+        if str(item.get("asset") or "").upper() in excluded_assets:
+            return False
         missing = set(item.get("missing") or [])
         if missing & {"asset", "direction", "entry", "stop_loss", "take_profit", "market_data", "broker_universe", "unknown_fbs_symbol"}:
             return False
@@ -445,6 +558,9 @@ def derive_opportunities(
     seeds = _seed_candidates(candidates, int(settings.get("lookback_hours", 72)), now)
     for seed in seeds:
         asset = str(seed["asset"])
+        if asset.upper() in excluded_assets:
+            rejections.append({"asset": asset, "reason": "asset_paused"})
+            continue
         if asset in attempted_assets:
             continue
         attempted_assets.add(asset)
@@ -459,6 +575,10 @@ def derive_opportunities(
         candidate, reason = build_derived_candidate(
             seed, snapshot, minimum_rr,
             bool(settings.get("allow_reversal", True)), now,
+            require_full_timeframe_alignment=require_full_alignment,
+            require_structural_room=require_structural_room,
+            max_target_atr=max_target_atr,
+            management_horizon_hours=management_horizon_hours,
         )
         if candidate:
             derived.append(candidate)
@@ -467,13 +587,14 @@ def derive_opportunities(
         else:
             rejections.append({"asset": asset, "reason": reason})
 
-    market_settings = settings.get("market_scan") or {}
     market_attempted = 0
     market_accepted = 0
     pool_target = max(needed, int(market_settings.get("candidate_pool_size", 9)))
     remaining = max(0, pool_target - len(derived))
     if remaining and market_settings.get("enabled", True) is not False:
-        universe = sorted(set(scan_assets or list(yahoo_map) + list(crypto_map)) - attempted_assets)
+        universe = sorted(
+            set(scan_assets or list(yahoo_map) + list(crypto_map)) - attempted_assets - excluded_assets
+        )
         max_assets = int(market_settings.get("max_assets", len(universe)))
         universe = universe[:max_assets]
         market_attempted = len(universe)
@@ -497,7 +618,18 @@ def derive_opportunities(
                 if not any(item.get("asset") == asset and item.get("reason") == "market_data_error" for item in rejections):
                     rejections.append({"asset": asset, "reason": "market_proxy_unavailable"})
                 continue
-            candidate, reason = build_market_scan_candidate(asset, snapshot, minimum_rr, now, validity_hours)
+            candidate, reason = build_market_scan_candidate(
+                asset,
+                snapshot,
+                minimum_rr,
+                now,
+                validity_hours,
+                allow_conditional=bool(market_settings.get("allow_conditional", True)),
+                require_full_timeframe_alignment=require_full_alignment,
+                require_structural_room=require_structural_room,
+                max_target_atr=max_target_atr,
+                management_horizon_hours=management_horizon_hours,
+            )
             if candidate:
                 scan_candidates.append(candidate)
             else:

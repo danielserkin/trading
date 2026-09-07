@@ -70,6 +70,54 @@ class DerivedOpportunityTest(unittest.TestCase):
         self.assertIn("atr_15m", candidate["analysis"])
         self.assertGreaterEqual((candidate["take_profits"][0] - candidate["entry"]) / (candidate["entry"] - candidate["stop_loss"]), 1.6)
 
+    def test_strict_mode_rejects_conditional_fallback(self) -> None:
+        with patch.object(derived, "_select_setup", return_value=None):
+            candidate, reason = derived.build_market_scan_candidate(
+                "EURUSD", snapshot("BUY"), 1.6, self.now, allow_conditional=False
+            )
+        self.assertIsNone(candidate)
+        self.assertEqual(reason, "strict_setup_required")
+
+    def test_structural_target_uses_nearest_confirmed_swing(self) -> None:
+        rows = []
+        highs = [99.0, 99.4, 99.1, 102.0, 99.2, 99.5, 99.3]
+        for index, high in enumerate(highs):
+            rows.append({"open": 99.0, "high": high, "low": 98.5, "close": 99.0, "volume": 100, "closed_at": index})
+        target, reason = derived._structural_target(
+            {"1h": rows, "4h": rows}, "BUY", 100.0, 99.0, 1.0, 1.6, 5.0
+        )
+        self.assertEqual(reason, "accepted")
+        self.assertAlmostEqual(target, 101.9)
+
+    def test_structural_target_rejects_nearby_barrier_below_minimum_rr(self) -> None:
+        rows = []
+        highs = [99.0, 99.4, 99.1, 101.2, 99.2, 99.5, 99.3]
+        for index, high in enumerate(highs):
+            rows.append({"open": 99.0, "high": high, "low": 98.5, "close": 99.0, "volume": 100, "closed_at": index})
+        target, reason = derived._structural_target(
+            {"1h": rows, "4h": rows}, "BUY", 100.0, 99.0, 1.0, 1.6, 5.0
+        )
+        self.assertIsNone(target)
+        self.assertEqual(reason, "structural_room_below_rr")
+
+    def test_excluded_asset_is_not_fetched_by_fallback(self) -> None:
+        seed = dict(self.seed, asset="USDTRY")
+        candidates, metadata = derived.derive_opportunities(
+            [seed],
+            {
+                "min_rr": 1.6,
+                "market_data": {"excluded_assets": ["USDTRY"]},
+                "fallback_opportunities": {"target_primary_candidates": 1, "market_scan": {"enabled": False}},
+            },
+            {},
+            {"USDTRY": "USDTRY=X"},
+            scan_assets=["USDTRY"],
+            snapshot_fetcher=lambda *args: self.fail("excluded asset should not be fetched"),
+            now=self.now,
+        )
+        self.assertEqual(candidates, [])
+        self.assertIn({"asset": "USDTRY", "reason": "asset_paused"}, metadata["rejections"])
+
     def test_market_scan_fills_three_assets_when_seeded_coverage_is_empty(self) -> None:
         assets = ["EURUSD", "GBPUSD", "XAUUSD"]
         candidates, metadata = derived.derive_opportunities(
@@ -93,6 +141,18 @@ class DerivedOpportunityTest(unittest.TestCase):
         self.assertIn("Una sola entrada por ID", summary)
         self.assertEqual(summary.count("NO TRADE"), 2)
         self.assertLessEqual(len(summary), 4096)
+
+    def test_summary_honors_one_primary_slot(self) -> None:
+        candidate, _ = derived.build_derived_candidate(self.seed, snapshot("BUY"), 1.6, True, self.now)
+        candidate.update({"risk_usd": 2.0, "size": "test size", "valid_until": (datetime.now(timezone.utc) + timedelta(hours=2)).isoformat()})
+        summary = publisher.build_summary(
+            [candidate],
+            {"telegram_messages_reviewed": 12, "fallback_opportunities": {}, "selection_policy": {"primary_count": 1}},
+            2.0,
+        )
+        self.assertIn("1. BTCUSD BUY", summary)
+        self.assertNotIn("NO TRADE", summary)
+        self.assertIn("Entrada válida hasta", summary)
 
     def test_preflight_blocks_missing_credentials(self) -> None:
         with patch.dict(os.environ, {}, clear=True):

@@ -328,14 +328,14 @@ def session_params(config_dir: Path) -> dict[str, Any]:
         "capital_usd": 1000.0,
         "max_risk_usd": 20.0,
         "signal_window_hours": 24,
-        "max_final_candidates": 5,
+        "max_final_candidates": 3,
         "primary_count": 3,
-        "backup_count": 2,
+        "backup_count": 0,
         "fallback_opportunities": {
             "enabled": True,
             "target_primary_candidates": 3,
             "lookback_hours": 72,
-            "allow_reversal": True,
+            "allow_reversal": False,
             "min_rr": 1.6,
             "no_trade_placeholders": True,
         },
@@ -674,11 +674,23 @@ def validate_candidate(candidate: dict[str, Any], params: dict[str, Any], symbol
         "fear_greed": fear_greed,
         "market_type": market_type_for_asset(str(candidate.get("asset") or ""), symbols_by_market),
     }
+    excluded_assets = {
+        str(asset).upper()
+        for asset in ((params.get("market_data") or {}).get("excluded_assets") or [])
+    }
+    if str(candidate.get("asset") or "").upper() in excluded_assets:
+        candidate["signal_status"] = "descartada"
+        candidate["market_valid"] = False
+        candidate["discard_reason"] = "asset_paused"
+        candidate["risk_usd"] = None
+        candidate["size"] = "TBD"
+        return candidate
 
     timestamp = parse_datetime(candidate.get("timestamp"))
     if timestamp:
         validity_hours = int(candidate.get("max_age_hours") or params.get("signal_window_hours", 24))
         candidate["valid_until"] = (timestamp + timedelta(hours=validity_hours)).isoformat()
+        candidate["entry_valid_until"] = candidate["valid_until"]
         freshness = max(0, int((utc_now() - timestamp).total_seconds() / 60))
         candidate["freshness_minutes"] = freshness
         if freshness > validity_hours * 60:
@@ -695,6 +707,17 @@ def validate_candidate(candidate: dict[str, Any], params: dict[str, Any], symbol
         candidate["analysis"] = {"market_data_note": "No public validator configured for this FBS market. Confirm price/spread in FBS before execution."}
         candidate["market_valid"] = False
         candidate.setdefault("missing", []).append("market_data")
+
+    strict_alignment = bool(
+        (params.get("fallback_opportunities") or {}).get("require_full_timeframe_alignment", False)
+    )
+    analysis = candidate.get("analysis") if isinstance(candidate.get("analysis"), dict) else {}
+    direction = candidate.get("direction")
+    timeframe_trends = [analysis.get(f"trend_{interval}") for interval in ("15m", "1h", "4h")]
+    if strict_alignment and direction in {"BUY", "SELL"} and timeframe_trends != [direction, direction, direction]:
+        candidate["signal_status"] = "descartada"
+        candidate["market_valid"] = False
+        candidate["discard_reason"] = "full_timeframe_confirmation_unavailable"
 
     rr = risk_reward(candidate)
     min_rr = float(params.get("min_rr", 1.6))
@@ -876,8 +899,8 @@ def apply_tiered_risk_policy(
 
     policy["enabled"] = True
     max_risk = float(params["max_risk_usd"])
-    minimum_stars = int(configured.get("minimum_actionable_stars", 3))
-    raw_tiers = configured.get("risk_by_stars_usd") or {5: 10, 4: 8, 3: 4}
+    minimum_stars = int(configured.get("minimum_actionable_stars", 4))
+    raw_tiers = configured.get("risk_by_stars_usd") or {5: 5, 4: 2.5}
     tiers = {int(stars): float(limit) for stars, limit in raw_tiers.items()}
     multipliers = {
         str(asset).upper(): float(multiplier)
@@ -1269,6 +1292,11 @@ def run_session(config_dir: Path, limit_per_channel: int, input_paths: list[Path
         "scanned_symbols": fallback_metadata.get("market_scan_attempted", 0),
         "modeled_scan_assets": modeled_scan_assets,
         "fallback_opportunities": fallback_metadata,
+        "selection_policy": {
+            "primary_count": int(params.get("primary_count", 3)),
+            "backup_count": int(params.get("backup_count", 0)),
+            "max_final_candidates": int(params.get("max_final_candidates", 3)),
+        },
         "scoring_weights": params.get("scoring_weights") or {},
         "source_trust": params.get("source_trust") or {},
     }
@@ -1340,7 +1368,7 @@ def main() -> int:
     report_path = args.output_dir / "session-report.md"
     ranked, _ = rank_candidates(candidates, float(params["max_risk_usd"]), params.get("scoring_weights"), params.get("source_trust"))
     fallback_metadata = metadata.get("fallback_opportunities") or {}
-    fallback_metadata["no_trade_slots"] = max(0, int(fallback_metadata.get("target", 3)) - len(primary))
+    fallback_metadata["no_trade_slots"] = max(0, int(params.get("primary_count", 3)) - len(primary))
     candidates_path.write_text(json.dumps(candidates, indent=2, sort_keys=True) + "\n")
     metadata_path.write_text(json.dumps(metadata, indent=2, sort_keys=True) + "\n")
     report_path.write_text(render_report(candidates, float(params["max_risk_usd"]), metadata))

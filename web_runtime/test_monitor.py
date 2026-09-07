@@ -57,11 +57,37 @@ class DecisionTests(unittest.TestCase):
         self.assertNotIn("new_sl", result)
         self.assertNotIn("new_tp", result)
 
-    def test_closes_before_intraday_validity_ends_without_enough_progress(self):
+    def test_entry_validity_does_not_close_an_activated_trade(self):
         snap = snapshot(0.00002)
         result = decision_for(self.monitor(valid_until=(NOW + timedelta(minutes=20)).isoformat()), snap, NOW)
+        self.assertEqual(result["action"], "MANTENER")
+
+    def test_explicit_management_horizon_closes_intraday_trade(self):
+        snap = snapshot(0.00002)
+        result = decision_for(
+            self.monitor(
+                activated_at=(NOW - timedelta(hours=8)).isoformat(),
+                valid_until=(NOW - timedelta(hours=7)).isoformat(),
+                management_horizon_hours=8,
+            ),
+            snap,
+            NOW,
+        )
         self.assertEqual(result["action"], "CERRAR_TODO")
-        self.assertTrue(any("Restan" in reason for reason in result["reasons"]))
+        self.assertTrue(any("Horizonte" in reason for reason in result["reasons"]))
+
+    def test_legacy_monitor_without_explicit_horizon_is_not_expired(self):
+        snap = snapshot(0.00002)
+        result = decision_for(
+            self.monitor(
+                activated_at=(NOW - timedelta(hours=12)).isoformat(),
+                valid_until=(NOW - timedelta(hours=11)).isoformat(),
+            ),
+            snap,
+            NOW,
+        )
+        self.assertEqual(result["action"], "MANTENER")
+        self.assertIsNone(result["management_deadline"])
 
 
 if __name__ == "__main__":

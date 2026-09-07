@@ -41,7 +41,9 @@ test("monitor survives a new session and can pause and resume without its old ca
   const state = {
     session:{run_id:"run-1", date:"2026-09-02", generated_at:"2026-09-02T12:00:00Z", cards:[{
       id:"trade-1", monitorable:true, asset:"USDJPY", direction:"BUY", order_type:"BUY STOP",
-      valid_until:"2026-09-03T00:00:00Z", proxy_symbol:"USDJPY=X", provider:"test", source:"technical_market_scan",
+      valid_until:"2026-09-03T00:00:00Z", entry_valid_until:"2026-09-03T00:00:00Z",
+      management_horizon_hours:8, target_basis:"nearest_confirmed_1h_4h_swing",
+      proxy_symbol:"USDJPY=X", provider:"test", source:"technical_market_scan",
     }]},
     monitors:{}, events:[],
   };
@@ -55,6 +57,8 @@ test("monitor survives a new session and can pause and resume without its old ca
   assert.equal(state.monitors["trade-1"].session_run_id, "run-1");
   assert.equal(state.monitors["trade-1"].session_date, "2026-09-02");
   assert.equal(state.monitors["trade-1"].display_decimals, 3);
+  assert.equal(state.monitors["trade-1"].management_horizon_hours, 8);
+  assert.equal(state.monitors["trade-1"].target_basis, "nearest_confirmed_1h_4h_swing");
   assert.notEqual(state.monitors["trade-1"].activation_id, activation);
   assert.equal(state.monitors["trade-1"].activated_at, "2026-09-02T12:05:00Z");
 });

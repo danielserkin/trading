@@ -194,6 +194,38 @@ class TelegramFbsParserTest(unittest.TestCase):
         self.assertEqual(validated["signal_status"], "vencida")
         self.assertIn("freshness", validated["missing"])
 
+    def test_configured_excluded_asset_is_rejected_before_market_lookup(self) -> None:
+        candidate = self.parse("BUY EURUSD Entry 1.1000 SL 1.0990 TP 1.1020")
+        validated = session.validate_candidate(
+            candidate,
+            {"market_data": {"excluded_assets": ["EURUSD"]}, "max_risk_usd": 20},
+            {"forex": ["EURUSD"]},
+            {},
+        )
+        self.assertFalse(validated["market_valid"])
+        self.assertEqual(validated["discard_reason"], "asset_paused")
+
+    def test_strict_alignment_prevents_unconfirmed_expert_signal_from_being_published(self) -> None:
+        candidate = self.parse("BUY EURUSD Entry 1.1000 SL 1.0990 TP 1.1020")
+        original_validator = session.validate_yahoo_proxy
+        session.validate_yahoo_proxy = lambda item: item.update({"current_price": 1.1000, "analysis": {"market_proxy": "test"}})
+        try:
+            validated = session.validate_candidate(
+                candidate,
+                {
+                    "fallback_opportunities": {"require_full_timeframe_alignment": True},
+                    "market_data": {},
+                    "min_rr": 1.6,
+                    "max_risk_usd": 20,
+                },
+                {"forex": ["EURUSD"]},
+                {},
+            )
+        finally:
+            session.validate_yahoo_proxy = original_validator
+        self.assertFalse(validated["market_valid"])
+        self.assertEqual(validated["discard_reason"], "full_timeframe_confirmation_unavailable")
+
     def test_de30_uses_available_yahoo_index_proxy(self) -> None:
         self.assertEqual(session.YAHOO_PROXY_SYMBOLS["DE30"], "^GDAXI")
 

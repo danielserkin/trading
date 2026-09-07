@@ -82,7 +82,7 @@ def _candidate_line(rank: int, candidate: dict[str, Any]) -> str:
         f"└ ✅ TP1: <code>{html.escape(str(tp))}</code>  |  ⚖️ R/R: <b>{rr:.2f}</b>\n"
         f"└ 💵 Riesgo: <b>{risk_text}</b>{tier_text}  |  📦 Tamaño: <b>{html.escape(str(size))}</b>\n"
         f"└ 📐 Calidad: <b>{star_text} · {score_text}</b>  |  ID: <code>{html.escape(str(candidate.get('idea_id', 'TBD')))}</code>\n"
-        f"└ ⏳ Válida hasta: <b>{html.escape(validity)}</b>\n"
+        f"└ ⏳ Entrada válida hasta: <b>{html.escape(validity)}</b>\n"
         f"\n⚡ <b>Ejecución</b>\n{html.escape(str(instruction))}\nUna sola entrada por ID; no reingresar tras TP o SL."
     )
 
@@ -90,8 +90,10 @@ def _candidate_line(rank: int, candidate: dict[str, Any]) -> str:
 def build_summary(candidates: list[dict[str, Any]], metadata: dict[str, Any], max_risk_usd: float) -> str:
     ranked, _ = rank_candidates(candidates, max_risk_usd, metadata.get("scoring_weights"), metadata.get("source_trust"))
     minimum_stars, max_same_usd_bias = selection_policy(metadata)
+    selection = metadata.get("selection_policy") or {}
+    primary_count = max(0, int(selection.get("primary_count", 3)))
     top = select_distinct_candidates(
-        ranked, 3, minimum_stars=minimum_stars, max_same_usd_bias=max_same_usd_bias
+        ranked, primary_count, minimum_stars=minimum_stars, max_same_usd_bias=max_same_usd_bias
     )
     risk_policy = metadata.get("risk_policy") or {}
     portfolio_cap = risk_policy.get("max_primary_risk_usd")
@@ -115,7 +117,7 @@ def build_summary(candidates: list[dict[str, Any]], metadata: dict[str, Any], ma
         lines.extend([_candidate_line(index, candidate), ""])
     fallback = metadata.get("fallback_opportunities") or {}
     rejection_reasons = ", ".join(dict.fromkeys(reason_label(item.get("reason")) for item in (fallback.get("rejections") or [])[:4]))
-    for index in range(len(top) + 1, 4):
+    for index in range(len(top) + 1, primary_count + 1):
         reason = rejection_reasons or "sin evidencia técnica suficiente"
         lines.extend([
             f"⏸ <b>{index}. NO TRADE</b>\n└ Esperar: {html.escape(reason)}",
@@ -125,6 +127,7 @@ def build_summary(candidates: list[dict[str, Any]], metadata: dict[str, Any], ma
         "━━━━━━━━━━━━━━━━━━━━",
         "⚠️ <b>ANTES DE OPERAR</b>",
         "Confirma en FBS el precio, spread, cierre de vela, contrato y margen.",
+        "La hora de vigencia cancela una entrada pendiente; no ordena cerrar una posición ya activada.",
         "",
         "🤖 Análisis informativo · No se ejecutaron órdenes.",
     ])

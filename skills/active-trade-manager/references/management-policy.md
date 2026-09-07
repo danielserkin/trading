@@ -8,10 +8,14 @@ Use the original thesis and timeframe as the baseline, then evaluate what change
 - `MOVER_SL`: the trade has made meaningful progress and a confirmed swing permits locking profit without placing the stop inside ordinary noise. Place it beyond that swing with a spread/volatility buffer; never choose break-even mechanically.
 - `AJUSTAR_TP`: new resistance/support or reduced remaining time makes the original target unlikely. Move it closer only, never farther to chase price.
 - `CIERRE_PARCIAL`: the position is meaningfully profitable, reversal risk exists, and enough room remains for a protected runner. Close an executable 40–60% by default, rounded to the verified broker lot step, and state the remaining volume and its SL/TP.
-- `CERRAR_TODO`: the thesis is invalid, momentum failed after substantial progress, remaining reward is poor relative to giveback risk, validity expired, important news/rollover is imminent, or an intraday trade is approaching the weekend.
+- `CERRAR_TODO`: the thesis is invalid, momentum failed after substantial progress, the explicit post-entry management horizon expired, important news/rollover is imminent, or an intraday trade is approaching the weekend.
 - `EVIDENCIA_INSUFICIENTE`: required fields or fresh prices are missing. Say exactly which screenshot or field is needed.
 
 For M1–M30 positions, time without renewed progress materially weakens the setup. Close profitable intraday FX positions within 90 minutes of the expected weekly close unless the original setup was explicitly swing-oriented and current higher-timeframe evidence still supports carrying gap risk. A stop does not guarantee protection through a weekend gap.
+
+`valid_until` and `entry_valid_until` expire only an unfilled pending order. Once the order activates, never use that timestamp by itself as a reason to close. Use `management_horizon_hours`, the original timeframe, price structure, and thesis invalidation for post-entry decisions.
+
+Outside weekend/news risk, default to `MANTENER` when the thesis remains intact. Do not close merely because a position is temporarily red, has not progressed between two screenshots, or has not reached TP quickly. For a 15m setup, reassess on a completed 15m candle or a material event (approximately +0.75R, -0.50R, or structural invalidation), not on arbitrary screenshot frequency.
 
 Do not optimize the label `win` at the expense of expectancy. Compare the dollars/pips still available to the dollars/pips that can be given back. When at least 75% of the original path to TP has been consumed, explicitly assess profit protection, but do not apply an automatic trailing level without structure.
 
