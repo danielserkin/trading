@@ -1,5 +1,6 @@
 capital_usd: 1000
-max_risk_usd: 20
+# Perfil demo x10: conserva el lotaje proporcional al SL, con 10 veces el riesgo anterior.
+max_risk_usd: 50
 signal_window_hours: 24
 max_final_candidates: 3
 primary_count: 3
@@ -36,9 +37,9 @@ risk_policy:
   enabled: true
   minimum_actionable_stars: 4
   risk_by_stars_usd:
-    5: 5
-    4: 2.5
-  max_primary_risk_usd: 5
+    5: 50
+    4: 25
+  max_primary_risk_usd: 50
   max_same_usd_bias: 1
   symbol_multipliers:
     USDJPY: 0.75
