@@ -24,6 +24,7 @@ __pycache__/
 .ruff_cache/
 .mypy_cache/
 worker/node_modules/
+research/.cache/
 
 # Local dashboard runtime outputs
 current-state.json

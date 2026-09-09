@@ -6,6 +6,10 @@
     "cards": [],
     "backups": []
   },
+  "carry": {
+    "status": "idle",
+    "cards": []
+  },
   "monitors": {},
   "events": []
 }

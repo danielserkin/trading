@@ -1,0 +1,39 @@
+name: Monthly carry opportunity
+
+on:
+  repository_dispatch:
+    types: [monthly_carry]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: monthly-carry-engine
+  cancel-in-progress: false
+
+jobs:
+  evaluate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+      - name: Mark monthly carry as running
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RUN_ID: ${{ github.run_id }}-${{ github.run_attempt }}
+          WORKFLOW_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: python3 web_runtime/github_state.py carry-running --run-id "$RUN_ID" --workflow-url "$WORKFLOW_URL"
+      - name: Evaluate validated monthly rule
+        run: python3 web_runtime/monthly_carry.py --output monthly-carry.json
+      - name: Publish monthly card
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python3 web_runtime/github_state.py carry-complete --result monthly-carry.json
+      - name: Record failure
+        if: failure()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python3 web_runtime/github_state.py carry-failed --message "No se pudo completar la evaluación mensual. Revisar el log privado de GitHub Actions."

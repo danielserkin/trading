@@ -79,6 +79,24 @@ test("display decimals are restricted to one through five", () => {
   );
 });
 
+test("monthly carry card can activate the regular monitor", () => {
+  const state = {
+    session:{run_id:"daily", cards:[]},
+    carry:{run_id:"monthly-carry-2026-10", date:"2026-10-02", generated_at:"2026-10-02T08:00:00Z", cards:[{
+      id:"carry-1", monitorable:true, asset:"GBPJPY", direction:"BUY", order_type:"MARKET",
+      valid_until:"2026-10-02T23:59:59Z", management_horizon_trading_days:20,
+      strategy_type:"monthly_carry", proxy_symbol:"GBPJPY=X", provider:"test", source:"carry",
+    }]},
+    monitors:{}, events:[],
+  };
+  mutateMonitor(state, "carry-1", {action:"activate", entry:201.2, stop_loss:199.7, take_profit:202.7, volume:0.3, display_decimals:3});
+  const monitor = state.monitors["carry-1"];
+  assert.equal(monitor.strategy_type, "monthly_carry");
+  assert.equal(monitor.management_horizon_trading_days, 20);
+  assert.equal(monitor.session_run_id, "monthly-carry-2026-10");
+  assert.equal(monitor.volume, 0.3);
+});
+
 test("dashboard state returns a bounded monitor history without losing its count", () => {
   const history = Array.from({length:30}, (_, index) => ({action:"MANTENER", index}));
   const state = {monitors:{trade:{history}}, events:Array.from({length:90}, (_, index) => ({index}))};

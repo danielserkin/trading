@@ -88,6 +88,7 @@ function connection(online, label) {
   pill.setAttribute("aria-label", label);
   pill.innerHTML = `<i></i><span class="pill-label">${escapeHtml(label)}</span>`;
   $("#new-session-button").disabled = !online;
+  $("#monthly-carry-button").disabled = !online;
 }
 
 async function connect(workerUrl, pin) {
@@ -125,9 +126,10 @@ function statusInfo(status) {
   }[status] || [status || "Sin sesión", "neutral"];
 }
 
-function cardHtml(card) {
+function cardHtml(card, context = "session") {
+  const monthly = context === "carry" || card.strategy_type === "monthly_carry";
   if (card.status === "NO_TRADE") {
-    return `<article class="trade-card wait"><div class="card-top"><span class="rank">SLOT ${card.rank}</span></div><div class="card-title"><h3>NO TRADE</h3><span class="direction">ESPERAR</span></div><p class="order-type">${escapeHtml((card.reasons || [])[0])}</p><div class="monitor-control"><div class="monitor-label"><strong>Sin entrada</strong><small>No se inventaron niveles.</small></div></div></article>`;
+    return `<article class="trade-card wait ${monthly ? "monthly" : ""}"><div class="card-top"><span class="rank">${monthly ? "CARRY MENSUAL" : `SLOT ${card.rank}`}</span></div><div class="card-title"><h3>NO TRADE</h3><span class="direction">ESPERAR</span></div><p class="order-type">${escapeHtml((card.reasons || [])[0])}</p>${card.next_review ? `<div class="strategy-note"><strong>Próxima revisión</strong>${escapeHtml(new Date(`${card.next_review}T12:00:00Z`).toLocaleDateString())}</div>` : ""}<div class="monitor-control"><div class="monitor-label"><strong>Sin entrada</strong><small>No se inventaron niveles.</small></div></div></article>`;
   }
   const type = card.direction === "SELL" ? "sell" : "buy";
   const active = Boolean(app.state?.monitors?.[card.id]?.enabled);
@@ -135,8 +137,8 @@ function cardHtml(card) {
   const precision = roundedTrade(card, decimals);
   const priceLevels = [["Entrada","entry",card.entry],["Stop loss","stop_loss",card.stop_loss],["Take profit","take_profit",card.take_profit]];
   const options = [1,2,3,4,5].map((value) => `<option value="${value}" ${value === decimals ? "selected" : ""}>${value}</option>`).join("");
-  return `<article class="trade-card ${type}">
-    <div class="card-top"><span class="rank">OPORTUNIDAD ${card.rank}</span><span class="stars">${"★".repeat(card.stars || 0)}${"☆".repeat(5-(card.stars || 0))}</span></div>
+  return `<article class="trade-card ${type} ${monthly ? "monthly" : ""}">
+    <div class="card-top"><span class="rank">${monthly ? "CARRY MENSUAL · 1 POSICIÓN" : `OPORTUNIDAD ${card.rank}`}</span><span class="stars">${"★".repeat(card.stars || 0)}${"☆".repeat(5-(card.stars || 0))}</span></div>
     <div class="card-title"><h3>${escapeHtml(card.asset)}</h3><span class="direction">${card.direction === "BUY" ? "▲ BUY" : "▼ SELL"}</span></div>
     <p class="order-type">${escapeHtml(card.order_type)} · ${escapeHtml(card.source || "análisis técnico")}</p>
     <label class="precision-control">Decimales <select class="precision-select" data-precision-card="${escapeHtml(card.id)}">${options}</select></label>
@@ -146,6 +148,7 @@ function cardHtml(card) {
       return `<div class="level"><small>${label}</small><div class="copy-row"><code>${escapeHtml(formatted)}</code><button class="copy-button copy-price-button" data-price-card="${escapeHtml(card.id)}" data-price-field="${field}" title="Copiar">📋</button></div></div>`;
     }).join("")}<div class="level"><small>Tamaño</small><div class="copy-row"><code>${escapeHtml(card.size || "—")}</code><button class="copy-button" data-copy="${escapeHtml(card.size || "")}" title="Copiar">📋</button></div></div></div>
     <div class="card-facts"><span>⚖️ R/R <strong>${escapeHtml(card.risk_reward?.toFixed?.(2) || "—")}</strong></span><span>🛡️ Riesgo <strong>${card.risk_usd != null ? `$${Number(card.risk_usd).toFixed(2)}` : "—"}</strong></span></div>
+    ${monthly ? `<div class="strategy-note"><strong>Horizonte: 20 días hábiles</strong>Diferencial de tasas ${Number(card.rate_gap) >= 0 ? "+" : ""}${escapeHtml(card.rate_gap)} pp. Confirma spread y swap en FBS antes de abrir; no repitas la entrada este mes.</div>` : ""}
     <div class="monitor-control"><div class="monitor-label"><strong>📡 Administrar trade</strong><small>${active ? "Seguimiento activo" : "Evaluar cada 15 minutos"}</small></div><label class="switch"><input class="monitor-toggle" data-trade-id="${escapeHtml(card.id)}" type="checkbox" ${active ? "checked" : ""} ${card.monitorable ? "" : "disabled"}><span class="slider"></span></label></div>
   </article>`;
 }
@@ -153,6 +156,11 @@ function cardHtml(card) {
 function renderCards(session) {
   const cards = session.cards || [];
   $("#cards").innerHTML = cards.length ? cards.map(cardHtml).join("") : `<div class="empty-state"><span>📊</span><h3>Todo listo para comenzar</h3><p>Pulsa “Nueva sesión” para generar tus próximas oportunidades.</p></div>`;
+}
+
+function renderCarry(carry) {
+  const cards = carry.cards || [];
+  $("#carry-cards").innerHTML = cards.length ? cards.map((card) => cardHtml(card, "carry")).join("") : `<div class="empty-state carry-empty"><span>🌙</span><h3>Estrategia mensual disponible</h3><p>Pulsa “Carry mensual” para comprobar la ventana de entrada.</p></div>`;
 }
 
 function renderMonitors(monitors) {
@@ -186,6 +194,7 @@ function renderEvents(events) {
 function render() {
   const state = app.state || {};
   const session = state.session || {};
+  const carry = state.carry || {};
   const summary = session.summary || {};
   $("#stat-messages").textContent = summary.messages_reviewed ?? "—";
   $("#stat-symbols").textContent = summary.symbols_scanned ?? "—";
@@ -200,7 +209,13 @@ function render() {
   $("#session-status").className = `status-badge ${css}`;
   $("#session-time").textContent = session.generated_at ? new Date(session.generated_at).toLocaleString() : "—";
   $("#new-session-button").disabled = !app.token || ["queued","running"].includes(session.status);
+  const [carryLabel, carryCss] = statusInfo(carry.status);
+  $("#carry-status").textContent = carry.status === "idle" || !carry.status ? "Sin evaluar" : carryLabel;
+  $("#carry-status").className = `status-badge ${carryCss}`;
+  $("#carry-time").textContent = carry.generated_at ? new Date(carry.generated_at).toLocaleString() : "—";
+  $("#monthly-carry-button").disabled = !app.token || ["queued","running"].includes(carry.status);
   renderCards(session);
+  renderCarry(carry);
   renderMonitors(state.monitors);
   renderEvents(state.events);
 }
@@ -215,7 +230,19 @@ async function newSession() {
   } catch (error) { toast(`❌ ${error.message}`); button.disabled = false; }
 }
 
-function findCard(tradeId) { return (app.state?.session?.cards || []).find((card) => card.id === tradeId); }
+async function newMonthlyCarry() {
+  const button = $("#monthly-carry-button");
+  button.disabled = true;
+  try {
+    await api("/monthly-carry", {method:"POST", body:"{}"});
+    toast("🌙 Evaluación mensual enviada a GitHub Actions");
+    await refresh();
+  } catch (error) { toast(`❌ ${error.message}`); button.disabled = false; }
+}
+
+function findCard(tradeId) {
+  return [...(app.state?.session?.cards || []), ...(app.state?.carry?.cards || [])].find((card) => card.id === tradeId);
+}
 
 function openMonitor(card) {
   $("#monitor-trade-id").value = card.id;
@@ -311,6 +338,7 @@ document.addEventListener("change", async (event) => {
     const card = findCard(precision.dataset.precisionCard);
     if (card) setDisplayDecimals(card, Number(precision.value));
     renderCards(app.state?.session || {});
+    renderCarry(app.state?.carry || {});
     renderMonitors(app.state?.monitors || {});
     return;
   }
@@ -326,6 +354,7 @@ $("#settings-button").addEventListener("click", () => {
   $("#settings-dialog").showModal();
 });
 $("#new-session-button").addEventListener("click", newSession);
+$("#monthly-carry-button").addEventListener("click", newMonthlyCarry);
 $("#clear-local-log").addEventListener("click", () => { sessionStorage.setItem("trading-control:hide-events-before", Date.now()); renderEvents([]); });
 
 $("#settings-form").addEventListener("submit", async (event) => {

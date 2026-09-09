@@ -89,6 +89,29 @@ class DecisionTests(unittest.TestCase):
         self.assertEqual(result["action"], "MANTENER")
         self.assertIsNone(result["management_deadline"])
 
+    def test_monthly_carry_ignores_intraday_deterioration(self):
+        snap = snapshot(-0.00005)
+        result = decision_for(
+            self.monitor(strategy_type="monthly_carry", management_horizon_trading_days=20),
+            snap,
+            NOW,
+        )
+        self.assertEqual(result["action"], "MANTENER")
+
+    def test_monthly_carry_closes_after_twenty_trading_days(self):
+        snap = snapshot(0.00002)
+        result = decision_for(
+            self.monitor(
+                strategy_type="monthly_carry",
+                activated_at="2026-07-30T18:31:00+00:00",
+                management_horizon_trading_days=20,
+            ),
+            snap,
+            NOW,
+        )
+        self.assertEqual(result["action"], "CERRAR_TODO")
+        self.assertIn("20 días hábiles", " ".join(result["reasons"]))
+
 
 if __name__ == "__main__":
     unittest.main()

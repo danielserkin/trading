@@ -28,6 +28,7 @@ def default_state() -> dict[str, Any]:
         "schema_version": 1,
         "updated_at": now(),
         "session": {"status": "idle", "cards": [], "backups": []},
+        "carry": {"status": "idle", "cards": []},
         "monitors": {},
         "events": [],
     }
@@ -128,6 +129,13 @@ def main() -> int:
     session_event = sub.add_parser("session-event")
     session_event.add_argument("--level", default="info", choices=("info", "success", "warning", "error"))
     session_event.add_argument("--message", required=True)
+    carry_running = sub.add_parser("carry-running")
+    carry_running.add_argument("--run-id", required=True)
+    carry_running.add_argument("--workflow-url", default="")
+    carry_complete = sub.add_parser("carry-complete")
+    carry_complete.add_argument("--result", required=True, type=Path)
+    carry_failed = sub.add_parser("carry-failed")
+    carry_failed.add_argument("--message", required=True)
     monitor = sub.add_parser("monitor-results")
     monitor.add_argument("--results", required=True, type=Path)
     args = parser.parse_args()
@@ -184,6 +192,34 @@ def main() -> int:
 
     if args.command == "session-event":
         store.update("runtime: session event", lambda state: add_event(state, args.level, args.message))
+        return 0
+
+    if args.command == "carry-running":
+        def mutation(state: dict[str, Any]) -> None:
+            state["carry"] = {
+                **state.get("carry", {}), "status": "running", "run_id": args.run_id,
+                "started_at": now(), "workflow_url": args.workflow_url,
+            }
+            add_event(state, "info", "🌙 Evaluando la oportunidad carry mensual")
+        store.update("runtime: monthly carry running", mutation)
+        return 0
+
+    if args.command == "carry-complete":
+        result = json.loads(args.result.read_text())
+
+        def mutation(state: dict[str, Any]) -> None:
+            state["carry"] = {**result, "status": "completed", "completed_at": now()}
+            actionable = int((result.get("summary") or {}).get("valid_candidates") or 0)
+            message = "🌙 Oportunidad mensual publicada" if actionable else "🌙 Evaluación mensual completa: sin entrada válida ahora"
+            add_event(state, "success" if actionable else "warning", message)
+        store.update("runtime: monthly carry completed", mutation)
+        return 0
+
+    if args.command == "carry-failed":
+        def mutation(state: dict[str, Any]) -> None:
+            state["carry"] = {**state.get("carry", {}), "status": "failed", "failed_at": now(), "error": args.message}
+            add_event(state, "error", f"❌ Estrategia mensual fallida: {args.message}")
+        store.update("runtime: monthly carry failed", mutation)
         return 0
 
     results = json.loads(args.results.read_text())

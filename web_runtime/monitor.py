@@ -54,6 +54,17 @@ def parse_time(value: Any) -> datetime | None:
         return None
 
 
+def add_trading_days(start: datetime, days: int) -> datetime:
+    """Add weekday trading days while preserving the activation time."""
+    current = start
+    remaining = max(0, days)
+    while remaining:
+        current += timedelta(days=1)
+        if current.weekday() < 5:
+            remaining -= 1
+    return current
+
+
 def get_json(url: str) -> Any:
     request = urllib.request.Request(url, headers={"User-Agent": "trading-dashboard-monitor/1.0"})
     with urllib.request.urlopen(request, timeout=20) as response:
@@ -207,11 +218,12 @@ def decision_for(monitor: dict[str, Any], snapshot: dict[str, Any], now: datetim
     age = now - activated
     raw_management_horizon = monitor.get("management_horizon_hours")
     management_horizon_hours = int(raw_management_horizon) if raw_management_horizon not in (None, "") else None
-    management_deadline = (
-        activated + timedelta(hours=management_horizon_hours)
-        if management_horizon_hours is not None
-        else None
+    raw_trading_days = monitor.get("management_horizon_trading_days")
+    management_horizon_trading_days = int(raw_trading_days) if raw_trading_days not in (None, "") else None
+    management_deadline = add_trading_days(activated, management_horizon_trading_days) if management_horizon_trading_days is not None else (
+        activated + timedelta(hours=management_horizon_hours) if management_horizon_hours is not None else None
     )
+    strategy_type = str(monitor.get("strategy_type") or "intraday")
     base = {
         "evaluated_at": now.isoformat(),
         "candle_close": m15[-1].closed_at.isoformat(),
@@ -225,6 +237,7 @@ def decision_for(monitor: dict[str, Any], snapshot: dict[str, Any], now: datetim
         "trends": trends,
         "confidence": "media" if snapshot["provider"] == "binance_spot_proxy" else "baja",
         "management_deadline": management_deadline.isoformat() if management_deadline else None,
+        "strategy_type": strategy_type,
     }
 
     def finish(action: str, instruction: str, reasons: list[str], urgency: str = "PRÓXIMO PASO", **levels: Any) -> dict[str, Any]:
@@ -236,6 +249,19 @@ def decision_for(monitor: dict[str, Any], snapshot: dict[str, Any], now: datetim
         return finish("CERRAR_TODO", "Verificar en FBS; si la posición continúa abierta, cerrarla a mercado.", ["El proxy cruzó el SL configurado", "No ampliar ni retirar el stop"], "AHORA")
     if tp_hit:
         return finish("CERRAR_TODO", "Verificar en FBS que el TP se ejecutó; si sigue abierta, cerrar el remanente.", ["El proxy alcanzó el TP", "Evitar devolver una ganancia ya conseguida"], "AHORA")
+    if strategy_type == "monthly_carry":
+        if management_deadline and now >= management_deadline:
+            return finish(
+                "CERRAR_TODO",
+                "Cerrar por fin del horizonte mensual tras confirmar la cotización en FBS.",
+                [f"Horizonte cumplido: {management_horizon_trading_days} días hábiles", f"Resultado actual: {current_r:.2f}R"],
+                "AHORA",
+            )
+        return finish(
+            "MANTENER",
+            "Mantener el SL y TP originales; confirmar niveles y swap acumulado en FBS.",
+            [f"Carry mensual en día hábil de gestión", f"Resultado actual: {current_r:.2f}R", "Sin salida anticipada por ruido intradía"],
+        )
     if now.weekday() == 4 and now.hour >= 19:
         return finish("CERRAR_TODO", "Cerrar la posición antes del fin de semana tras confirmar el precio en FBS.", ["Cierre semanal próximo", "El seguimiento usa una estrategia intradía"], "AHORA")
     if management_deadline and now >= management_deadline:

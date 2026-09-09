@@ -33,10 +33,16 @@
         <h1>Tu sesión, clara.<br><span>Tu riesgo, bajo control.</span></h1>
         <p class="hero-copy">Analiza señales, prepara órdenes y sigue cada trade desde un solo lugar. Tú confirmas y ejecutas siempre en FBS.</p>
       </div>
-      <button id="new-session-button" class="primary-button" disabled>
-        <span class="button-icon">🚀</span>
-        <span><strong>Nueva sesión</strong><small>Buscar 3 oportunidades</small></span>
-      </button>
+      <div class="hero-actions">
+        <button id="new-session-button" class="primary-button" disabled>
+          <span class="button-icon">🚀</span>
+          <span><strong>Nueva sesión</strong><small>Buscar hasta 3 oportunidades</small></span>
+        </button>
+        <button id="monthly-carry-button" class="primary-button carry-button" disabled>
+          <span class="button-icon">🌙</span>
+          <span><strong>Carry mensual</strong><small>Evaluar 1 oportunidad macro</small></span>
+        </button>
+      </div>
     </section>
 
     <section class="stats" aria-label="Resumen de sesión">
@@ -57,6 +63,20 @@
         <h3>Todo listo para comenzar</h3>
         <p>Conecta el panel y pulsa “Nueva sesión” para generar tus próximas oportunidades.</p>
       </div>
+    </section>
+
+    <section class="carry-zone">
+      <div class="section-heading carry-heading">
+        <div><p class="eyebrow">ESTRATEGIA PARALELA · DEMO</p><h2>Carry mensual</h2><p class="section-copy">Una sola posición basada en diferencial de tasas. No reemplaza la búsqueda diaria.</p></div>
+        <div class="session-meta"><span id="carry-status" class="status-badge neutral">Sin evaluar</span><time id="carry-time">—</time></div>
+      </div>
+      <section id="carry-cards" class="cards carry-cards" aria-live="polite">
+        <div class="empty-state carry-empty">
+          <span>🌙</span>
+          <h3>Estrategia mensual disponible</h3>
+          <p>Pulsa “Carry mensual” para saber si la ventana de este mes permite una entrada.</p>
+        </div>
+      </section>
     </section>
 
     <section class="lower-grid">

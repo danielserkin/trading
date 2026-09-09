@@ -198,7 +198,12 @@ function mutateMonitor(state, tradeId, input, timestamp = new Date().toISOString
     return "active";
   }
   if (action !== "activate") throw new Error("Acción de seguimiento no válida");
-  const card = (state.session?.cards || []).find((item) => item.id === tradeId);
+  const sources = [
+    {kind:"session", payload:state.session},
+    {kind:"carry", payload:state.carry},
+  ];
+  const source = sources.find(({payload}) => (payload?.cards || []).some((item) => item.id === tradeId));
+  const card = (source?.payload?.cards || []).find((item) => item.id === tradeId);
   if (!card || !card.monitorable) throw new Error("Este trade no está disponible para seguimiento");
   const entry = Number(input.entry), stopLoss = Number(input.stop_loss), takeProfit = Number(input.take_profit);
   const volume = input.volume === null || input.volume === undefined || input.volume === "" ? null : Number(input.volume);
@@ -211,9 +216,11 @@ function mutateMonitor(state, tradeId, input, timestamp = new Date().toISOString
     volume, display_decimals:validDisplayDecimals(input.display_decimals),
     valid_until:card.valid_until, entry_valid_until:card.entry_valid_until || card.valid_until,
     management_horizon_hours:card.management_horizon_hours,
+    management_horizon_trading_days:card.management_horizon_trading_days,
+    strategy_type:card.strategy_type || (source?.kind === "carry" ? "monthly_carry" : "intraday"),
     target_basis:card.target_basis, proxy_symbol:card.proxy_symbol,
-    provider:card.provider, source:card.source, session_run_id:state.session?.run_id,
-    session_date:state.session?.date, session_generated_at:state.session?.generated_at,
+    provider:card.provider, source:card.source, session_run_id:source?.payload?.run_id,
+    session_date:source?.payload?.date, session_generated_at:source?.payload?.generated_at,
     activated_at:timestamp, history:existing?.history || [], last_decision:null,
   };
   event(state, "success", `📡 Seguimiento activado: ${card.asset} ${card.direction}`);
@@ -264,6 +271,30 @@ async function handle(request, env) {
       await updateState(env, "runtime: session dispatch failed", (state) => {
         state.session = {...state.session, status:"failed", error:error.message};
         event(state, "error", `❌ No se pudo iniciar la sesión: ${error.message}`);
+      });
+      throw error;
+    }
+    return response(request, env, {status:"queued", request_id:requestId}, 202);
+  }
+
+  if (url.pathname === "/monthly-carry" && request.method === "POST") {
+    const requestId = crypto.randomUUID();
+    await updateState(env, "runtime: queue monthly carry", (state) => {
+      const status = state.carry?.status;
+      const since = Date.parse(state.carry?.started_at || state.carry?.requested_at || "");
+      const ageMinutes = Number.isFinite(since) ? (Date.now() - since) / 60000 : Number.POSITIVE_INFINITY;
+      if (status === "queued" && ageMinutes < 15) throw new Error("Ya existe una evaluación mensual en cola");
+      if (status === "running" && ageMinutes < 30) throw new Error("Ya existe una evaluación mensual en curso");
+      if (["queued","running"].includes(status)) event(state, "warning", "♻️ La evaluación mensual anterior venció; se inicia otro intento");
+      state.carry = {...(state.carry || {}), status:"queued", request_id:requestId, requested_at:new Date().toISOString()};
+      event(state, "info", "🌙 Estrategia mensual enviada a la cola");
+    });
+    try {
+      await dispatch(env, "monthly_carry", {request_id:requestId});
+    } catch (error) {
+      await updateState(env, "runtime: monthly carry dispatch failed", (state) => {
+        state.carry = {...state.carry, status:"failed", error:error.message};
+        event(state, "error", `❌ No se pudo iniciar la estrategia mensual: ${error.message}`);
       });
       throw error;
     }
